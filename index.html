@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RFFS-BOD — Fiches de Formation</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rouge: #c0392b;
+  --rouge-dark: #922b21;
+  --rouge-light: #fadbd8;
+  --or: #f39c12;
+  --bleu: #2980b9;
+  --vert: #27ae60;
+  --orange: #e67e22;
+  --noir: #1a1a1a;
+  --gris: #4a4a4a;
+  --gris-clair: #f5f5f0;
+  --blanc: #ffffff;
+  --border: #e0ddd8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',sans-serif;background:var(--gris-clair);color:var(--noir);min-height:100vh}
+
+/* HEADER */
+header{background:var(--rouge);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.logo{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:3px;display:flex;align-items:center;gap:10px}
+.logo-badge{background:#fff;color:var(--rouge);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.logo span{color:var(--or)}
+nav{display:flex;gap:4px}
+nav a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:6px;transition:all 0.2s;cursor:pointer}
+nav a:hover{background:rgba(255,255,255,0.15);color:#fff}
+nav a.active{background:rgba(255,255,255,0.2);color:#fff;border-bottom:2px solid var(--or)}
+
+/* SECTIONS */
+.section-page{display:none}
+.section-page.active{display:block}
+
+/* HERO */
+.hero{background:var(--rouge-dark);padding:48px 28px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{background:var(--or);color:#fff;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase}
+.hero h1{font-family:'Oswald',sans-serif;font-size:clamp(24px,5vw,36px);font-weight:600;color:#fff;letter-spacing:1px;line-height:1.1;margin-bottom:10px}
+.hero p{color:rgba(255,255,255,0.75);font-size:15px;max-width:460px;line-height:1.6}
+
+/* MAIN */
+.main{max-width:860px;margin:0 auto;padding:36px 28px 60px}
+.section-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;color:var(--rouge);letter-spacing:1px;text-transform:uppercase;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--rouge-light);display:flex;align-items:center;gap:8px}
+
+/* ANIMATION CARD */
+.anim-card{background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:36px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.anim-header{background:var(--rouge);padding:12px 18px;display:flex;align-items:center;gap:8px}
+.anim-header span{color:#fff;font-size:13px;font-weight:500;letter-spacing:0.5px}
+.anim-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4)}
+.anim-body{padding:22px}
+
+/* PYRO STAGE */
+@keyframes pbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pwave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes pscan{0%{top:0}100%{top:44px}}
+@keyframes pdl{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(4px)}}
+@keyframes ppop{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+.scene{display:none}
+.scene.active{display:flex;flex-direction:column;align-items:center;animation:ppop 0.3s ease}
+.stage{width:100%;border-radius:10px;padding:20px 16px 16px;background:linear-gradient(180deg,#d0eaf8 0%,#e8f4fd 60%,#c8e6c9 100%);border:1px solid #b8d4e8;position:relative;min-height:200px;display:flex;align-items:flex-end;justify-content:center;gap:28px;overflow:hidden}
+.pompier{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.helmet{width:36px;height:20px;background:var(--rouge);border-radius:18px 18px 4px 4px;position:relative}
+.helmet::after{content:'';position:absolute;bottom:-2px;left:-4px;right:-4px;height:5px;background:var(--rouge-dark);border-radius:2px}
+.hbadge{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:10px;height:8px;background:var(--or);border-radius:2px}
+.phead{width:30px;height:28px;background:#f5cba7;border-radius:50%;position:relative;margin-top:-4px}
+.peye{position:absolute;width:5px;height:5px;background:#2c3e50;border-radius:50%;top:10px}
+.peye.l{left:6px}.peye.r{right:6px}
+.psmile{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:12px;height:5px;border-bottom:2px solid var(--rouge);border-radius:0 0 6px 6px}
+.pbrow{position:absolute;width:7px;height:2px;background:#6d4c41;border-radius:1px;top:6px}
+.pbrow.l{left:5px;transform:rotate(-5deg)}.pbrow.r{right:5px;transform:rotate(5deg)}
+.pbody{width:34px;height:36px;background:#2980b9;border-radius:4px;margin-top:2px;position:relative}
+.pbody::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:10px;height:14px;background:#1a5276;border-radius:2px}
+.pbelt{position:absolute;bottom:0;left:0;right:0;height:6px;background:var(--or);border-radius:0 0 4px 4px}
+.parm-l{position:absolute;left:-10px;top:4px;width:10px;height:22px;background:#2980b9;border-radius:5px}
+.parm-r{position:absolute;right:-10px;top:4px;width:10px;height:22px;background:#2980b9;border-radius:5px}
+.plegs{display:flex;gap:4px;margin-top:1px}
+.pleg{width:12px;height:22px;background:#1a252f;border-radius:3px;position:relative}
+.pboot{position:absolute;bottom:-4px;left:-2px;right:-2px;height:8px;background:#111;border-radius:2px}
+.bubble{background:#fff;border:2px solid var(--rouge);border-radius:14px;padding:10px 14px;font-size:13px;color:#1a252f;max-width:190px;text-align:center;position:relative;z-index:3;animation:pfloat 2s ease-in-out infinite;align-self:flex-start;margin-bottom:24px;font-weight:500;line-height:1.5}
+.bubble::after{content:'';position:absolute;bottom:-10px;left:20px;width:14px;height:10px;background:#fff;clip-path:polygon(0 0,100% 0,0 100%);border-left:2px solid var(--rouge);border-bottom:2px solid var(--rouge)}
+.prop{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.phone-frame{width:52px;height:88px;background:#2c3e50;border-radius:8px;padding:4px}
+.phone-screen{width:100%;height:100%;background:#fff;border-radius:4px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:var(--rouge);opacity:0.8;animation:pscan 1.2s linear infinite}
+.theme-card-sm{width:38px;height:50px;border-radius:4px;display:flex;flex-direction:column;gap:3px;padding:4px;border:2px solid}
+.theme-card-sm.sel{transform:scale(1.12);box-shadow:0 4px 12px rgba(0,0,0,0.12)}
+.tbar{height:5px;border-radius:1px}
+.fiche-sm{width:60px;height:74px;background:#fff;border:2px solid #bdc3c7;border-radius:5px;padding:5px;position:relative;margin-bottom:18px}
+.fiche-top{height:10px;background:var(--rouge);border-radius:2px;margin-bottom:4px}
+.fiche-line{height:4px;background:#ecf0f1;border-radius:1px;margin-bottom:3px}
+.fiche-line.s{width:70%}
+.dl-arrow{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:18px;color:#27ae60;animation:pdl 0.7s ease-in-out infinite}
+
+/* NAV SCÈNES */
+.scene-nav{display:flex;align-items:center;gap:12px;padding:14px 0 4px;width:100%}
+.scene-dots{display:flex;gap:8px;justify-content:center;flex:1}
+.sdot{width:10px;height:10px;border-radius:50%;background:#d0ccc5;transition:all 0.2s}
+.sdot.active{background:var(--rouge);transform:scale(1.2)}
+.scene-btn{background:#fff;border:1.5px solid #d0ccc5;color:var(--gris);padding:8px 18px;border-radius:6px;font-size:13px;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:all 0.15s}
+.scene-btn:hover:not(:disabled){background:var(--rouge);color:#fff;border-color:var(--rouge)}
+.scene-btn:disabled{opacity:0.3;cursor:default}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:600px){.steps-grid{grid-template-columns:1fr}}
+.step-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px 16px;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.step-num{font-family:'Oswald',sans-serif;font-size:38px;font-weight:700;color:var(--rouge-light);line-height:1;margin-bottom:6px}
+.step-card h3{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.step-card p{font-size:13px;color:var(--gris);line-height:1.5}
+.step-ico{position:absolute;top:14px;right:14px;width:32px;height:32px;background:var(--rouge-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.qr-wrap{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.qr-url{font-size:11px;color:var(--bleu);font-weight:700;letter-spacing:0.5px}
+
+/* TIPS */
+.tip-box{background:#fff9e6;border:1.5px solid var(--or);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.tip-icon{width:30px;height:30px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tip-box p{font-size:13px;color:#7d6608;line-height:1.5}
+
+/* THÈMES */
+.themes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:600px){.themes-grid{grid-template-columns:1fr}}
+.theme-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:26px 22px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.theme-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--tc);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.theme-card:hover::before{transform:scaleX(1)}
+.theme-card:hover{border-color:var(--tc);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.1)}
+.theme-icon{font-size:38px;margin-bottom:12px;display:block}
+.theme-label{font-family:'Oswald',sans-serif;font-size:21px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tc);margin-bottom:5px}
+.theme-desc{font-size:13px;color:var(--gris);line-height:1.5}
+
+/* SOUS-THÈMES */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid #d0ccc5;border-radius:8px;padding:7px 14px;font-size:13px;font-family:'Source Sans 3',sans-serif;color:var(--gris);cursor:pointer;margin-bottom:18px;transition:all 0.2s}
+.back-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+.subthemes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.subtheme-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px 14px;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.subtheme-card:hover{border-color:var(--tc,var(--rouge));background:var(--rouge-light)}
+.subtheme-icon{font-size:24px;margin-bottom:8px;display:block}
+.subtheme-label{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--tc,var(--rouge));text-transform:uppercase;letter-spacing:0.5px}
+.empty-state{background:#fff;border:1px solid var(--border);border-radius:10px;padding:36px;text-align:center;color:var(--gris);font-size:14px}
+.empty-state div{font-size:36px;margin-bottom:10px}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+@media(max-width:600px){.contact-grid{grid-template-columns:1fr}}
+.contact-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.contact-ico{width:44px;height:44px;background:var(--rouge-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.contact-label{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.contact-val{font-size:13px;color:var(--bleu);font-weight:600;text-decoration:none}
+.contact-desc{font-size:12px;color:var(--gris);margin-bottom:8px;line-height:1.4}
+.form-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--gris);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.form-input{width:100%;background:var(--gris-clair);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;font-family:'Source Sans 3',sans-serif;color:var(--noir);outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--rouge)}
+.form-submit{background:var(--rouge);color:#fff;border:none;border-radius:8px;padding:12px 26px;font-size:14px;font-weight:600;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.3px}
+.form-submit:hover{opacity:0.85}
+.form-confirm{display:none;margin-top:14px;background:var(--rouge-light);border:1.5px solid var(--rouge);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--rouge-dark);font-weight:500}
+
+/* FICHES LIST */
+.fiches-list{display:flex;flex-direction:column;gap:10px}
+.fiche-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.fiche-item:hover{border-color:var(--rouge);background:var(--rouge-light)}
+.fiche-item-title{font-size:15px;font-weight:600;color:var(--noir);margin-bottom:3px}
+.fiche-item-meta{font-size:12px;color:var(--gris);display:flex;gap:8px;align-items:center}
+.fiche-badge{font-size:11px;background:var(--rouge-light);color:var(--rouge);padding:2px 8px;border-radius:4px;font-weight:600}
+.fiche-arrow{color:var(--rouge);font-size:20px;font-weight:300}
+.fiche-detail-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.fiche-detail-title{font-family:'Oswald',sans-serif;font-size:24px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--rouge-light)}
+.fiche-section-h{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.fiche-content-p{font-size:14px;color:var(--gris);line-height:1.7}
+.pdf-link{display:inline-flex;align-items:center;gap:10px;background:var(--rouge);color:#fff;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Source Sans 3',sans-serif;transition:opacity 0.2s;margin-top:8px}
+.pdf-link:hover{opacity:0.85}
+.pdf-embed{width:100%;height:500px;border:none;border-radius:8px;margin-top:12px;border:1px solid var(--border)}
+
+/* FOOTER */
+footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:0.5px}
+
+/* MODAL ADMIN */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;padding:28px 24px;width:90%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.modal-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#1F3864;margin-bottom:16px}
+.modal-input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 14px;font-size:14px;font-family:inherit;box-sizing:border-box;margin-bottom:12px;outline:none}
+.modal-input:focus{border-color:#1F3864}
+.modal-btn{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px}
+.modal-btn-sec{background:#f5f5f5;color:#666;border:1.5px solid #ddd;border-radius:8px;padding:9px 20px;font-size:14px;cursor:pointer;width:100%}
+.modal-error{color:#c0392b;font-size:13px;margin-bottom:8px;display:none}
+.modal-success{color:#27ae60;font-size:13px;margin-bottom:8px;display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showSection('home')" style="cursor:pointer" title="Accueil"><div class="logo-badge">🔥</div>RFFS-<span>BOD</span></div>
+  <nav>
+    <a id="nav-home" onclick="showSection('home')">🏠</a>
+    <a id="nav-themes" onclick="showSection('themes')">🗂️ Thèmes</a>
+    <a id="nav-contact" onclick="showSection('contact')">📞 Contact</a>
+    <a id="nav-tutoriel" onclick="showSection('tutoriel')" style="opacity:0.7;font-size:12px">❓ Tutoriel</a>
+    <a onclick="openAdmin()" style="opacity:0.4;font-size:11px;cursor:pointer">⚙</a>
+  </nav>
+</header>
+
+<!-- ===== TUTORIEL ===== -->
+<div id="section-tutoriel" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Guide d'utilisation</div>
+      <h1>Comment utiliser<br>le site RFFS-BOD ?</h1>
+      <p>En 3 étapes simples, découvre comment accéder aux ressources pédagogiques et télécharger tes fiches formateur.</p>
+    </div>
+  </div>
+  <div class="main">
+    <div class="section-title"><span>🎬</span> Tutoriel animé</div>
+    <div class="anim-card">
+      <div class="anim-header">
+        <div class="anim-dot"></div><div class="anim-dot"></div><div class="anim-dot"></div>
+        <span>Pyro te guide — clique sur les flèches pour naviguer</span>
+      </div>
+      <div class="anim-body">
+
+        <div id="s0" class="scene active">
+          <div class="stage">
+            <div class="bubble">"Salut ! Je suis Pyro,<br>ton guide sur<br>RFFS-BOD !"</div>
+            <div class="pompier" style="animation:pbounce 0.9s ease-in-out infinite">
+              <div class="helmet"><div class="hbadge"></div></div>
+              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
+              <div class="pbody" style="position:relative"><div class="parm-l"></div><div class="parm-r" style="transform-origin:top center;animation:pwave 0.5s ease-in-out 4"></div><div class="pbelt"></div></div>
+              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s1" class="scene">
+          <div class="stage">
+            <div class="bubble">"Scanne ce QR code<br>pour arriver sur<br>le site !"</div>
+            <div class="pompier" style="animation:pbounce 1s ease-in-out infinite">
+              <div class="helmet"><div class="hbadge"></div></div>
+              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
+              <div class="pbody" style="position:relative"><div class="parm-l"></div><div class="parm-r" style="transform:rotate(-35deg);transform-origin:top center;right:-14px"></div><div class="pbelt"></div></div>
+              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
+            </div>
+            <div class="prop">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="44" height="44" fill="white"/>
+                    <rect x="2" y="2" width="16" height="16" fill="#1F3864" rx="1"/>
+                    <rect x="4" y="4" width="12" height="12" fill="white" rx="1"/>
+                    <rect x="6" y="6" width="8" height="8" fill="#1F3864"/>
+                    <rect x="26" y="2" width="16" height="16" fill="#1F3864" rx="1"/>
+                    <rect x="28" y="4" width="12" height="12" fill="white" rx="1"/>
+                    <rect x="30" y="6" width="8" height="8" fill="#1F3864"/>
+                    <rect x="2" y="26" width="16" height="16" fill="#1F3864" rx="1"/>
+                    <rect x="4" y="28" width="12" height="12" fill="white" rx="1"/>
+                    <rect x="6" y="30" width="8" height="8" fill="#1F3864"/>
+                    <rect x="20" y="2" width="4" height="4" fill="#1F3864"/>
+                    <rect x="20" y="8" width="4" height="4" fill="#1F3864"/>
+                    <rect x="20" y="14" width="4" height="4" fill="#1F3864"/>
+                    <rect x="26" y="20" width="4" height="4" fill="#1F3864"/>
+                    <rect x="32" y="20" width="4" height="4" fill="#1F3864"/>
+                    <rect x="38" y="20" width="4" height="4" fill="#1F3864"/>
+                    <rect x="20" y="26" width="4" height="4" fill="#1F3864"/>
+                    <rect x="26" y="26" width="4" height="4" fill="#1F3864"/>
+                    <rect x="20" y="32" width="4" height="4" fill="#1F3864"/>
+                    <rect x="32" y="32" width="4" height="4" fill="#1F3864"/>
+                    <rect x="38" y="38" width="4" height="4" fill="#1F3864"/>
+                    <rect x="26" y="38" width="4" height="4" fill="#1F3864"/>
+                    <rect x="2" y="20" width="4" height="4" fill="#1F3864"/>
+                    <rect x="8" y="20" width="4" height="4" fill="#1F3864"/>
+                    <rect x="14" y="20" width="4" height="4" fill="#1F3864"/>
+                  </svg>
+                  <div class="scan-line"></div>
+                </div>
+              </div>
+              <div style="font-size:9px;color:#1F3864;font-weight:700;margin-top:4px;z-index:2">rffsbod.netlify.app</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s2" class="scene">
+          <div class="stage">
+            <div class="bubble">"Choisis ton thème :<br>incendie, secours,<br>RFFS..."</div>
+            <div class="pompier" style="animation:pfloat 1.5s ease-in-out infinite">
+              <div class="helmet"><div class="hbadge"></div></div>
+              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
+              <div class="pbody" style="position:relative"><div class="parm-l" style="transform:rotate(30deg);transform-origin:top center"></div><div class="parm-r"></div><div class="pbelt"></div></div>
+              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
+            </div>
+            <div class="prop" style="flex-direction:row;gap:7px;align-items:flex-end;margin-bottom:10px">
+              <div class="theme-card-sm sel" style="background:#fadbd8;border-color:var(--rouge)"><div class="tbar" style="background:var(--rouge)"></div><div class="tbar" style="background:#f5b7b1;width:70%"></div><div class="tbar" style="background:#f5b7b1"></div></div>
+              <div class="theme-card-sm" style="background:#fef3e2;border-color:var(--orange)"><div class="tbar" style="background:var(--orange)"></div><div class="tbar" style="background:#fad7a0;width:70%"></div><div class="tbar" style="background:#fad7a0"></div></div>
+              <div class="theme-card-sm" style="background:#eaf4fb;border-color:var(--bleu)"><div class="tbar" style="background:var(--bleu)"></div><div class="tbar" style="background:#aed6f1;width:70%"></div><div class="tbar" style="background:#aed6f1"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s3" class="scene">
+          <div class="stage">
+            <div class="bubble">"Un clic et ta fiche<br>formateur est<br>téléchargée !"</div>
+            <div class="pompier" style="animation:pbounce 0.8s ease-in-out infinite">
+              <div class="helmet"><div class="hbadge"></div></div>
+              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
+              <div class="pbody" style="position:relative"><div class="parm-l" style="transform:rotate(-20deg);transform-origin:top center"></div><div class="parm-r" style="transform:rotate(20deg);transform-origin:top center"></div><div class="pbelt"></div></div>
+              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
+            </div>
+            <div class="fiche-sm">
+              <div class="fiche-top"></div>
+              <div class="fiche-line"></div><div class="fiche-line s"></div>
+              <div class="fiche-line"></div><div class="fiche-line s"></div>
+              <div class="dl-arrow">↓</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-nav">
+          <button class="scene-btn" id="btnPrev" onclick="goScene(cur-1)" disabled>← Précédent</button>
+          <div class="scene-dots">
+            <div class="sdot active" id="d0"></div>
+            <div class="sdot" id="d1"></div>
+            <div class="sdot" id="d2"></div>
+            <div class="sdot" id="d3"></div>
+          </div>
+          <button class="scene-btn" id="btnNext" onclick="goScene(cur+1)">Suivant →</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-title"><span>📋</span> Les 3 étapes en détail</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-ico">📱</div>
+        <h3>Scanner le QR code</h3>
+        <p>Utilise l'appareil photo de ton smartphone pour scanner et accéder directement au site.</p>
+        <div class="qr-wrap">
+          <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" style="border-radius:6px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+            <rect width="110" height="110" fill="white"/>
+            <rect x="5" y="5" width="40" height="40" fill="#1F3864" rx="2"/>
+            <rect x="10" y="10" width="30" height="30" fill="white" rx="1"/>
+            <rect x="15" y="15" width="20" height="20" fill="#1F3864"/>
+            <rect x="65" y="5" width="40" height="40" fill="#1F3864" rx="2"/>
+            <rect x="70" y="10" width="30" height="30" fill="white" rx="1"/>
+            <rect x="75" y="15" width="20" height="20" fill="#1F3864"/>
+            <rect x="5" y="65" width="40" height="40" fill="#1F3864" rx="2"/>
+            <rect x="10" y="70" width="30" height="30" fill="white" rx="1"/>
+            <rect x="15" y="75" width="20" height="20" fill="#1F3864"/>
+            <rect x="50" y="5" width="10" height="10" fill="#1F3864"/>
+            <rect x="50" y="20" width="10" height="10" fill="#1F3864"/>
+            <rect x="50" y="35" width="10" height="10" fill="#1F3864"/>
+            <rect x="65" y="50" width="10" height="10" fill="#1F3864"/>
+            <rect x="80" y="50" width="10" height="10" fill="#1F3864"/>
+            <rect x="95" y="50" width="10" height="10" fill="#1F3864"/>
+            <rect x="50" y="65" width="10" height="10" fill="#1F3864"/>
+            <rect x="65" y="65" width="10" height="10" fill="#1F3864"/>
+            <rect x="50" y="80" width="10" height="10" fill="#1F3864"/>
+            <rect x="80" y="80" width="10" height="10" fill="#1F3864"/>
+            <rect x="95" y="95" width="10" height="10" fill="#1F3864"/>
+            <rect x="65" y="95" width="10" height="10" fill="#1F3864"/>
+            <rect x="5" y="50" width="10" height="10" fill="#1F3864"/>
+            <rect x="20" y="50" width="10" height="10" fill="#1F3864"/>
+            <rect x="35" y="50" width="10" height="10" fill="#1F3864"/>
+          </svg>
+          <span class="qr-url">rffsbod.netlify.app</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-ico">🗂️</div>
+        <h3>Choisir un thème</h3>
+        <p>Parcours les thèmes : incendie, secours, RFFS… et sélectionne celui qui correspond à ta formation.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-ico">📄</div>
+        <h3>Télécharger la fiche</h3>
+        <p>Clique sur la fiche formateur souhaitée et télécharge-la en un clic. Prête à l'emploi !</p>
+      </div>
+    </div>
+
+    <div class="section-title"><span>💡</span> Conseils</div>
+    <div class="tip-box"><div class="tip-icon">💡</div><p>Les fiches sont optimisées pour l'impression A4. Ouvre le PDF et imprime en qualité haute depuis ton navigateur.</p></div>
+    <div class="tip-box"><div class="tip-icon">📶</div><p>Le site fonctionne aussi depuis une connexion mobile. Pas besoin de Wi-Fi pour consulter les fiches une fois téléchargées.</p></div>
+  </div>
+</div>
+
+<!-- ===== THÈMES ===== -->
+<div id="section-themes" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Espace Formation</div>
+      <h1>Fiches de formation<br>RFFS-BOD</h1>
+      <p>Sélectionne un thème pour accéder aux fiches et ressources pédagogiques.</p>
+    </div>
+  </div>
+  <div class="main">
+    <div id="view-home">
+      <div class="section-title"><span>📚</span> Choisissez un thème</div>
+      <div class="themes-grid">
+        <div class="theme-card" style="--tc:#c0392b" onclick="showSub('ssuap')">
+          <span class="theme-icon">🚑</span>
+          <div class="theme-label">SSUAP</div>
+          <div class="theme-desc">Secours et Soins aux personnes — procédures et techniques opérationnelles</div>
+        </div>
+        <div class="theme-card" style="--tc:#e67e22" onclick="showSub('incendie')">
+          <span class="theme-icon">🔥</span>
+          <div class="theme-label">Incendie</div>
+          <div class="theme-desc">Fiches techniques incendie, extinction et lutte contre le feu</div>
+        </div>
+        <div class="theme-card" style="--tc:#2980b9" onclick="showSub('rffs')">
+          <span class="theme-icon">✈️</span>
+          <div class="theme-label">RFFS</div>
+          <div class="theme-desc">Sauvetage et lutte contre l'incendie d'aéronef</div>
+        </div>
+        <div class="theme-card" style="--tc:#27ae60" onclick="showSub('ressources')">
+          <span class="theme-icon">📚</span>
+          <div class="theme-label">Ressources</div>
+          <div class="theme-desc">PDF, vidéos et quiz pour enrichir la formation</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-ssuap" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+
+      <!-- Sous-thèmes SSUAP -->
+      <div id="ssuap-sub">
+        <div class="section-title" style="color:#c0392b">🚑 SSUAP</div>
+        <div class="subthemes-grid" style="--tc:#c0392b">
+          <div class="subtheme-card" onclick="showFiches('ssuap-urgence-vitale','🆘 Urgence Vitale')"><span class="subtheme-icon">🆘</span><div class="subtheme-label">Urgence Vitale</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-malaises','🤒 Malaises & Maladies')"><span class="subtheme-icon">🤒</span><div class="subtheme-label">Malaises & Maladies</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-traumatismes','🦴 Traumatismes')"><span class="subtheme-icon">🦴</span><div class="subtheme-label">Traumatismes</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-atteintes','🌡️ Atteintes liées aux circonstances')"><span class="subtheme-icon">🌡️</span><div class="subtheme-label">Atteintes liées aux circonstances</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-peau','🩹 Accident de la peau')"><span class="subtheme-icon">🩹</span><div class="subtheme-label">Accident de la peau</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-route','🚗 Accident de la route')"><span class="subtheme-icon">🚗</span><div class="subtheme-label">Accident de la route</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-relevages','🚑 Relevages & Brancardages')"><span class="subtheme-icon">🚑</span><div class="subtheme-label">Relevages & Brancardages</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-detresses','🔀 Détresses vitales')"><span class="subtheme-icon">🔀</span><div class="subtheme-label">Détresses vitales</div></div>
+        </div>
+      </div>
+
+      <!-- Liste des fiches -->
+      <div id="ssuap-fiches" style="display:none">
+        <button class="back-btn" onclick="backSub()">← Retour aux sous-thèmes</button>
+        <div class="section-title" style="color:#c0392b" id="fiches-title"></div>
+        <div id="fiches-list"></div>
+      </div>
+
+      <!-- Détail d'une fiche -->
+      <div id="ssuap-detail" style="display:none">
+        <button class="back-btn" onclick="backFiches()">← Retour à la liste</button>
+        <div id="fiche-detail-inner"></div>
+      </div>
+    </div>
+
+    <div id="view-incendie" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#e67e22">🔥 Incendie</div>
+      <div class="empty-state"><div>📭</div>Fiches disponibles prochainement.</div>
+    </div>
+
+    <div id="view-rffs" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#2980b9">✈️ RFFS</div>
+      <div class="empty-state"><div>📭</div>Fiches disponibles prochainement.</div>
+    </div>
+
+    <div id="view-ressources" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#27ae60">📚 Ressources</div>
+      <div class="subthemes-grid" style="--tc:#27ae60">
+        <div class="subtheme-card"><span class="subtheme-icon">📄</span><div class="subtheme-label">PDF</div></div>
+        <div class="subtheme-card"><span class="subtheme-icon">🎬</span><div class="subtheme-label">Vidéos</div></div>
+        <div class="subtheme-card"><span class="subtheme-icon">📝</span><div class="subtheme-label">Quiz</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="section-home" class="section-page active">
+
+  <!-- BANDEAU PYRO -->
+  <div id="info-banner" style="position:relative;overflow:hidden;background:linear-gradient(135deg,#1F3864 0%,#2c4f8a 50%,#1F3864 100%);padding:14px 24px;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center">
+    <canvas id="pyro-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.6"></canvas>
+    <span id="banner-text" style="position:relative;z-index:2;color:#fff;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.3)">Bienvenue sur RFFS BOD Formation 🚑</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">RFFS BOD — Aéroport de Bordeaux</div>
+      <h1>Fiches de formation<br>à portée de main</h1>
+      <p>Accède rapidement aux fiches pédagogiques SSUAP, RFFS et incendie.</p>
+    </div>
+  </div>
+
+  <!-- BOUTONS PRINCIPAUX -->
+  <div class="main" style="padding-top:32px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:480px;margin:0 auto 32px">
+      <button onclick="showSection('themes')" style="background:#c0392b;color:#fff;border:none;border-radius:12px;padding:24px 16px;font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(192,57,43,0.3);transition:all 0.2s;letter-spacing:0.5px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,0.3)'">
+        🗂️<br><span style="font-size:14px;opacity:0.9">Thèmes</span>
+      </button>
+      <button onclick="showSection('contact')" style="background:#fff;color:#1F3864;border:2px solid #1F3864;border-radius:12px;padding:24px 16px;font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(31,56,100,0.1);transition:all 0.2s;letter-spacing:0.5px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        📞<br><span style="font-size:14px;opacity:0.8">Contact</span>
+      </button>
+    </div>
+    <div style="text-align:center;margin-bottom:24px">
+      <button onclick="showSection('tutoriel')" style="background:none;border:none;color:#999;font-size:13px;cursor:pointer;text-decoration:underline;font-family:'Source Sans 3',sans-serif">❓ Comment utiliser le site ?</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONTACT ===== -->
+<div id="section-contact" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Nous contacter</div>
+      <h1>Une question ?<br>On est là.</h1>
+      <p>Pour toute demande concernant les fiches, le site ou les formations RFFS-BOD.</p>
+    </div>
+  </div>
+  <div class="main">
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-ico">📧</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-desc">Pour toute question sur les fiches ou les formations.</div>
+        <a href="/cdn-cgi/l/email-protection#62010d0c160301162210040411000d064c0410" class="contact-val"><span class="__cf_email__" data-cfemail="fa9995948e9b998eba889c9c8998959ed49c88">[email&#160;protected]</span></a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-ico">🌐</div>
+        <div class="contact-label">Site</div>
+        <div class="contact-desc">Accède directement aux ressources en ligne.</div>
+        <a href="https://rffsbod.netlify.app" target="_blank" class="contact-val">rffsbod.netlify.app</a>
+      </div>
+    </div>
+    <div class="section-title"><span>✉️</span> Envoyer un message</div>
+    <div class="form-box">
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="sendForm(event)">
+        <input type="hidden" name="form-name" value="contact">
+        <p style="display:none"><input name="bot-field"></p>
+        <div class="form-row">
+          <div>
+            <label class="form-label">Prénom & Nom</label>
+            <input type="text" name="nom" required placeholder="Jean Dupont" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Email</label>
+            <input type="email" name="email" required placeholder="jean@exemple.fr" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sujet</label>
+          <input type="text" name="sujet" required placeholder="Question sur une fiche, suggestion..." class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea name="message" required rows="5" placeholder="Votre message..." class="form-input" style="resize:vertical"></textarea>
+        </div>
+        <button type="submit" class="form-submit">📨 Envoyer le message</button>
+        <div class="form-confirm" id="form-confirm">✅ Message envoyé ! Nous vous répondrons dans les plus brefs délais.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>© 2025 RFFS-BOD — Ressources pédagogiques pompiers · Tous droits réservés</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function showSection(name) {
+  if (name === 'home') {
+    document.querySelectorAll('.section-page').forEach(function(s){ s.classList.remove('active'); });
+    var home = document.getElementById('section-home');
+    if (home) home.classList.add('active');
+    document.querySelectorAll('nav a').forEach(function(a){ a.classList.remove('active'); });
+    window.scrollTo(0, 0);
+    return;
+  }
+  document.querySelectorAll('.section-page').forEach(function(s){ s.classList.remove('active'); });
+  var sec = document.getElementById('section-' + name);
+  if (sec) sec.classList.add('active');
+  document.querySelectorAll('nav a').forEach(function(a){ a.classList.remove('active'); });
+  var nav = document.getElementById('nav-' + name);
+  if (nav) nav.classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'themes') backHome();
+}
+
+var views = ['ssuap','incendie','rffs','ressources'];
+var allFiches = [];
+var currentCat = '';
+
+fetch('fiches.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){ allFiches = data; })
+  .catch(function(){ allFiches = []; });
+
+function showFiches(cat, title) {
+  currentCat = cat;
+  document.getElementById('ssuap-sub').style.display = 'none';
+  document.getElementById('ssuap-fiches').style.display = 'block';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  document.getElementById('fiches-title').textContent = title;
+  var list = allFiches.filter(function(f){ return f.cat === cat; });
+  var html = '';
+  if (list.length === 0) {
+    html = '<div class="empty-state"><div>📭</div>Aucune fiche dans cette catégorie.</div>';
+  } else {
+    html = '<div class="fiches-list">' + list.map(function(f){
+      return '<div class="fiche-item" onclick="showFiche(\''+f.id+'\')">'+
+        '<div>'+
+          '<div class="fiche-item-title">'+f.title+'</div>'+
+          '<div class="fiche-item-meta">'+
+            (f.pdf ? '<span class="fiche-badge">📄 PDF</span>' : '')+
+            (f.content ? '<span>Procédure disponible</span>' : '')+
+          '</div>'+
+        '</div>'+
+        '<div class="fiche-arrow">›</div>'+
+      '</div>';
+    }).join('') + '</div>';
+  }
+  document.getElementById('fiches-list').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function showFiche(id) {
+  var f = allFiches.find(function(x){ return x.id === id; });
+  if (!f) return;
+  document.getElementById('ssuap-fiches').style.display = 'none';
+  document.getElementById('ssuap-detail').style.display = 'block';
+  var html = '<div class="fiche-detail-card">';
+  html += '<div class="fiche-detail-title">'+f.title+'</div>';
+  if (f.content) {
+    html += '<div class="fiche-section-h">Procédure</div>';
+    html += '<p class="fiche-content-p">'+f.content.replace(/\n/g,'<br>')+'</p>';
+  }
+  if (f.pdf) {
+    html += '<div style="margin-top:20px"><div class="fiche-section-h">Document PDF</div>';
+    html += '<a href="'+f.pdf+'" target="_blank" class="pdf-link">📄 Ouvrir le PDF</a>';
+    html += '<iframe src="'+f.pdf+'" class="pdf-embed"></iframe></div>';
+  }
+  if (!f.content && !f.pdf) {
+    html += '<div class="empty-state"><div>📭</div>Contenu disponible prochainement.</div>';
+  }
+  html += '</div>';
+  document.getElementById('fiche-detail-inner').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function backSub() {
+  document.getElementById('ssuap-sub').style.display = 'block';
+  document.getElementById('ssuap-fiches').style.display = 'none';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function backFiches() {
+  document.getElementById('ssuap-fiches').style.display = 'block';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+function showSub(name) {
+  document.getElementById('view-home').style.display = 'none';
+  views.forEach(function(v){ document.getElementById('view-' + v).style.display = 'none'; });
+  document.getElementById('view-' + name).style.display = 'block';
+}
+function backHome() {
+  views.forEach(function(v){ document.getElementById('view-' + v).style.display = 'none'; });
+  document.getElementById('view-home').style.display = 'block';
+}
+
+function showDocs() {
+  document.getElementById('view-ressources').style.display = 'none';
+  document.getElementById('view-docs').style.display = 'block';
+  renderDocs();
+}
+
+function backRessources() {
+  document.getElementById('view-docs').style.display = 'none';
+  document.getElementById('view-ressources').style.display = 'block';
+}
+
+var DOCS = [
+  { icon: '📋', title: 'GDTO SSUAP v2025', desc: 'Guide de Doctrine et Techniques Opérationnelles — Secours et Soins aux Personnes, version septembre 2025.', url: '' },
+  { icon: '📘', title: 'Référentiel SSUAP', desc: 'Référentiel national de compétences de sécurité civile.', url: '' }
+];
+
+function renderDocs() {
+  var el = document.getElementById('docs-list');
+  if (!el) return;
+  if (DOCS.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div>📭</div>Aucun document disponible.</div>';
+    return;
+  }
+  var html = '';
+  DOCS.forEach(function(doc) {
+    html += '<div class="doc-card">';
+    html += '<div class="doc-card-icon">' + doc.icon + '</div>';
+    html += '<div class="doc-card-title">' + doc.title + '</div>';
+    html += '<div class="doc-card-desc">' + doc.desc + '</div>';
+    if (doc.url) {
+      html += '<a href="' + doc.url + '" target="_blank" class="doc-card-btn">📄 Ouvrir le document</a>';
+    } else {
+      html += '<span style="font-size:12px;color:#999;font-style:italic">Lien à venir</span>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ===== ADMIN =====
+var ADMIN_PWD = 'RFFSBOD96';
+var isAdmin = false;
+
+function openAdmin() {
+  if (isAdmin) {
+    openModal('modal-admin');
+    var saved = localStorage.getItem('rffs-banner') || 'Bienvenue sur RFFS BOD Formation 🚑';
+    document.getElementById('banner-input').value = saved;
+  } else {
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-error').style.display = 'none';
+    openModal('modal-pwd');
+  }
+}
+
+function checkPwd() {
+  var val = document.getElementById('pwd-input').value;
+  if (val === ADMIN_PWD) {
+    isAdmin = true;
+    closeModal('modal-pwd');
+    openModal('modal-admin');
+    var saved = localStorage.getItem('rffs-banner') || 'Bienvenue sur RFFS BOD Formation 🚑';
+    document.getElementById('banner-input').value = saved;
+  } else {
+    document.getElementById('pwd-error').style.display = 'block';
+  }
+}
+
+function saveBanner() {
+  var txt = document.getElementById('banner-input').value.trim();
+  if (!txt) return;
+  localStorage.setItem('rffs-banner', txt);
+  document.getElementById('banner-text').textContent = txt;
+  var s = document.getElementById('banner-success');
+  s.style.display = 'block';
+  setTimeout(function(){ s.style.display = 'none'; closeModal('modal-admin'); }, 1500);
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+var cur = 0;
+function goScene(n) {
+  if (n < 0 || n >= 4) return;
+  document.getElementById('s' + cur).classList.remove('active');
+  document.getElementById('d' + cur).classList.remove('active');
+  cur = n;
+  document.getElementById('s' + cur).classList.add('active');
+  document.getElementById('d' + cur).classList.add('active');
+  document.getElementById('btnPrev').disabled = (cur === 0);
+  document.getElementById('btnNext').disabled = (cur === 3);
+}
+
+function sendForm(e) {
+  e.preventDefault();
+  var form = e.target;
+  fetch('/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams(new FormData(form)).toString()
+  }).then(function() {
+    document.getElementById('form-confirm').style.display = 'block';
+  }).catch(function() {
+    document.getElementById('form-confirm').style.display = 'block';
+  });
+}
+</script>
+
+<!-- MODAL MOT DE PASSE ADMIN -->
+<div class="modal-overlay" id="modal-pwd">
+  <div class="modal-box">
+    <div class="modal-title">🔐 Accès Admin</div>
+    <input class="modal-input" type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div class="modal-error" id="pwd-error">Mot de passe incorrect.</div>
+    <button class="modal-btn" onclick="checkPwd()">Entrer</button>
+    <button class="modal-btn-sec" onclick="closeModal('modal-pwd')">Annuler</button>
+  </div>
+</div>
+
+<!-- MODAL ADMIN BANDEAU -->
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal-box">
+    <div class="modal-title">⚙️ Modifier le bandeau</div>
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">Texte du bandeau :</label>
+    <input class="modal-input" type="text" id="banner-input" placeholder="Ex: Bienvenue sur RFFS BOD Formation 🚑" maxlength="100">
+    <div class="modal-success" id="banner-success">✅ Bandeau mis à jour !</div>
+    <button class="modal-btn" onclick="saveBanner()">💾 Enregistrer</button>
+    <button class="modal-btn-sec" onclick="closeModal('modal-admin')">Fermer</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  // QR CODE
+  var qrEl = document.getElementById('qrcode-hero');
+  if (qrEl) {
+    new QRCode(qrEl, {
+      text: 'https://rffsbod.netlify.app',
+      width: 110, height: 110,
+      colorDark: '#1F3864', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+
+  // PAGE DE DÉMARRAGE
+  showSection('home');
+
+  // ANIMATION FLAMMES POMPIER
+  var canvas = document.getElementById('pyro-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var flames = [];
+  var W, H;
+
+  function resize() {
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W; canvas.height = H;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(a, b) { return Math.random() * (b - a) + a; }
+
+  function spawnFlame() {
+    flames.push({
+      x: rand(0, W),
+      y: H + rand(0, 6),
+      vx: rand(-0.3, 0.3),
+      vy: rand(-1.8, -0.8),
+      life: 1,
+      decay: rand(0.012, 0.025),
+      size: rand(3, 7),
+      wobble: rand(0, Math.PI * 2),
+      wobbleSpeed: rand(0.05, 0.12)
+    });
+  }
+
+  for (var i = 0; i < 20; i++) {
+    spawnFlame();
+    flames[flames.length-1].life = Math.random();
+  }
+
+  var frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+    if (frame % 4 === 0) spawnFlame();
+    flames = flames.filter(function(f) {
+      f.wobble += f.wobbleSpeed;
+      f.x += f.vx + Math.sin(f.wobble) * 0.4;
+      f.y += f.vy;
+      f.life -= f.decay;
+      var t = 1 - f.life;
+      var r, g, b;
+      if (t < 0.3) { r=255; g=Math.floor(255-t*200); b=Math.floor(100-t*300); }
+      else if (t < 0.7) { r=255; g=Math.floor(165-(t-0.3)*300); b=0; }
+      else { r=Math.floor(255-(t-0.7)*500); g=0; b=0; }
+      var grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.size*(1-t*0.4));
+      grad.addColorStop(0, 'rgba('+r+','+g+','+b+','+(f.life*0.85)+')');
+      grad.addColorStop(0.5, 'rgba('+r+','+Math.floor(g*0.5)+',0,'+(f.life*0.4)+')');
+      grad.addColorStop(1, 'rgba(180,0,0,0)');
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.size*(1-t*0.3), 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      return f.life > 0;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // BANDEAU ADMIN
+  var savedBanner = localStorage.getItem('rffs-banner');
+  if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+[
+  {
+    "id": "1771712659108",
+    "title": "Intoxication",
+    "cat": "ssuap-atteintes",
+    "content": "Conduite à tenir face à une victime intoxiquée — GDTO SSUAP v2025 p.62-63",
+    "pdf": "https://drive.google.com/file/d/1qNiq_Bp8aJJyMPdBNcVSzq93jsc5yr0w/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1771779155697",
+    "title": "Morsures et Piqûres",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1pabuofPByMbzIEKuKotIH3NunYpjmw5A/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1771779226254",
+    "title": "Accident Électrique",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1KdCb4ITEKYM3kNe_yAF9B8gKwouSXBgD/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1771779272325",
+    "title": "Victime d'Explosion",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1K4TVC8i-nzW4BPz93WBrS9wm6d4t-lqs/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1771779318168",
+    "title": "Compression Prolongée",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1RrJ7L8qeZHQli9cMCch4EVga-aIcAVV_/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1772356364005",
+    "title": "Hypothermie",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1EKlIzRnddz4RNCQbe9SAiyTX__R6yas6/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1772356413138",
+    "title": "Pendaison",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1pU55rCt_TXoB_af6Gi6mJgND9gxRgTwD/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1772356443428",
+    "title": "Noyade",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1Mll_zIcn6Ea76Qdfl6pgSpf03gmDPpik/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1772356510260",
+    "title": "Accouchement inopiné",
+    "cat": "ssuap-atteintes",
+    "content": "",
+    "pdf": "https://drive.google.com/file/d/1izcejXqlOVUTFLi4Kmcax6-rr2dheLkx/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425092063",
+    "title": "Hémorragie externe",
+    "cat": "ssuap-urgence-vitale",
+    "content": "Compression manuelle, garrot, pansement hémostatique — GDTO SSUAP v2025 p.35",
+    "pdf": "https://drive.google.com/file/d/1f4GQX5d9OcwSG0v3jzHCLsMpYIeK0804/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425100001",
+    "title": "Hémorragies Extériorisées",
+    "cat": "ssuap-urgence-vitale",
+    "content": "Épistaxis, otorragie, hématémèse, hémorragies génitales — GDTO SSUAP v2025 p.36",
+    "pdf": "https://drive.google.com/file/d/1fMlLu-eKHpCi8LTSskOpu2aq724jB0Jr/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425100002",
+    "title": "Obstruction des Voies Aériennes (OVA)",
+    "cat": "ssuap-urgence-vitale",
+    "content": "Corps étranger — Claques, compressions, RCP — GDTO SSUAP v2025 p.37",
+    "pdf": "https://drive.google.com/file/d/1qFSl1KHCK5D6Xl32JrQrEwKzGJARBR9v/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425100003",
+    "title": "Perte de Connaissance",
+    "cat": "ssuap-urgence-vitale",
+    "content": "LVA, PLS, suspicion traumatisme — GDTO SSUAP v2025 p.38",
+    "pdf": "https://drive.google.com/file/d/1Zs4M87V5VDXUA7DP8atmU35Inu1HGX60/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425100004",
+    "title": "Arrêt Cardiaque (RCP)",
+    "cat": "ssuap-urgence-vitale",
+    "content": "RCP adulte 30/2 + DSA, RCP pédiatrique 15/2 — GDTO SSUAP v2025 p.39",
+    "pdf": "https://drive.google.com/file/d/15ErR2_ums2UXzrWR9OkfOXmosNYNC5TK/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425200001",
+    "title": "Plaies",
+    "cat": "ssuap-peau",
+    "content": "Types de plaies, éléments de gravité, CAT — GDTO SSUAP v2025 p.50",
+    "pdf": "https://drive.google.com/file/d/1Oy1BSQt6e4HdhN0OznAR-rG3bEKXy_cP/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425200002",
+    "title": "Brûlures",
+    "cat": "ssuap-peau",
+    "content": "3 degrés, règle de Wallace, CAT brûlure thermique grave — GDTO SSUAP v2025 p.51",
+    "pdf": "https://drive.google.com/file/d/1dmuuZLRMhXo3m6HPT2wLJTJAQIvergQ5/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300001",
+    "title": "Traumatismes de la Face et du Cou",
+    "cat": "ssuap-traumatismes",
+    "content": "Atteinte oculaire, fracture de la face, traumatisme dentaire — GDTO SSUAP v2025 p.53",
+    "pdf": "https://drive.google.com/file/d/1qeB-a9GXtx6K3kIcf_18qMwdMgeskDqt/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300002",
+    "title": "Traumatismes du Crâne",
+    "cat": "ssuap-traumatismes",
+    "content": "Signes, immobilisation rachis cervical — GDTO SSUAP v2025 p.54",
+    "pdf": "https://drive.google.com/file/d/1BqyNt0Pp4en99QLu4kzZ3NQS8O1Zpb30/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300003",
+    "title": "Traumatismes du Dos et du Cou (Rachis)",
+    "cat": "ssuap-traumatismes",
+    "content": "Immobilisation, relevage, MID — GDTO SSUAP v2025 p.55",
+    "pdf": "https://drive.google.com/file/d/1c-AM3ex5ju6uVqatKV-d0X6TRJBkUr15/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300004",
+    "title": "Traumatisme du Thorax",
+    "cat": "ssuap-traumatismes",
+    "content": "Pansement non occlusif, position demi-assise — GDTO SSUAP v2025 p.56",
+    "pdf": "https://drive.google.com/file/d/140NYwag3EXf08ZPKXgZL8ePG5QfDM_J5/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300005",
+    "title": "Traumatisme de l'Abdomen",
+    "cat": "ssuap-traumatismes",
+    "content": "Éviscération, femme enceinte, hémorragie interne — GDTO SSUAP v2025 p.57",
+    "pdf": "https://drive.google.com/file/d/10lMiMlwn5ox-xlm6tvSnM_OAdg1aFXit/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300006",
+    "title": "Traumatisme du Bassin",
+    "cat": "ssuap-traumatismes",
+    "content": "Hémorragie interne, position allongée stricte — GDTO SSUAP v2025 p.58",
+    "pdf": "https://drive.google.com/file/d/1XlYbAaIRctEixop6zi2vo_7W2KH89Xc9/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425300007",
+    "title": "Traumatismes des Membres",
+    "cat": "ssuap-traumatismes",
+    "content": "Entorse, luxation, fracture, immobilisation — GDTO SSUAP v2025 p.59",
+    "pdf": "https://drive.google.com/file/d/1ME_ey-AFN3KsOD7PYuYuPbOivv6Bqrsr/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400001",
+    "title": "Malaise et Aggravation de Maladie",
+    "cat": "ssuap-malaises",
+    "content": "Malaise bénin, grave, bilan rigoureux — GDTO SSUAP v2025 p.42",
+    "pdf": "https://drive.google.com/file/d/1f8sSkXL0U7C7HIAoVpqXnGU8-fTCxUCB/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400002",
+    "title": "Hypoglycémie chez le Diabétique",
+    "cat": "ssuap-malaises",
+    "content": "Glycémie capillaire, administration de sucre, ASU — GDTO SSUAP v2025 p.43",
+    "pdf": "https://drive.google.com/file/d/1BT-FchsKz0uE5swNIpgnOi4k_d5gOi__/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400003",
+    "title": "AVC",
+    "cat": "ssuap-malaises",
+    "content": "Score FAST, heure des premiers signes, CAT — GDTO SSUAP v2025 p.44",
+    "pdf": "https://drive.google.com/file/d/1b-fTDFbRk3c16LrbY1upIQmvmuWOMWL8/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400004",
+    "title": "Crise Convulsive Généralisée",
+    "cat": "ssuap-malaises",
+    "content": "Phases de la crise, protection, PLS ou RCP — GDTO SSUAP v2025 p.45",
+    "pdf": "https://drive.google.com/file/d/1zFYMbkAGnYHEfSrcew9yaWSij-7SDmew/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400005",
+    "title": "Crise d'Asthme",
+    "cat": "ssuap-malaises",
+    "content": "Signes de gravité, aérosol doseur, ASU — GDTO SSUAP v2025 p.46",
+    "pdf": "https://drive.google.com/file/d/1zT62kNE5vMpr8nwhSvIsN1VO2LLIYF2x/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400006",
+    "title": "Douleur Thoracique",
+    "cat": "ssuap-malaises",
+    "content": "Causes, PA sur deux bras, position adaptée, ECG — GDTO SSUAP v2025 p.47",
+    "pdf": "https://drive.google.com/file/d/10szzG_fkcntrYP5c3SRAFC37wzYzq_ho/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400007",
+    "title": "Insuffisance Respiratoire Chronique",
+    "cat": "ssuap-malaises",
+    "content": "Décompensation, O₂ adapté, dispositif personnel — GDTO SSUAP v2025 p.48",
+    "pdf": "https://drive.google.com/file/d/1VYMnYnk6JF0HQIT73GV1dCW8ozoNVOTA/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425400008",
+    "title": "Réaction Allergique / Anaphylaxie",
+    "cat": "ssuap-malaises",
+    "content": "Anaphylaxie, AIA adrénaline, ASU — GDTO SSUAP v2025 p.49",
+    "pdf": "https://drive.google.com/file/d/17JEmZVQVEfQJIM4HCjwI2tG0dLlKP56v/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425500001",
+    "title": "Accident de la Route",
+    "cat": "ssuap-route",
+    "content": "VL, 2 roues, types de chocs, enfant, personne âgée — GDTO SSUAP v2025 p.75-76",
+    "pdf": "https://drive.google.com/file/d/1wJBJ-4LVMjvUGhIvu-Ml4ddJDPvR5vNq/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425600001",
+    "title": "Relevages et Matériels",
+    "cat": "ssuap-relevages",
+    "content": "Combiné, brancard cuillère, plan dur, sangle araignée, ACT, ponts 3/4 SP — GDTO SSUAP v2025 p.135-146",
+    "pdf": "https://drive.google.com/file/d/1Hr8nFQoc_efe8N3ZBNvsVpZVa0rdl8Av/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425600002",
+    "title": "Brancardage et Extraction",
+    "cat": "ssuap-relevages",
+    "content": "Brancardage terrain plat, franchissement obstacle, chargement VSAV, extractions VL — GDTO SSUAP v2025 p.147-153",
+    "pdf": "https://drive.google.com/file/d/19hEaZHFcyiRSmFSNgd0RMkdi-1d5ULOG/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425700001",
+    "title": "Dégagements, Retournements et Retrait de Casque",
+    "cat": "ssuap-detresses",
+    "content": "Dégagement d'urgence, retournement 1/2/3 SP, retrait casque — GDTO SSUAP v2025 p.97, 108-110",
+    "pdf": "https://drive.google.com/file/d/1aheNOoyur8JWPGS6UidOm-aMHYIv85q6/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425700002",
+    "title": "Hémorragies — Contrôle du Saignement",
+    "cat": "ssuap-detresses",
+    "content": "Compression manuelle, pansements compressif/hémostatique, garrots, membre sectionné — GDTO SSUAP v2025 p.100-104",
+    "pdf": "https://drive.google.com/file/d/1OJWe0VhgH-IGxrY9puOhcbEm5gdSIlxC/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425700003",
+    "title": "Voies Aériennes et Oxygénothérapie",
+    "cat": "ssuap-detresses",
+    "content": "O₂, désobstruction, LVA, PLS, canule oropharyngée, aspiration — GDTO SSUAP v2025 p.98-99, 105-107, 111-112, 117-118",
+    "pdf": "https://drive.google.com/file/d/1OwQ3qn0IBWaIuwadVP8vae4pRS1flQpX/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  },
+  {
+    "id": "1773425700004",
+    "title": "RCP et Défibrillation (DSA)",
+    "cat": "ssuap-detresses",
+    "content": "Compressions thoraciques, ventilation orale/BAVU, DSA FR3 et Lifepack CR2 — GDTO SSUAP v2025 p.113-116, 119",
+    "pdf": "https://drive.google.com/file/d/1JW_gLVqbUVYtHQDgLmT1tKfkKG9kGOUU/preview",
+    "img": "",
+    "video": "",
+    "quiz": ""
+  }
+]
