@@ -453,10 +453,17 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
       <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
       <div class="section-title" style="color:#27ae60">📚 Ressources</div>
       <div class="subthemes-grid" style="--tc:#27ae60">
-        <div class="subtheme-card"><span class="subtheme-icon">📄</span><div class="subtheme-label">PDF</div></div>
+        <div class="subtheme-card" onclick="showDocs()"><span class="subtheme-icon">📄</span><div class="subtheme-label">Documentation</div></div>
         <div class="subtheme-card"><span class="subtheme-icon">🎬</span><div class="subtheme-label">Vidéos</div></div>
         <div class="subtheme-card"><span class="subtheme-icon">📝</span><div class="subtheme-label">Quiz</div></div>
       </div>
+    </div>
+
+    <!-- Section Documentation -->
+    <div id="view-docs" style="display:none">
+      <button class="back-btn" onclick="backRessources()">← Retour aux ressources</button>
+      <div class="section-title" style="color:#27ae60">📄 Documentation</div>
+      <div id="docs-list" class="docs-grid"></div>
     </div>
   </div>
 </div>
