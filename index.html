@@ -488,13 +488,19 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
 
   <!-- BOUTONS PRINCIPAUX -->
   <div class="main" style="padding-top:32px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:480px;margin:0 auto 32px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:480px;margin:0 auto 16px">
       <button onclick="showSection('themes')" style="background:#c0392b;color:#fff;border:none;border-radius:12px;padding:24px 16px;font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(192,57,43,0.3);transition:all 0.2s;letter-spacing:0.5px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,0.3)'">
         🗂️<br><span style="font-size:14px;opacity:0.9">Thèmes</span>
       </button>
       <button onclick="showSection('contact')" style="background:#fff;color:#1F3864;border:2px solid #1F3864;border-radius:12px;padding:24px 16px;font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(31,56,100,0.1);transition:all 0.2s;letter-spacing:0.5px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
         📞<br><span style="font-size:14px;opacity:0.8">Contact</span>
       </button>
+    </div>
+    <!-- BOUTON GÉNÉRATEUR -->
+    <div style="max-width:480px;margin:0 auto 24px">
+      <a href="generateur_rffs.html" style="display:block;background:linear-gradient(135deg,#C55A11 0%,#e06820 100%);color:#fff;border-radius:12px;padding:18px 16px;font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;box-shadow:0 4px 14px rgba(197,90,17,0.35);transition:all 0.2s;letter-spacing:0.5px;text-decoration:none;text-align:center" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(197,90,17,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(197,90,17,0.35)'">
+        ⚡ Générateur de fiches d'exercice RFFS<br><span style="font-size:13px;opacity:0.85;font-family:'Source Sans 3',sans-serif;font-weight:400">Niveaux 5 / 7 / 8 — Tous aéronefs</span>
+      </a>
     </div>
     <div style="text-align:center;margin-bottom:24px">
       <button onclick="showSection('tutoriel')" style="background:none;border:none;color:#999;font-size:13px;cursor:pointer;text-decoration:underline;font-family:'Source Sans 3',sans-serif">❓ Comment utiliser le site ?</button>
