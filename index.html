@@ -545,9 +545,7 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
     </div>
     <div class="section-title"><span>✉️</span> Envoyer un message</div>
     <div class="form-box">
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="sendForm(event)">
-        <input type="hidden" name="form-name" value="contact">
-        <p style="display:none"><input name="bot-field"></p>
+      <form action="https://formspree.io/f/mvzdrrqo" method="POST" onsubmit="sendForm(event)">
         <div class="form-row">
           <div>
             <label class="form-label">Prénom & Nom</label>
@@ -779,14 +777,15 @@ function goScene(n) {
 function sendForm(e) {
   e.preventDefault();
   var form = e.target;
-  fetch('/', {
+  fetch('https://formspree.io/f/mvzdrrqo', {
     method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: new URLSearchParams(new FormData(form)).toString()
-  }).then(function() {
+    headers: {'Accept': 'application/json'},
+    body: new FormData(form)
+  }).then(function(r) {
     document.getElementById('form-confirm').style.display = 'block';
+    form.reset();
   }).catch(function() {
-    document.getElementById('form-confirm').style.display = 'block';
+    alert('Erreur envoi — réessayez ou contactez directement par email.');
   });
 }
 </script>
