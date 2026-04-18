@@ -95,6 +95,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 .obs div{border-bottom:1px solid #ccc;height:24px;margin-bottom:3px;}
 @media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
 @media(max-width:768px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.tg2{grid-template-columns:1fr;}.sr{grid-template-columns:1fr;}}
+/* BOUTON RETOUR */
+.btn-home{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+.btn-home:hover{background:rgba(255,255,255,.25);}
 </style>
 </head>
 <body>
@@ -105,7 +108,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
       <h1>RFFS BOD</h1>
       <span>Générateur de fiches d'exercice</span>
     </div>
-    <div class="hdr-badge"></div>
+    <div class="hdr-badge" style="padding:10px 20px;display:flex;align-items:center;">
+      <a href="index.html" class="btn-home">← Accueil</a>
+    </div>
   </div>
 </header>
 
@@ -191,6 +196,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
         <p>Sélectionnez les paramètres à gauche<br>puis cliquez sur <strong>Générer la fiche</strong></p>
       </div>
     </div>
+
   </main>
 </div>
 
@@ -453,6 +459,7 @@ function gen(){
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
 upd();
+
 </script>
 </body>
 </html>
