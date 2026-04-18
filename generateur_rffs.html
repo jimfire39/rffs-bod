@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Fiches d'Exercice RFFS BOD</title>
+<style>
+:root{--navy:#1F3864;--navy-l:#2a4a80;--orange:#C55A11;--orange-l:#e06820;--red:#C00000;--green:#375623;--amber:#E36C09;--gray:#595959;--lgray:#f5f5f5;--lblue:#D6E4F7;--border:#ddd;--text:#1a1a1a;--text-m:#666;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--text);min-height:100vh;}
+.app-header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.hdr-inner{max-width:1200px;margin:0 auto;display:flex;align-items:stretch;}
+.hdr-brand{padding:14px 24px;display:flex;flex-direction:column;justify-content:center;}
+.hdr-brand h1{font-size:17px;font-weight:700;color:#fff;letter-spacing:.5px;}
+.hdr-brand span{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;}
+.hdr-badge{background:var(--orange);padding:14px 20px;margin-left:auto;display:flex;align-items:center;}
+.hdr-badge span{font-size:12px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;}
+.app-body{max-width:1200px;margin:0 auto;padding:20px 14px;display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start;}
+.panel{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;position:sticky;top:68px;}
+.panel-title{background:var(--navy);padding:12px 18px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.8px;text-transform:uppercase;}
+.panel-body{padding:18px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fg select,.fg input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);background:#fff;transition:border-color .2s;appearance:none;}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--navy);}
+.sw{position:relative;}
+.sw::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none;font-size:11px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tg{display:flex;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;}
+.tg input{display:none;}
+.tg label{flex:1;padding:7px 4px;text-align:center;font-size:12px;font-weight:500;color:var(--gray);cursor:pointer;transition:all .2s;margin:0;text-transform:none;letter-spacing:0;border:none;}
+.tg input:checked+label{background:var(--navy);color:#fff;}
+.div{height:1px;background:var(--border);margin:14px 0;}
+.btn-gen{width:100%;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;}
+.btn-gen:hover{background:var(--orange-l);}
+.btn-gen:active{transform:scale(.98);}
+.btn-prt{width:100%;padding:9px;background:#fff;color:var(--navy);border:1.5px solid var(--navy);border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn-prt:hover{background:var(--navy);color:#fff;}
+.fiche-wrap{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+.placeholder{padding:70px 30px;text-align:center;color:var(--text-m);}
+.placeholder .ico{font-size:40px;margin-bottom:14px;opacity:.25;}
+.placeholder h3{font-size:17px;font-weight:500;margin-bottom:6px;color:var(--gray);}
+.placeholder p{font-size:13px;}
+/* FICHE */
+.fiche-hdr{display:grid;grid-template-columns:1fr auto;}
+.fhdr-l{background:var(--navy);padding:13px 18px;}
+.fhdr-l h2{font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px;}
+.fhdr-l span{font-size:10px;color:rgba(255,255,255,.55);margin-top:2px;display:block;}
+.fhdr-r{background:var(--orange);padding:13px 18px;display:flex;align-items:center;}
+.fhdr-r span{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;}
+.fiche-body{padding:16px;}
+.id-t{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px;}
+.id-t td{padding:6px 9px;border:1px solid #ccc;}
+.lbl{background:#f0f0f0;font-weight:600;color:var(--gray);font-size:10px;text-transform:uppercase;white-space:nowrap;}
+.vm{font-weight:700;color:var(--navy);font-size:14px;}
+.vniv{font-weight:800;font-size:18px;text-align:center;}
+.vr{color:var(--red)}.va{color:var(--amber)}.vg{color:var(--green)}.vo{color:var(--orange)}
+.vav{color:var(--red);font-weight:700}.vpob{color:var(--red);font-weight:700;font-size:15px;}
+.bg-b{background:var(--lblue);}
+.shdr{padding:7px 12px;font-size:11px;font-weight:700;color:#fff;letter-spacing:.8px;text-transform:uppercase;margin:12px 0 8px;border-radius:4px;}
+.shdr.nv{background:var(--navy)}.shdr.gy{background:var(--gray)}.shdr.or{background:var(--orange);}
+.abox{border:2px solid var(--amber);background:#fffbe6;border-radius:7px;padding:12px 14px;margin-bottom:8px;}
+.abox p{font-size:12px;line-height:1.6;margin-bottom:3px;}
+.abox .bd{font-weight:700}.abox .it{font-style:italic;}
+.qbox{font-size:11px;color:var(--gray);margin-bottom:14px;font-style:italic;padding:7px 11px;background:var(--lgray);border-radius:5px;border-left:3px solid var(--navy);}
+.qbox strong{color:var(--navy);font-style:normal;}
+.st{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px;}
+.st td{border:1px solid #ccc;vertical-align:top;}
+.sl{width:32px;text-align:center;font-size:20px;font-weight:800;color:#fff;padding:10px 4px;}
+.slb{width:80px;font-size:10px;font-weight:700;padding:8px 7px;background:var(--lgray);text-transform:uppercase;letter-spacing:.5px;}
+.sc{padding:9px 11px;line-height:1.6;}
+.ss{background:var(--navy)}.si{background:var(--orange)}.sm{background:var(--red)}.ssec{background:var(--green);}
+.ssl{color:var(--navy)}.sil{color:var(--orange)}.sml{color:var(--red)}.ssecl{color:var(--green);}
+.dt{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:12px;}
+.dt th{background:var(--navy);color:#fff;padding:7px 9px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--navy);text-align:left;}
+.dt td{padding:7px 9px;border:1px solid #ccc;vertical-align:top;}
+.dt tr:nth-child(even) td{background:var(--lgray);}
+.vn{font-weight:700;color:var(--navy)}.sn{font-weight:700;color:var(--orange);}
+.tg2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.tc{border:1px solid #ddd;border-radius:7px;padding:10px;background:var(--lgray);font-size:11px;}
+.tc h4{font-size:11px;font-weight:700;margin-bottom:5px;}
+.tc ul{list-style:none;padding:0;}
+.tc ul li{padding:2px 0;color:var(--text-m);line-height:1.5;}
+.tc ul li::before{content:'› ';color:var(--navy);}
+.et{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px;}
+.et th{background:var(--navy);color:#fff;padding:7px 9px;border:1px solid var(--navy);text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+.et th.sm{width:44px;text-align:center;}
+.et td{border:1px solid #ccc;padding:6px 9px;}
+.et .cr td{background:var(--gray);color:#fff;font-weight:600;font-size:11px;padding:6px 9px;}
+.et tr:nth-child(even):not(.cr) td{background:var(--lgray);}
+.et .cc{text-align:center;width:44px;}
+.sr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:14px;}
+.sb{border:1px solid #ccc;border-radius:5px;padding:9px;background:var(--lgray);font-size:11px;color:var(--gray);}
+.fiche-footer{border-top:1px solid var(--border);padding:8px 18px;font-size:10px;color:var(--text-m);display:flex;justify-content:space-between;background:var(--lgray);}
+.obs div{border-bottom:1px solid #ccc;height:24px;margin-bottom:3px;}
+@media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
+@media(max-width:768px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.tg2{grid-template-columns:1fr;}.sr{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <h1>RFFS BOD</h1>
+      <span>Générateur de fiches d'exercice</span>
+    </div>
+    <div class="hdr-badge"></div>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="panel no-print">
+    <div class="panel-title">Paramètres de l'exercice</div>
+    <div class="panel-body">
+
+      <div class="fg">
+        <label>Niveau RFFS</label>
+        <div class="tg">
+          <input type="radio" name="niv" id="n5" value="5"><label for="n5">Niveau 5</label>
+          <input type="radio" name="niv" id="n7" value="7"><label for="n7">Niveau 7</label>
+          <input type="radio" name="niv" id="n8" value="8" checked><label for="n8">Niveau 8</label>
+        </div>
+      </div>
+
+      <div class="fg"><label>Aéronef</label><div class="sw"><select id="aeronef"></select></div></div>
+      <div class="fg"><label>Catégorie</label><div class="sw"><select id="categorie" onchange="updThemes()">
+        <option value="incendie">🔥 Incendie aéronef</option>
+        <option value="structure">✈️ Structure / train / hydraulique</option>
+        <option value="soute">📦 Soutes / détection</option>
+        <option value="sauvetage">🚨 Sauvetage / urgence</option>
+        <option value="special">⚠️ Situations spéciales</option>
+        <option value="militaire">💣 Aviation militaire</option>
+      </select></div></div>
+      <div class="fg"><label>Thème d'intervention</label><div class="sw"><select id="theme"></select></div></div>
+
+      <div class="fg">
+        <label>Localisation</label>
+        <div class="sw">
+          <select id="loc">
+            <option>Piste 23</option><option>Piste 05</option><option>Piste 11</option>
+            <option>Piste 29</option><option>Seuil 05</option><option>Seuil 23</option><option>Seuil 29</option>
+            <option>Parking Alpha</option><option>Parking Yankee</option>
+            <option>Parking Kilo</option><option>Parking Lima</option>
+            <option>Parking Fox</option><option>La FATO</option>
+            <option>Zone essencier</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="div"></div>
+
+      <div class="row2">
+        <div class="fg"><label>PN</label><input type="number" id="pn" min="1" max="10" value="3"></div>
+        <div class="fg"><label>PAX</label><input type="number" id="pax" min="0" max="500" value="120"></div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label>Carburant</label><input type="text" id="cbrt" value="10 t"></div>
+        <div class="fg"><label>Figurants</label><input type="number" id="fig" min="0" max="10" value="0"></div>
+      </div>
+
+      <div class="fg">
+        <label>Conditions</label>
+        <div class="tg">
+          <input type="radio" name="cond" id="cj" value="Jour" checked><label for="cj">Jour</label>
+          <input type="radio" name="cond" id="cn" value="Nuit"><label for="cn">Nuit</label>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>Fret</label>
+        <div class="sw">
+          <select id="fret">
+            <option>Sans</option><option>Colis vrac</option><option>Pièces avion</option>
+            <option>Matières dangereuses codes 50/60</option><option>Armement (canon, missiles, bombes)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="div"></div>
+      <button class="btn-gen" onclick="gen()">⚡ Générer la fiche</button>
+      <button class="btn-prt" onclick="window.print()">🖨 Imprimer / PDF</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="fiche-wrap" id="fw">
+      <div class="placeholder">
+        <div class="ico">📋</div>
+        <h3>Configurez l'exercice</h3>
+        <p>Sélectionnez les paramètres à gauche<br>puis cliquez sur <strong>Générer la fiche</strong></p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const AV=[
+  {n:"── Avions légers / turbopropulseurs ──",sep:true},
+  {n:"Cessna 172",t:"monomoteur à pistons",c:""},
+  {n:"TBM 700",t:"turbopropulseur monoréacteur",c:""},
+  {n:"Pilatus PC-12",t:"turbopropulseur monoréacteur",c:""},
+  {n:"Beechcraft King Air",t:"turbopropulseur biréacteur",c:""},
+  {n:"Dash 8 Milan 24",t:"turbopropulseur biréacteur",c:"Milan 24 — armée de l'air"},
+  {n:"Dash 8 Q400",t:"turbopropulseur biréacteur",c:""},
+  {n:"── Hélicoptères ──",sep:true},
+  {n:"EC 125",t:"hélicoptère monomoteur",c:"sécurité civile / gendarmerie"},
+  {n:"EC 135",t:"hélicoptère biréacteur",c:"SAMU / sécurité civile"},
+  {n:"Puma AS 330",t:"hélicoptère biréacteur",c:"armée de l'air"},
+  {n:"Caracal EC 725",t:"hélicoptère biréacteur",c:"armée de l'air — base 106"},
+  {n:"── Avions régionaux ──",sep:true},
+  {n:"ATR 42",t:"turbopropulseur biréacteur",c:"Air France / HOP!"},
+  {n:"ATR 72",t:"turbopropulseur biréacteur",c:"Air France / HOP!"},
+  {n:"ERJ 145",t:"biréacteur régional",c:"HOP!"},
+  {n:"CRJ 700",t:"biréacteur régional",c:"HOP!"},
+  {n:"Embraer E175",t:"biréacteur régional",c:"HOP!"},
+  {n:"── Avions commerciaux ──",sep:true},
+  {n:"A318",t:"biréacteur — 107 pax",c:"Air France"},
+  {n:"A219 CEO",t:"biréacteur — 140 pax",c:"EasyJet / Volotea"},
+  {n:"A220-300",t:"biréacteur — 149 pax",c:"Air France / Swiss"},
+  {n:"A320 CEO",t:"biréacteur — 180 pax",c:"EasyJet / Volotea / Vueling"},
+  {n:"A320neo",t:"biréacteur — 180 pax",c:"Transavia / Vueling / Air Arabia"},
+  {n:"A321 CEO",t:"biréacteur — 220 pax",c:"EasyJet / Air France"},
+  {n:"A321neo",t:"biréacteur — 220 pax",c:"Wizz Air / Turkish / KLM"},
+  {n:"A321LR",t:"biréacteur — 180 pax long courrier",c:"Air Transat (BOD-Montréal)"},
+  {n:"A350",t:"biréacteur — 440 pax",c:"Air France (occasionnel)"},
+  {n:"Boeing 737-800",t:"biréacteur — 162 pax",c:"KLM / Transavia / Royal Air Maroc / Air Algérie"},
+  {n:"Boeing 737 MAX 8",t:"biréacteur — 162 pax",c:"Turkish Airlines / Royal Air Maroc"},
+  {n:"Boeing 737F",t:"biréacteur cargo",c:"fret / charters"},
+  {n:"Boeing 777F",t:"biréacteur cargo long courrier",c:"fret international"},
+  {n:"A330 MRTT",t:"biréacteur — ravitaillement",c:"armée de l'air — base 106"},
+  {n:"── Aviation militaire ──",sep:true},
+  {n:"Rafale",t:"biréacteur chasseur",c:"armée de l'air — base 106"},
+];
+
+const TH={
+  feu_moteur:{
+    l:"Feu moteur",av:"Feu moteur",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec problème technique.",b:1},{t:"Feu moteur signalé — extinction bord en cours.",i:1},{t:"L'aéronef vient de s'immobiliser sur la piste. Intervenez.",b:1}],
+    q:"POB — Carburant — Fret — Moteur en feu confirmé ? — Extinction bord efficace ? — Évacuation en cours ? — Renforts ?",
+    sit:["Alerte TWR : aéronef en retour terrain avec feu moteur.","Extinction bord percutée — résultat inconnu.","Appareil immobilisé sur piste — intervenez immédiatement."],
+    m5:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu — poudre + LDV — protection couloir évacuation.","Chef de manœuvre : SIMS radio — CR TWR — coordination sauvetage."],
+    m7:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu moteur — poudre + LDV.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage.","Chef de manœuvre : SIMS radio — coordination évacuation PAX — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu moteur — poudre + LDV.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage PAX.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination générale — SIMS radio — CR TWR."],
+    sec:["Risque ingestion moteur : ne jamais passer devant la prise d'air.","Carburant : interdire toute source d'ignition — mousse si nappe.","Surveiller propagation vers aile et fuselage.","CR continu conducteurs → CM sur état sinistre."],
+    tc:[{ti:"🔥 Feu moteur",c:"red",li:["Poudre polyvalente : extinction nappe moteur","LDV jet diffusé : refroidissement + protection","Surveiller reprise de feu après extinction"]},{ti:"⚠️ Risque ingestion",c:"red",li:["Ne jamais passer devant la prise d'air","Approche par l'arrière ou le côté","Hélice : danger même moteur coupé (si TP)"]},{ti:"👥 Évacuation PAX",c:"nv",li:["Protéger couloirs évacuation","Coordonner avec PNC","Regroupement à distance sécurité"]},{ti:"✈️ Points clés",c:"nv",li:["Vérifier efficacité extinction bord","Surveiller propagation hydraulique","CR régulier à la TWR"]}],
+  },
+  train_non_verrouille:{
+    l:"Train non verrouillé",av:"Train non verrouillé — effacement prévu",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec problème technique.",b:1},{t:"Train non verrouillé — effacement prévu à l'atterrissage.",i:1},{t:"L'avion se pose avec effacement des trains — sortie de piste. Intervenez.",b:1}],
+    q:"POB — Carburant — Avarie confirmée — Position exacte — Feu visible ? — Fuite carburant ? — Renforts SDIS/SAMU ?",
+    sit:["Alerte TWR : aéronef en retour terrain — train non verrouillé.","L'aéronef se pose avec effacement des trains — perte de contrôle.","Sortie de piste — intervenez immédiatement."],
+    m5:["VIM 1 → Avant aéronef : Sauvetage occupants — extinction si feu — mousse préventive nappe carburant.","Chef de manœuvre : SIMS radio — périmètre sécurité — CR TWR — SDIS/SAMU."],
+    m7:["VIM 1 → Secteur 1 (avant gauche) : Sauvetage — accès portes/trappes — extinction si feu.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — appui sauvetage — mousse préventive.","Chef de manœuvre : SIMS radio — périmètre — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (avant gauche) : Sauvetage — accès portes/trappes — extinction si feu.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — mousse préventive.","VIM 3 → Secteur 4 (arrière) : Surveillance — protection réservoirs intrados.","Chef de manœuvre : coordination générale — SIMS radio — CR TWR."],
+    sec:["Effacement train : fuselage au sol — débris, tôles déformées.","Risque fuite carburant : mousse préventive si nappe — interdire source d'ignition.","Structure fragilisée : ne pas s'appuyer sur le fuselage.","Hélices (si TP) : rester hors de l'arc de rotation même moteur coupé."],
+    tc:[{ti:"⚠️ Effacement du train",c:"red",li:["Fuselage posé au sol — débris dangereux","Trains rétractés ou brisés","Vérifier stabilité avant approche personnel"]},{ti:"🔥 Risque carburant",c:"red",li:["Mousse LDV : tapis préventif si nappe","Interdire toute source d'ignition","Surveiller réservoirs intrados"]},{ti:"✈️ Constitution train",c:"nv",li:["Jambe magnésium : fond 700-800°C","Pneu azote : fusible > 175°C","Zone danger jante : 120° × 100 m"]},{ti:"👥 Sauvetage",c:"nv",li:["Accès : portes principales + trappes","Structure fragilisée : attention écrasement","Prise en charge médicale immédiate"]}],
+  },
+  fumee_a_bord:{
+    l:"Fumée à bord",av:"Fumée à bord — feu probable",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec fumée à bord.",b:1},{t:"L'aéronef se pose et reste sur la piste — plus aucune réponse du pilote.",i:1},{t:"Intervenez immédiatement.",b:1}],
+    q:"POB — Carburant — Avarie (fumée/feu) — Position exacte — Fumée visible extérieur ? — Incendie confirmé ? — SAMU ?",
+    sit:["Alerte TWR : aéronef en retour terrain avec fumée à bord.","L'aéronef posé reste sur la piste — aucune réponse du pilote.","Intervenez immédiatement."],
+    m5:["VIM 1 → Avant aéronef (hors arc hélice) : Accès cabine — ARI — sauvetage — manœuvres sécurité si pilote inconscient.","Chef de manœuvre : SIMS radio — demande SAMU — CR TWR."],
+    m7:["VIM 1 → Secteur 1 (avant) : Accès cabine — ARI — sauvetage — manœuvres sécurité si pilote inconscient.","VIM 2 → Secteur 2 (latéral) : Protection fuselage — mousse si fuite carburant.","Chef de manœuvre : SIMS radio — SAMU — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (avant) : Accès cabine — ARI — sauvetage — manœuvres sécurité si pilote inconscient.","VIM 2 → Secteur 2 (latéral droit) : Protection — surveillance propagation.","VIM 3 → Secteur 4 (arrière) : Surveillance réservoirs — appui sauvetage.","Chef de manœuvre : coordination générale — SAMU — CR TWR."],
+    sec:["Fumée = risque intoxication CO — ARI obligatoire pour accès cabine.","Pilote inconscient : manœuvres sécurité (coupure moteur / batterie / carburant).","Ventiler la cabine dès l'accès — ouvrir toutes les issues.","Carburant : mousse préventive si nappe détectée."],
+    tc:[{ti:"💨 Fumée / intoxication",c:"red",li:["ARI obligatoire pour accès cabine enfumée","Ventiler dès l'accès : ouvrir toutes issues","Risque CO : effets rapides — urgence médicale"]},{ti:"🔥 Feu probable",c:"red",li:["Origine : tableau de bord, moteur, câblage","LDV jet diffusé : refroidissement + protection","Mousse si nappe carburant détectée"]},{ti:"🚨 Pilote inconscient",c:"nv",li:["Coupure moteur — batterie — carburant","Coordonner avec SAMU en urgence","Accès cabine : porte ou brise-glace"]},{ti:"✈️ Points clés",c:"nv",li:["Hélice (si TP) : approche par l'arrière","Structure : attention résistance fuselage","CR régulier à la TWR"]}],
+  },
+  sortie_de_piste:{
+    l:"Sortie de piste",av:"Sortie de piste — urgence",
+    al:[{t:"Vous prenez l'alerte pour un avion avec problème à l'atterrissage.",b:1},{t:"Tentative d'atterrissage — sortie de piste signalée.",i:1},{t:"Intervenez immédiatement — ELD 120 m.",b:1}],
+    q:"POB — Carburant — Fret — Position exacte de sortie — Structure intacte ? — Feu visible ? — Renforts ?",
+    sit:["Alerte TWR : aéronef en sortie de piste après atterrissage difficile.","Appareil immobilisé hors piste — ELD 120 m signalée.","Intervenez immédiatement."],
+    m5:["VIM 1 → Avant aéronef : Sauvetage occupants — accès cabine — mousse si fuite carburant.","Chef de manœuvre : SIMS radio — périmètre sécurité — CR TWR."],
+    m7:["VIM 1 → Secteur 1 (avant) : Sauvetage PAX — accès portes — extinction si feu.","VIM 2 → Secteur 2 (latéral) : Protection fuselage — mousse préventive.","Chef de manœuvre : SIMS radio — CR TWR — gestion évacuation."],
+    m8:["VIM 1 → Secteur 1 (avant gauche) : Sauvetage PAX — accès portes — extinction si feu.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — appui évacuation.","VIM 3 → Secteur 4 (arrière) : Surveillance — protection réservoirs.","Chef de manœuvre : coordination — CR TWR — renforts SDIS."],
+    sec:["ELD : risque projection lors de l'éclatement du pneu — zone de danger.","Carburant : mousse préventive si fuite — interdire source d'ignition.","Structure : vérifier stabilité de l'appareil avant approche.","Terrain hors piste : attention sol meuble, fossés, obstacles."],
+    tc:[{ti:"⚠️ Sortie de piste",c:"red",li:["Terrain hors piste : sol meuble, obstacles","Vérifier stabilité appareil avant approche","ELD : zone danger projection 100 m / 120°"]},{ti:"🔥 Risque carburant",c:"red",li:["Mousse LDV : tapis préventif si fuite","Surveiller réservoirs sous aile","Interdire toute source d'ignition"]},{ti:"👥 Évacuation PAX",c:"nv",li:["Protéger et dégager couloirs évacuation","Coordonner avec PNC","Regroupement à distance sécurité"]},{ti:"✈️ Points clés",c:"nv",li:["Adapter trajectoire VIM (terrain hors piste)","Signaler obstacles et accès difficiles","CR régulier à la TWR"]}],
+  },
+  feu_train:{
+    l:"Feu de train / T° élevée",av:"T° élevée train — freinage excessif",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain.",b:1},{t:"Suite au freinage excessif, T° élevée sur train — intervention demandée.",i:1},{t:"L'aéronef posé se rend au parking. Intervenez pour refroidissement.",b:1}],
+    q:"POB — Carburant — Position exacte (piste ou parking) — Feu visible ? — Fumée ? — Température estimée ?",
+    sit:["Alerte TWR : aéronef signalant T° élevée sur train suite freinage excessif.","L'appareil posé se dirige vers le parking.","Intervention demandée par le pilote pour refroidissement train."],
+    m5:["VIM 1 → Plan de rotation roues (avant) : Refroidissement freins — jet diffusé intermittent.","Chef de manœuvre : SIMS radio — maintien zone danger — CR TWR."],
+    m7:["VIM 1 → Secteur 1 (plan rotation, avant gauche) : Refroidissement train gauche.","VIM 2 → Secteur 2 (plan rotation, avant droit) : Refroidissement train droit — contact visuel PNT.","Chef de manœuvre : SIMS radio — gestion zone danger — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (avant gauche) : Refroidissement train gauche — jet diffusé.","VIM 2 → Secteur 2 (avant droit) : Refroidissement train droit — contact visuel PNT.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection réservoirs intrados.","Chef de manœuvre : coordination — CR TWR — gestion zone danger."],
+    sec:["Approche dans le plan de rotation — JAMAIS dans l'axe des jantes.","Zone de danger : projection 100 m / 120° de part et d'autre de l'axe roue.","Refroidissement : jet diffusé 150 L/min — 5 à 10 sec toutes les 30 sec.","Maintenir zone dégagée 15 min après intervention."],
+    tc:[{ti:"🌡️ Refroidissement train",c:"red",li:["Jet diffusé 150 L/min — intermittent","5 à 10 sec toutes les 30 sec","Ordre : freins → jambe → réservoirs intrados"]},{ti:"⚠️ Zone de danger",c:"red",li:["Axe des jantes : INTERDIT","Projection 100 m / 120° — danger 15 min","Approche : plan de rotation uniquement"]},{ti:"🔧 Constitution du train",c:"nv",li:["Disques carbone : 2 500-3 000°C max","Fusible roue : fond > 175°C → dégonflage azote","Jambe magnésium : fond 700-800°C"]},{ti:"✈️ Points clés",c:"nv",li:["Pas de refroidissement brutal ou irrégulier","Surveiller évolution — CR conducteurs → CM","Carburant élevé : surveiller propagation"]}],
+  },
+  feu_avitaillement:{
+    l:"Feu suite avitaillement",av:"Feu d'aile — suite avitaillement",
+    al:[{t:"Vous prenez l'information : plein carburant en cours avec passagers à bord.",b:1},{t:"Un agent de piste demande votre intervention pour feu de train avec propagation aile.",i:1},{t:"L'essencier vient de dégager. Intervenez immédiatement.",b:1}],
+    q:"POB — Carburant (volume avitaillé) — Parking — Passagers à bord ? — Essencier dégagé ? — Renforts ?",
+    sit:["Information : avitaillement en cours au parking avec passagers à bord.","Feu de train avec propagation aile signalé par agent de piste.","Essencier dégagé — intervenez immédiatement."],
+    m5:["VIM 1 → Secteur 1 (côté feu) : Extinction feu train + aile — LDV + poudre — protection PAX.","Chef de manœuvre : SIMS radio — évacuation PAX — CR TWR."],
+    m7:["VIM 1 → Secteur 1 (côté feu aile) : Extinction feu — poudre + LDV — protection PAX.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage.","Chef de manœuvre : SIMS radio — évacuation PAX — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (côté feu aile) : Extinction feu train + aile — poudre + LDV.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui évacuation PAX.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation fuselage — protection.","Chef de manœuvre : coordination — évacuation PAX prioritaire — CR TWR."],
+    sec:["Carburant : quantité importante — risque nappe et propagation rapide.","Évacuation PAX prioritaire — protéger toboggans / portes.","Poudre : extinction nappe — eau/mousse : refroidissement + protection.","Surveiller propagation vers fuselage et cabine."],
+    tc:[{ti:"🔥 Feu aile + train",c:"red",li:["Poudre : extinction nappe au sol","LDV jet diffusé : refroidissement aile","Priorité : couper alimentation carburant"]},{ti:"⚠️ Carburant",c:"red",li:["Risque nappe et propagation rapide","Interdire toute source d'ignition","Surveiller réservoirs intrados"]},{ti:"👥 Évacuation PAX",c:"nv",li:["Évacuation = priorité absolue","Protéger issues et toboggans","Coordonner avec PNC"]},{ti:"✈️ Points clés",c:"nv",li:["Vérifier dégagement essencier","Surveiller feu résiduel après extinction","CR régulier à la TWR"]}],
+  },
+  collision_aviaire:{
+    l:"Collision aviaire",av:"Collision aviaire — feu moteur possible",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec problèmes techniques.",b:1},{t:"Suite à une collision aviaire — feu moteur signalé — percussions extincteurs bord.",i:1},{t:"L'avion vient de s'immobiliser sur la piste. Intervenez.",b:1}],
+    q:"POB — Carburant — Fret — État exact moteur — Extinction bord efficace ? — Évacuation en cours ? — FOD ?",
+    sit:["Alerte TWR : collision aviaire en courte finale — feu moteur signalé.","Percussions extincteurs bord en cours.","Aéronef immobilisé sur piste — intervenez."],
+    m5:["VIM 1 → Côté moteur sinistre : Extinction feu moteur — protection couloir évacuation.","Chef de manœuvre : SIMS radio — CR TWR — signaler FOD."],
+    m7:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu — poudre + LDV.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage.","Chef de manœuvre : SIMS radio — signaler FOD — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu — poudre + LDV.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui évacuation PAX.","VIM 3 → Secteur 4 (arrière) : Surveillance — protection réservoirs.","Chef de manœuvre : coordination — signaler FOD — CR TWR."],
+    sec:["Collision aviaire : débris FOD dans la zone — baliser et signaler à TWR.","Risque ingestion moteur même après coupure.","Carburant : surveiller fuite sous aile — mousse si nappe.","Surveiller propagation vers aile et fuselage."],
+    tc:[{ti:"🦅 Collision aviaire",c:"red",li:["FOD dans la zone : baliser et signaler","Débris ingérés : dommages moteur importants","Risque ingestion même après coupure"]},{ti:"🔥 Feu moteur",c:"red",li:["Poudre : extinction nappe moteur","LDV jet diffusé : refroidissement","Vérifier efficacité extinction bord"]},{ti:"⚠️ Risques spécifiques",c:"nv",li:["Carburant : surveiller fuite sous aile","Réducteur huile moteur (si TP)","Surveiller propagation vers fuselage"]},{ti:"✈️ Points clés",c:"nv",li:["Signaler FOD à TWR immédiatement","Protéger couloirs évacuation PAX","CR régulier à la TWR"]}],
+  },
+
+  feu_generalise:{l:"Feu généralisé",av:"Feu généralisé — propagation rapide",al:[{t:"Feu généralisé signalé sur aéronef immobilisé.",b:1},{t:"Flammes visibles sur fuselage et ailes — propagation rapide.",i:1},{t:"Intervenez immédiatement — priorité sauvetage.",b:1}],q:"POB — Carburant — Fret — Évacuation en cours ? — Issues accessibles ? — Renforts SDIS ?",sit:["Feu généralisé sur aéronef — fuselage et ailes touchés.","Propagation rapide — risque explosion carburant.","Priorité absolue : sauvetage des occupants."],m5:["VIM 1 → Avant aéronef : Attaque feu fuselage — LDV jet plein — dégagement couloir évacuation.","Chef de manœuvre : SIMS radio — SDIS — CR TWR — SAMU."],m7:["VIM 1 → Secteur 1 : Attaque feu fuselage — LDV jet plein.","VIM 2 → Secteur 2 : Attaque feu aile — protection réservoirs.","Chef de manœuvre : SIMS radio — SDIS — CR TWR."],m8:["VIM 1 → Secteur 1 : Attaque feu fuselage — LDV jet plein.","VIM 2 → Secteur 2 : Attaque feu aile gauche — protection réservoirs.","VIM 3 → Secteur 4 : Attaque feu aile droite — surveillance arrière.","Chef de manœuvre : coordination générale — SDIS — CR TWR — SAMU."],sec:["Feu généralisé : risque explosion carburant — maintenir distance sécurité.","ARI obligatoire — fumées toxiques (CFRP, câblage).","Ne jamais s interposer entre réservoirs et foyer principal.","Surveiller évolution permanente — ordre évolution SIMS si aggravation."],tc:[{ti:"🔥 Feu généralisé",c:"red",li:["Attaque simultanée fuselage + ailes","LDV jet plein : débit maximal","Priorité : dégager couloirs évacuation"]},{ti:"💥 Risque explosion",c:"red",li:["Carburant : risque BLEVE réservoirs surchauffés","Maintenir distance sécurité VIM","Refroidissement réservoirs en priorité"]},{ti:"☠️ Fumées toxiques",c:"nv",li:["CFRP : fumées HCN — ARI obligatoire","Composites : particules cancérogènes","Zone de repli si vent défavorable"]},{ti:"✈️ Points clés",c:"nv",li:["Renforts SDIS obligatoires","Coordination DOS / COS","CR régulier à la TWR"]}],},
+  feu_apu:{l:"Feu APU",av:"Feu APU — groupe auxiliaire de puissance",al:[{t:"Feu APU signalé par le pilote.",b:1},{t:"APU en queue — extincteurs bord percutés.",i:1},{t:"Aéronef immobilisé au parking. Intervenez.",b:1}],q:"POB — Carburant — Extincteurs bord efficaces ? — PAX évacués ? — Renforts ?",sit:["Feu APU signalé en queue d aéronef — parking.","Extincteurs bord percutés — résultat inconnu.","Intervenez immédiatement."],m5:["VIM 1 → Arrière aéronef (queue) : Extinction feu APU — poudre + LDV.","Chef de manœuvre : SIMS radio — évacuation PAX — CR TWR."],m7:["VIM 1 → Secteur 4 (arrière) : Extinction feu APU — poudre + LDV.","VIM 2 → Secteur 1 (avant) : Protection fuselage — appui évacuation PAX.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 4 (arrière) : Extinction feu APU — poudre + LDV.","VIM 2 → Secteur 1 (avant gauche) : Protection fuselage — appui évacuation.","VIM 3 → Secteur 2 (avant droit) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination — CR TWR."],sec:["APU en queue : approche par l arrière — hors souffle réacteurs.","Carburant APU : risque nappe sous queue.","Risque propagation vers réservoirs queue et fuselage arrière.","ARI si fumée dense en queue."],tc:[{ti:"⚙️ APU — localisation",c:"red",li:["Toujours en queue de l aéronef","Accès : trappe dédiée APU","Carburant propre + huile moteur inflammable"]},{ti:"🔥 Extinction APU",c:"red",li:["Poudre : extinction nappe APU","LDV : refroidissement queue + réservoirs","Vérifier efficacité extincteur bord"]},{ti:"⚠️ Risques spécifiques",c:"nv",li:["Propagation réservoirs queue","Souffle réacteurs si moteurs tournent","ARI si espace confiné (trappe APU)"]},{ti:"✈️ Points clés",c:"nv",li:["Évacuation PAX prioritaire si à bord","Couper alimentation carburant APU","CR régulier à la TWR"]}],},
+  detection_soute_avionique:{l:"Alarme feu soute avionique",av:"Alarme feu soute avionique",al:[{t:"Détection incendie déclenchée en soute avionique.",b:1},{t:"Aéronef immobilisé — alarme tableau de bord.",i:1},{t:"Intervenez pour investigation et sécurisation.",b:1}],q:"POB — Carburant — Fumée visible ? — Chaleur ressentie ? — Extincteurs bord activés ? — PAX évacués ?",sit:["Alarme détection incendie soute avionique déclenchée.","Pas de feu visible extérieur — origine électronique possible.","Aéronef immobilisé — investigation requise."],m5:["VIM 1 → Avant aéronef : Surveillance — ARI prêt — accès trappe avionique.","Chef de manœuvre : SIMS radio — coordination équipage — CR TWR."],m7:["VIM 1 → Secteur 1 (avant) : Surveillance soute avionique — ARI — accès trappe.","VIM 2 → Secteur 2 (latéral) : Protection fuselage — surveillance générale.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 1 (avant) : Surveillance soute avionique — ARI — accès trappe.","VIM 2 → Secteur 2 (latéral droit) : Protection fuselage — surveillance.","VIM 3 → Secteur 4 (arrière) : Surveillance générale — protection.","Chef de manœuvre : coordination — CR TWR — décision évacuation."],sec:["Soute avionique : espace confiné — ARI obligatoire pour accès.","Ne pas utiliser eau sur composants sous tension — CO2 ou poudre.","CO2 ou poudre pour feux électriques — jamais d eau.","Fumées toxiques composants électroniques — ventiler avant accès."],tc:[{ti:"⚡ Feu électrique / avionique",c:"red",li:["CO2 ou poudre — jamais d eau","Couper circuits électriques avant accès","Fumées toxiques : ARI obligatoire"]},{ti:"🔍 Investigation",c:"red",li:["Localiser la source (cockpit vs soute)","Tester chaleur trappe avant ouverture","Ventiler avant accès personnel"]},{ti:"⚠️ Risques spécifiques",c:"nv",li:["Espace confiné : accès limité","Électricité résiduelle même moteurs coupés","Propagation rapide si feu non maîtrisé"]},{ti:"✈️ Points clés",c:"nv",li:["Décision évacuation PAX selon évolution","CO2 embarqué soute avionique","CR régulier à la TWR"]}],},
+  feu_soute_avant:{l:"Feu soute avant",av:"Feu soute avant — cargo",al:[{t:"Feu détecté en soute avant de l aéronef.",b:1},{t:"Fumée visible sous fuselage avant — alarme déclenchée.",i:1},{t:"Aéronef immobilisé. Intervenez immédiatement.",b:1}],q:"POB — Carburant — Nature fret — Fumée visible ? — PAX évacués ? — Trappes accessibles ?",sit:["Feu en soute avant — fumée visible sous fuselage.","Fret inconnu ou dangereux possible.","Aéronef immobilisé — intervenez immédiatement."],m5:["VIM 1 → Secteur 1 (avant gauche) : Extinction feu soute avant — LDV + poudre — accès trappe.","Chef de manœuvre : SIMS radio — nature fret — évacuation PAX — CR TWR."],m7:["VIM 1 → Secteur 1 (avant gauche) : Extinction feu soute — LDV + poudre.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — appui évacuation PAX.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 1 (avant gauche) : Extinction feu soute avant — LDV + poudre.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — appui évacuation PAX.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination — vérifier fret — CR TWR."],sec:["Fret inconnu : risque matières dangereuses — identifier avant intervention.","ARI obligatoire pour accès soute enfumée.","Trappe soute : tester chaleur avant ouverture — risque embrasement.","Surveiller propagation vers cabine passagers."],tc:[{ti:"📦 Fret / soute avant",c:"red",li:["Identifier nature fret avant accès","MD : procédure spécifique","Tester chaleur trappe avant ouverture"]},{ti:"🔥 Extinction soute",c:"red",li:["LDV jet diffusé : refroidissement soute","Poudre si feu matières solides","CO2 si feu électrique"]},{ti:"⚠️ Risques spécifiques",c:"nv",li:["Propagation vers cabine PAX","Fumées toxiques selon fret","Espace confiné : ARI obligatoire"]},{ti:"✈️ Points clés",c:"nv",li:["Évacuation PAX prioritaire","Vérifier nature fret avec équipage","CR régulier à la TWR"]}],},
+  feu_soute_arriere:{l:"Feu soute arrière",av:"Feu soute arrière — cargo",al:[{t:"Feu détecté en soute arrière de l aéronef.",b:1},{t:"Fumée visible sous fuselage arrière — alarme déclenchée.",i:1},{t:"Aéronef immobilisé. Intervenez immédiatement.",b:1}],q:"POB — Carburant — Nature fret — Fumée visible ? — APU actif ? — PAX évacués ?",sit:["Feu en soute arrière — fumée visible sous fuselage arrière.","Risque propagation vers APU et réservoirs queue.","Aéronef immobilisé — intervenez immédiatement."],m5:["VIM 1 → Secteur 4 (arrière) : Extinction feu soute arrière — LDV + poudre.","Chef de manœuvre : SIMS radio — nature fret — évacuation PAX — CR TWR."],m7:["VIM 1 → Secteur 4 (arrière) : Extinction feu soute arrière — LDV + poudre.","VIM 2 → Secteur 1 (avant) : Protection fuselage — appui évacuation PAX.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 4 (arrière) : Extinction feu soute arrière — LDV + poudre.","VIM 2 → Secteur 2 (avant droit) : Protection fuselage — appui évacuation PAX.","VIM 3 → Secteur 1 (avant gauche) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination — CR TWR."],sec:["Soute arrière : risque propagation APU et réservoirs queue.","ARI obligatoire pour accès soute enfumée.","Couper APU si actif avant intervention arrière.","Surveiller propagation vers cabine passagers."],tc:[{ti:"📦 Soute arrière — risques",c:"red",li:["Propagation APU et réservoirs queue","Fret inconnu : identifier avant accès","Tester chaleur trappe avant ouverture"]},{ti:"🔥 Extinction",c:"red",li:["LDV jet diffusé : refroidissement","Poudre si feu matières solides","Surveiller feu résiduel APU"]},{ti:"⚠️ Risques spécifiques",c:"nv",li:["APU en queue : risque aggravation","Fumées toxiques selon fret","Espace confiné : ARI obligatoire"]},{ti:"✈️ Points clés",c:"nv",li:["Couper APU en priorité","Évacuation PAX prioritaire","CR régulier à la TWR"]}],},
+  detection_soute_avant:{l:"Alarme feu soute avant",av:"Alarme feu soute avant",al:[{t:"Alarme détection incendie déclenchée en soute avant.",b:1},{t:"Pas de feu visible — investigation requise.",i:1},{t:"Aéronef immobilisé. Intervenez pour vérification.",b:1}],q:"POB — Carburant — Nature fret — Fumée visible ? — Chaleur trappe ? — PAX évacués ?",sit:["Alarme détection soute avant déclenchée — origine inconnue.","Pas de feu visible extérieur.","Investigation et sécurisation requises."],m5:["VIM 1 → Secteur 1 (avant) : Surveillance — ARI prêt — investigation trappe soute.","Chef de manœuvre : SIMS radio — coordination équipage — CR TWR."],m7:["VIM 1 → Secteur 1 (avant) : Investigation soute avant — ARI — surveillance.","VIM 2 → Secteur 2 (latéral) : Protection fuselage — surveillance générale.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 1 (avant) : Investigation soute avant — ARI — surveillance.","VIM 2 → Secteur 2 (latéral droit) : Protection fuselage.","VIM 3 → Secteur 4 (arrière) : Surveillance générale.","Chef de manœuvre : coordination — décision évacuation — CR TWR."],sec:["Tester chaleur trappe avant toute ouverture — risque embrasement.","ARI prêt — si fumée confirmée : ARI obligatoire.","Faux positif possible — rester vigilant.","Décision évacuation PAX selon investigation."],tc:[{ti:"🔍 Investigation",c:"red",li:["Tester chaleur trappe avant ouverture","Observer fumée ou odeur suspecte","Coordonner avec équipage"]},{ti:"⚠️ Risques",c:"red",li:["Embrasement à l ouverture si feu couvant","Fret inconnu potentiellement dangereux","ARI obligatoire si fumée confirmée"]},{ti:"📋 Procédure",c:"nv",li:["Vérifier nature fret avant accès","Préparer extinction adaptée","Décision évacuation selon résultat"]},{ti:"✈️ Points clés",c:"nv",li:["CR à la TWR sur résultat investigation","Surveillance post-investigation","Rester prêt même si faux positif"]}],},
+  detection_soute_arriere:{l:"Alarme feu soute arrière",av:"Alarme feu soute arrière",al:[{t:"Alarme détection incendie déclenchée en soute arrière.",b:1},{t:"Pas de feu visible — investigation requise.",i:1},{t:"Aéronef immobilisé. Intervenez pour vérification.",b:1}],q:"POB — Carburant — APU actif ? — Fumée visible ? — Chaleur trappe ? — PAX évacués ?",sit:["Alarme détection soute arrière déclenchée — origine inconnue.","APU potentiellement actif en queue.","Investigation et sécurisation requises."],m5:["VIM 1 → Secteur 4 (arrière) : Surveillance — ARI prêt — investigation trappe soute.","Chef de manœuvre : SIMS radio — coordination équipage — CR TWR."],m7:["VIM 1 → Secteur 4 (arrière) : Investigation soute arrière — ARI — surveillance.","VIM 2 → Secteur 1 (avant) : Protection fuselage — surveillance générale.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Secteur 4 (arrière) : Investigation soute arrière — ARI — surveillance.","VIM 2 → Secteur 1 (avant gauche) : Protection fuselage.","VIM 3 → Secteur 2 (avant droit) : Surveillance générale.","Chef de manœuvre : coordination — décision évacuation — CR TWR."],sec:["APU en queue : vérifier état avant approche arrière.","Tester chaleur trappe avant ouverture.","ARI prêt — si fumée : ARI obligatoire.","Risque faux positif — rester vigilant."],tc:[{ti:"🔍 Investigation arrière",c:"red",li:["Vérifier APU avant approche","Tester chaleur trappe","Observer fumée ou odeur"]},{ti:"⚠️ Risques spécifiques",c:"red",li:["APU actif : risque aggravation","Réservoirs queue à proximité","Embrasement à l ouverture trappe"]},{ti:"📋 Procédure",c:"nv",li:["Couper APU si actif","Préparer extinction adaptée","Décision évacuation selon résultat"]},{ti:"✈️ Points clés",c:"nv",li:["CR à la TWR sur résultat","Surveillance post-investigation","Rester prêt même si faux positif"]}],},
+  crash_ejection:{l:"Crash / éjection pilote (militaire)",av:"Crash aéronef militaire — éjection pilote",al:[{t:"Effacement des trains — crash signalé sur piste.",b:1},{t:"Éjection pilote confirmée — armement à bord.",i:1},{t:"Intervenez — ELD 120 m — DANGER ARMEMENT.",b:1}],q:"Type armement (canon, missiles, bombes) — Carburant — Pilote localisé ? — Siège éjecté actif ? — Renforts armée ?",sit:["Crash aéronef militaire armé — éjection pilote confirmée.","Armement à bord : canon, missiles, bombes.","Siège éjecteur potentiellement actif — zone danger élargie."],m5:["VIM 1 → Avant épave (hors siège éjecteur) : Extinction feu — sauvetage pilote éjecté.","Chef de manœuvre : SIMS radio — armée prévenue — CR TWR — SAMU."],m7:["VIM 1 → Secteur 1 (avant épave) : Extinction feu — sauvetage pilote éjecté.","VIM 2 → Secteur 2 (latéral) : Protection épave — surveillance armement.","Chef de manœuvre : SIMS radio — armée — CR TWR — SAMU."],m8:["VIM 1 → Secteur 1 (avant épave) : Extinction feu — sauvetage pilote éjecté.","VIM 2 → Secteur 2 (latéral gauche) : Protection épave — surveillance armement.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection.","Chef de manœuvre : coordination — armée — CR TWR — SAMU."],sec:["SIÈGE ÉJECTEUR : zone danger 200 m dans l axe — NE JAMAIS passer devant.","ARMEMENT : périmètre 300 m — attendre neutralisation spécialistes armée.","Canon 30mm, missiles, bombes : NE PAS TOUCHER — rester à distance.","Carburant militaire : mousse préventive sur nappe."],tc:[{ti:"🪂 Siège éjecteur",c:"red",li:["Zone danger 200 m dans l axe","NE JAMAIS passer devant le siège","Siège actif même après crash"]},{ti:"💣 Armement",c:"red",li:["Périmètre 300 m minimum","Attendre spécialistes armée","Canon / missiles / bombes : NE PAS TOUCHER"]},{ti:"🔥 Extinction",c:"nv",li:["Mousse préventive nappe carburant","LDV : refroidissement épave","Sauvetage pilote éjecté en priorité"]},{ti:"✈️ Points clés",c:"nv",li:["Prévenir armée immédiatement","SAMU : pilote éjecté blessé probable","CR régulier à la TWR"]}],},
+  atterrissage_urgence:{l:"Atterrissage d urgence",av:"Atterrissage d urgence — MAY DAY déclaré",al:[{t:"MAY DAY déclaré — aéronef en détresse en approche.",b:1},{t:"Problème non défini — situation dégradée.",i:1},{t:"Mise en place préventive sur piste. Intervenez à l atterrissage.",b:1}],q:"POB — Carburant — Nature avarie — Train sorti et verrouillé ? — Carburant délésté ? — Renforts ?",sit:["MAY DAY déclaré — aéronef en approche finale.","Avarie multiple ou inconnue — préparation maximale.","Mise en place préventive sur piste."],m5:["VIM 1 → Seuil de piste (attente hors piste) : Mise en place préventive — intervention dès immobilisation.","Chef de manœuvre : SIMS radio — CR TWR — prêt à intervenir."],m7:["VIM 1 → Seuil piste côté gauche (hors piste) : Mise en place préventive.","VIM 2 → Seuil piste côté droit (hors piste) : Appui intervention.","Chef de manœuvre : SIMS radio — CR TWR."],m8:["VIM 1 → Seuil piste côté gauche (hors piste) : Intervention dès immobilisation.","VIM 2 → Seuil piste côté droit (hors piste) : Appui — protection fuselage.","VIM 3 → Mi-piste (escorte) : Accompagnement roulage — surveillance.","Chef de manœuvre : coordination — CR TWR — évaluation à l atterrissage."],sec:["VIM positionnés HORS piste en attente — ne jamais sur piste pendant atterrissage.","Intervenir uniquement après immobilisation complète de l aéronef.","Évaluer la situation à l arrivée — SIMS d évolution immédiat.","Tous risques possibles : feu, train, fumée, MD."],tc:[{ti:"🛬 MAY DAY — préparation",c:"red",li:["VIM en attente hors piste","Ne jamais sur piste pendant atterrissage","Intervenir après immobilisation complète"]},{ti:"⚠️ Situation inconnue",c:"red",li:["Avarie multiple possible","Évaluer à l arrivée — SIMS évolution","Tous risques : feu, train, fumée, MD"]},{ti:"👥 Sauvetage",c:"nv",li:["Évacuation PAX selon situation","SAMU en attente","Coordonner avec PNC dès accès"]},{ti:"✈️ Points clés",c:"nv",li:["SIMS évolution immédiat après atterrissage","Renforts SDIS en attente","CR régulier à la TWR"]}],},
+  matieres_dangereuses:{l:"Incident matières dangereuses",av:"Incident matières dangereuses — fuite/contact",al:[{t:"Incident signalé impliquant des matières dangereuses.",b:1},{t:"Fuite ou contact avec substance dangereuse — codes 50/60.",i:1},{t:"Aéronef immobilisé. Intervenez — procédure MD.",b:1}],q:"Nature MD (code danger) — Quantité — Fuite confirmée ? — PAX exposés ? — SDIS MD — Spécialistes ?",sit:["Incident matières dangereuses — fuite ou contact.","Codes danger identifiés — procédure spécifique requise.","Aéronef immobilisé — périmètre sécurité à établir."],m5:["VIM 1 → Upwind (vent arrière) : Périmètre sécurité — pas d intervention directe sans spécialistes MD.","Chef de manœuvre : SIMS radio — SDIS — spécialistes MD — CR TWR."],m7:["VIM 1 → Upwind secteur 1 : Périmètre — mousse préventive si fuite inflammable.","VIM 2 → Upwind secteur 2 : Protection aéronef — surveillance.","Chef de manœuvre : SIMS radio — SDIS MD — CR TWR."],m8:["VIM 1 → Upwind secteur 1 : Périmètre — mousse préventive si fuite inflammable.","VIM 2 → Upwind secteur 2 : Protection aéronef — surveillance.","VIM 3 → Secteur 4 : Surveillance générale — confinement.","Chef de manœuvre : coordination — SDIS MD — CR TWR — DOS/COS."],sec:["Toujours se positionner UPWIND (vent dans le dos).","EPI MD + ARI obligatoires — type substance inconnu = danger maximal.","Codes 50/60 : substances toxiques/infectieuses — isoler zone.","Attendre spécialistes SDIS MD avant toute action directe."],tc:[{ti:"☢️ Matières dangereuses",c:"red",li:["Toujours upwind — vent dans le dos","EPI MD + ARI obligatoires","Attendre spécialistes avant action"]},{ti:"🧪 Codes danger",c:"red",li:["Code 50 : substances toxiques","Code 60 : matières infectieuses","Identifier avant toute approche"]},{ti:"🚧 Périmètre",c:"nv",li:["Périmètre large (100 m min)","Interdire accès zone contaminée","Décontamination si contact"]},{ti:"✈️ Points clés",c:"nv",li:["SDIS MD + SAMU alertés immédiatement","Plan ORSEC MD si nécessaire","Ne pas laver zone avant ID substance"]}],},
+  feu_nappe:{l:"Feu nappe carburant sol",av:"Feu de nappe carburant au sol",al:[{t:"Feu de nappe carburant signalé au sol.",b:1},{t:"Nappe enflammée sous ou autour de l aéronef.",i:1},{t:"Intervenez immédiatement — risque propagation rapide.",b:1}],q:"Surface nappe estimée — Carburant restant — PAX évacués ? — Source alimentation coupée ? — Renforts ?",sit:["Feu de nappe carburant au sol — sous ou autour de l aéronef.","Risque propagation rapide vers réservoirs.","Intervenez immédiatement."],m5:["VIM 1 → Upwind (vent arrière) : Attaque nappe — LDV mousse — tapis moussant.","Chef de manœuvre : SIMS radio — évacuation PAX — CR TWR."],m7:["VIM 1 → Secteur 1 upwind : Attaque nappe — LDV mousse — tapis moussant.","VIM 2 → Secteur 2 : Refroidissement réservoirs aéronef — protection propagation.","Chef de manœuvre : SIMS radio — évacuation PAX — CR TWR."],m8:["VIM 1 → Secteur 1 upwind : Attaque nappe principale — LDV mousse.","VIM 2 → Secteur 2 : Refroidissement réservoirs — protection fuselage.","VIM 3 → Secteur 4 : Confinement arrière nappe — surveillance propagation.","Chef de manœuvre : coordination — CR TWR — évacuation PAX."],sec:["Toujours attaquer upwind — vent dans le dos.","Mousse : tapis moussant complet — ne pas briser le tapis.","Interdire toute source d ignition dans le périmètre.","Surveiller réallumage après extinction — maintenir tapis moussant."],tc:[{ti:"🔥 Feu de nappe",c:"red",li:["Attaque upwind — vent dans le dos","Tapis moussant complet sur nappe","Ne pas briser le tapis moussant"]},{ti:"💧 Mousse",c:"red",li:["LDV mousse : taux d application maximal","Couvrir 100% surface nappe","Surveiller réallumage après extinction"]},{ti:"⛽ Source carburant",c:"nv",li:["Couper alimentation si fuite active","Interdire sources d ignition","Surveiller extension nappe"]},{ti:"✈️ Points clés",c:"nv",li:["Évacuation PAX prioritaire","Maintenir tapis moussant 15 min","CR régulier à la TWR"]}],},
+  accident_fato:{l:"Accident FATO / hélitreuillage",av:"Accident hélicoptère — zone FATO",al:[{t:"Accident hélicoptère signalé sur ou à proximité de la FATO.",b:1},{t:"Crash ou incident grave — occupants à bord.",i:1},{t:"Intervenez immédiatement — DANGER ROTOR.",b:1}],q:"POB — Carburant — Rotor en rotation ? — Feu visible ? — Personnes éjectées ? — SAMU ?",sit:["Accident hélicoptère sur zone FATO — rotor potentiellement en rotation.","Occupants à bord — sauvetage requis.","DANGER : rotor, carburant Jet A1, possible feu."],m5:["VIM 1 → Côté porte (rotor arrêté ou hors arc) : Sauvetage occupants — ARI si fumée — extinction si feu.","Chef de manœuvre : SIMS radio — SAMU — CR TWR."],m7:["VIM 1 → Côté porte (rotor arrêté) : Sauvetage occupants — ARI si fumée.","VIM 2 → Côté opposé : Protection — mousse préventive carburant.","Chef de manœuvre : SIMS radio — SAMU — CR TWR."],m8:["VIM 1 → Côté porte (rotor arrêté) : Sauvetage occupants — ARI si fumée.","VIM 2 → Côté opposé : Protection — mousse préventive carburant.","VIM 3 → Arrière : Surveillance — protection.","Chef de manœuvre : coordination — SAMU — CR TWR."],sec:["ROTOR : NE JAMAIS approcher un hélicoptère rotor en rotation sans contact équipage.","Arc de rotation rotor principal ET anti-couple (queue).","Approche uniquement par l avant ou les côtés — JAMAIS par l arrière (rotor queue).","Carburant Jet A1 : mousse préventive si fuite."],tc:[{ti:"🚁 Danger rotor",c:"red",li:["Rotor principal : arc complet 360°","Rotor queue : approche arrière INTERDITE","Attendre arrêt complet ou contact équipage"]},{ti:"🔥 Feu hélicoptère",c:"red",li:["Carburant Jet A1 — mousse LDV","Réservoir généralement sous plancher","Extinction rapide : structure légère"]},{ti:"👥 Sauvetage",c:"nv",li:["Approche côté portes uniquement","ARI si espace enfumé","SAMU immédiat — blessés probables"]},{ti:"✈️ Points clés",c:"nv",li:["SAMU en priorité","Contacter équipage avant approche","CR régulier à la TWR"]}],},
+  aeronef_arme:{l:"Aéronef militaire armé",av:"Aéronef militaire armé — approche sécurisée",al:[{t:"Aéronef militaire armé signalé en détresse.",b:1},{t:"Armement actif à bord — procédure spécifique.",i:1},{t:"Intervenez — périmètre armement obligatoire.",b:1}],q:"Type armement (canon, missiles, bombes, roquettes) — Carburant — Éjection possible ? — Spécialistes armée disponibles ?",sit:["Aéronef militaire armé en détresse — piste ou parking.","Armement actif : canon, missiles, bombes à guidage laser.","Intervention RFFS avec périmètre armement."],m5:["VIM 1 → Hors périmètre armement (côté) : Extinction si feu — sauvetage pilote — NE PAS toucher armement.","Chef de manœuvre : SIMS radio — armée prévenue — CR TWR."],m7:["VIM 1 → Hors périmètre armement (avant gauche) : Extinction — sauvetage pilote.","VIM 2 → Hors périmètre (avant droit) : Protection — surveillance armement.","Chef de manœuvre : SIMS radio — armée — CR TWR."],m8:["VIM 1 → Hors périmètre armement (avant gauche) : Extinction — sauvetage pilote.","VIM 2 → Hors périmètre (avant droit) : Protection — surveillance armement.","VIM 3 → Secteur 4 (hors périmètre) : Surveillance propagation.","Chef de manœuvre : coordination — armée — CR TWR."],sec:["Périmètre armement : 300 m minimum autour de l aéronef armé.","Canon 30mm : NE PAS s aligner dans l axe du canon.","Missiles / bombes : NE PAS TOUCHER — spécialistes armée uniquement.","Siège éjecteur : zone danger 200 m dans l axe."],tc:[{ti:"💣 Armement — règles absolues",c:"red",li:["Périmètre 300 m minimum","NE PAS TOUCHER l armement","Spécialistes armée pour neutralisation"]},{ti:"🪂 Siège éjecteur",c:"red",li:["Zone danger 200 m dans l axe","NE JAMAIS passer devant le cockpit","Actif même moteurs coupés"]},{ti:"🔥 Extinction",c:"nv",li:["Mousse préventive nappe carburant","Hors périmètre armement uniquement","Refroidissement à distance si possible"]},{ti:"✈️ Points clés",c:"nv",li:["Prévenir armée immédiatement","Attendre neutralisation armement","CR régulier à la TWR"]}],},
+  pb_hydraulique:{
+    l:"Problème hydraulique",av:"Problème hydraulique — fuite probable",
+    al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec problème hydraulique.",b:1},{t:"Risque de sortie de piste — train et freins affectés.",i:1},{t:"L'aéronef se pose — éclatement de train signalé. Intervenez immédiatement.",b:1}],
+    q:"POB — Carburant — Fret — Train sorti et verrouillé ? — Freinage possible ? — Fuite hydraulique visible ?",
+    sit:["Alerte TWR : aéronef en retour avec problème hydraulique — train et freins affectés.","À l'atterrissage : éclatement de train signalé.","Sortie de piste — intervenez immédiatement."],
+    m5:["VIM 1 → Avant aéronef : Refroidissement train — mousse si fuite hydraulique.","Chef de manœuvre : SIMS radio — périmètre — CR TWR."],
+    m7:["VIM 1 → Secteur 1 (avant gauche) : Train gauche — refroidissement + protection fuite.","VIM 2 → Secteur 2 (avant droit) : Train droit — refroidissement — contact visuel PNT.","Chef de manœuvre : SIMS radio — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (avant gauche) : Refroidissement train gauche — protection fuite hydraulique.","VIM 2 → Secteur 2 (avant droit) : Refroidissement train droit — contact visuel PNT.","VIM 3 → Secteur 4 (arrière) : Surveillance — protection réservoirs.","Chef de manœuvre : coordination — CR TWR — gestion évolution."],
+    sec:["Fuite hydraulique Skydrol : corrosif — éviter contact peau.","Skydrol : point inflammabilité 500-800°C — attention si source de chaleur (freins).","Zone danger train : axe jante INTERDIT — 100 m / 120°.","Vapeurs suffocantes si Skydrol chauffé — ARI si nécessaire."],
+    tc:[{ti:"💧 Liquide hydraulique",c:"red",li:["Skydrol : corrosif — éviter contact direct","Point inflammabilité 500-800°C","Vapeurs suffocantes sous chaleur → ARI"]},{ti:"⚠️ Zone de danger",c:"red",li:["Axe jante : INTERDIT","Éclatement roue : projection 100 m / 120°","Maintenir zone dégagée 15 min"]},{ti:"🔧 Refroidissement",c:"nv",li:["Poudre : extinction nappe hydraulique","LDV : refroidissement freins + atterrisseur","Refroidissement doux — pas brutal"]},{ti:"✈️ Points clés",c:"nv",li:["Haute pression (200 bars) : risque projection","Surveiller propagation vers aile/fuselage","CR régulier à la TWR"]}],
+  },
+};
+
+const NV={5:1,7:2,8:3};
+const NC={5:"vg",7:"va",8:"vr"};
+
+const CATS={
+  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","feu_nappe"],
+  structure:["train_non_verrouille","feu_train","pb_hydraulique","sortie_de_piste"],
+  soute:["feu_soute_avant","feu_soute_arriere","detection_soute_avant","detection_soute_arriere","detection_soute_avionique"],
+  sauvetage:["fumee_a_bord","atterrissage_urgence","accident_fato","collision_aviaire"],
+  special:["matieres_dangereuses","pb_hydraulique"],
+  militaire:["crash_ejection","aeronef_arme","collision_aviaire"],
+};
+
+function updThemes(){
+  const cat=document.getElementById('categorie').value;
+  const keys=CATS[cat]||Object.keys(TH);
+  document.getElementById('theme').innerHTML=keys.filter(k=>TH[k]).map(k=>`<option value="${k}">${TH[k].l}</option>`).join('');
+}
+
+function upd(){
+  document.getElementById('aeronef').innerHTML=AV.map(a=>a.sep?`<option disabled style="font-weight:700;color:#888">${a.n}</option>`:`<option value="${a.n}">${a.n}${a.c?' — '+a.c:''}</option>`).join('');
+  updThemes();
+}
+
+function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
+
+function gen(){
+  const niv=+document.querySelector('input[name="niv"]:checked').value;
+  const aNom=document.getElementById('aeronef').value;
+  const av=AV.find(a=>a.n===aNom)||{t:'',c:''};
+  const tk=document.getElementById('theme').value;
+  const th=TH[tk];
+  const loc=document.getElementById('loc').value;
+  const pn=+document.getElementById('pn').value;
+  const pax=+document.getElementById('pax').value;
+  const pob=pn+pax;
+  const cbrt=document.getElementById('cbrt').value;
+  const fig=document.getElementById('fig').value;
+  const cond=document.querySelector('input[name="cond"]:checked').value;
+  const fret=document.getElementById('fret').value;
+  const nbv=NV[niv];
+  const miss=getMiss(th,niv);
+  const nc=NC[niv];
+
+  const alH=th.al.map(l=>`<p class="${l.b?'bd':''} ${l.i?'it':''}">${l.t}</p>`).join('');
+  const simD=[
+    {l:'S',w:'SITUATION',cs:'ss',cl:'ssl',c:th.sit.join('<br>')},
+    {l:'I',w:'INFORMATION',cs:'si',cl:'sil',c:`POB : ${pob} (${pn} PN + ${pax} PAX)<br>Carburant restant : ${cbrt}<br>Avarie : ${th.av}<br>Fret : ${fret}<br>Figurants : ${fig}<br>Questions complémentaires à poser à la TWR.`},
+    {l:'M',w:'MISSION',cs:'sm',cl:'sml',c:miss.join('<br>')},
+    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:th.sec.join('<br>')},
+  ];
+  const simH=simD.map(r=>`<tr><td class="sl ${r.cs}">${r.l}</td><td class="slb ${r.cl}">${r.w}</td><td class="sc">${r.c}</td></tr>`).join('');
+
+  const sects=["S1","S2","S4"];
+  const pos=["Secteur 1 (avant gauche)","Secteur 2 (avant droit)","Secteur 4 (arrière)"];
+  const dispH=Array.from({length:nbv},(_,i)=>`<tr><td class="vn">VIM ${i+1}</td><td class="sn">${sects[i]}</td><td>${pos[i]}</td><td>${miss[i]||miss[miss.length-1]}</td></tr>`).join('');
+
+  const techH=th.tc.map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
+
+  const ecats=[
+    {c:"1. Prise d'alerte & renseignements",i:["Déclenche la procédure d'alerte correctement","Recueille : type d'incident, aéronef, POB, carburant, avarie","Pose les questions réglementaires à la TWR","Évalue et demande renforts si nécessaire"]},
+    {c:"2. Ordre initial — SIMS",i:["Formule la Situation clairement (SIMS radio)","Complète les Informations manquantes","Donne la Mission à chaque VIM (secteur + action)","Énonce les consignes de Sécurité"]},
+    {c:"3. Positionnement & intervention",i:[`VIM positionnés correctement (${nbv} VIM — secteurs adaptés)`,"Approche sécurisée — zones de danger respectées","Techniques d'extinction adaptées au sinistre","Surveillance continue de l'évolution"]},
+    {c:"4. Commandement & communication",i:["Utilise l'ordre graphique (ZI, sinistre, moyens, actions)","Compte rendu régulier à la TWR","Gère l'évolution — ordre d'évolution SIMS si besoin","Veille à la sécurité du personnel intervenant"]},
+    {c:"5. Retour & débriefing",i:["Reconditionnement des véhicules vérifié","Disponibilité des moyens rendue compte","Débriefing en 4 phases conduit","Révalorisation du groupe assurée"]},
+  ];
+  let evH='';
+  ecats.forEach(c=>{
+    evH+=`<tr class="cr"><td colspan="4">${c.c}</td></tr>`;
+    c.i.forEach(it=>evH+=`<tr><td>${it}</td><td class="cc"></td><td class="cc"></td><td class="cc"></td></tr>`);
+  });
+
+  document.getElementById('fw').innerHTML=`
+  <div class="fiche">
+    <div class="fiche-hdr">
+      <div class="fhdr-l"><h2>RFFS BOD — FICHE D'EXERCICE</h2><span>${cond} — Niveau RFFS ${niv} — ${nbv} × VIM 108 P2.5</span></div>
+      <div class="fhdr-r"><span>${th.l.toUpperCase()}</span></div>
+    </div>
+    <div class="fiche-body">
+      <table class="id-t">
+        <tr><td class="lbl">AÉRONEF</td><td class="vm bg-b" colspan="3">${aNom} <small style="font-weight:400;font-size:11px;color:#888">(${av.t})</small></td><td class="lbl">NIVEAU RFFS</td><td class="vniv ${nc} bg-b">${niv}</td></tr>
+        <tr><td class="lbl">MOYENS</td><td colspan="3" style="font-weight:700;color:var(--navy)">${nbv} × VIM 108 P2.5</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>
+        <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="vpob bg-b">${pob}</td></tr>
+        <tr><td class="lbl">CARBURANT</td><td colspan="3" class="vo" style="font-weight:700">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td></tr>
+        <tr><td class="lbl">AVARIE</td><td colspan="3" class="vav">${th.av}</td><td class="lbl">FRET</td><td>${fret}</td></tr>
+        <tr><td class="lbl">CONDITIONS</td><td colspan="3" style="font-weight:600">${cond}</td><td class="lbl">DÉPART</td><td style="font-weight:700">RFFS BOD</td></tr>
+      </table>
+      <div class="shdr gy">Déclenchement d'alerte</div>
+      <div class="abox">${alH}</div>
+      <div class="qbox"><strong>❓ Questions à poser à la TWR :</strong> ${th.q}</div>
+      <div class="shdr nv">Commandement — Méthode SIMS (ordre initial)</div>
+      <table class="st">${simH}</table>
+      <div class="shdr gy">Dispositif d'intervention — Répartition VIM</div>
+      <table class="dt"><thead><tr><th>Véhicule</th><th>Secteur</th><th>Position</th><th>Mission</th></tr></thead><tbody>${dispH}</tbody></table>
+      <p style="font-size:10px;color:#999;font-style:italic;margin-bottom:12px">Sectorisation cadran horaire — S1 avant gauche / S2 avant droit / S4 arrière</p>
+      <div class="shdr or">Points techniques clés — ${aNom} — ${th.l}</div>
+      <div class="tg2" style="margin-top:8px">${techH}</div>
+      <div class="shdr nv">Grille d'évaluation — Chef de manœuvre</div>
+      <table class="et" style="margin-top:8px"><thead><tr><th>Critères d'évaluation</th><th class="sm">✓</th><th class="sm">✗</th><th class="sm">Obs.</th></tr></thead><tbody>${evH}</tbody></table>
+      <p style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Observations de l'évaluateur :</p>
+      <div class="obs"><div></div><div></div><div></div><div></div></div>
+      <div class="sr">
+        <div class="sb">Évaluateur : ……………………………</div>
+        <div class="sb">Date : ………………………………………</div>
+        <div class="sb" style="font-weight:700">Résultat : ✓ VALIDÉ &nbsp; ✗ NON VALIDÉ</div>
+      </div>
+    </div>
+    <div class="fiche-footer">
+      <span>FJ  |  Réf. RFFS/FICHE  |  Doc. interne — ne pas diffuser</span>
+      <span>RFFS BOD — Niveau ${niv} — ${aNom} — ${th.l}</span>
+    </div>
+  </div>`;
+}
+
+document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
+upd();
+</script>
+</body>
+</html>
