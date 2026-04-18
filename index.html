@@ -446,7 +446,18 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
     <div id="view-rffs" style="display:none">
       <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
       <div class="section-title" style="color:#2980b9">✈️ RFFS</div>
-      <div class="empty-state"><div>📭</div>Fiches disponibles prochainement.</div>
+      <div class="subthemes-grid" style="--tc:#2980b9">
+        <div class="subtheme-card" onclick="window.location.href='generateur_rffs.html'" style="border-color:#C55A11;background:linear-gradient(135deg,#fff7f3,#fff);position:relative;overflow:hidden">
+          <span class="subtheme-icon">⚡</span>
+          <div class="subtheme-label" style="color:#C55A11">Générateur d'exercices</div>
+          <div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">Niveaux 5 / 7 / 8 — Tous aéronefs</div>
+        </div>
+        <div class="subtheme-card" onclick="showFiches('rffs-manoeuvres','✈️ Fiches manœuvres')"><span class="subtheme-icon">📋</span><div class="subtheme-label">Fiches manœuvres</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-reglementation','📜 Réglementation RFFS')"><span class="subtheme-icon">📜</span><div class="subtheme-label">Réglementation</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-aerodromes','🛫 Aérodrome & Piste')"><span class="subtheme-icon">🛫</span><div class="subtheme-label">Aérodrome & Piste</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-aeronefs','✈️ Aéronefs')"><span class="subtheme-icon">✈️</span><div class="subtheme-label">Aéronefs</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-agents','🧯 Agents extincteurs')"><span class="subtheme-icon">🧯</span><div class="subtheme-label">Agents extincteurs</div></div>
+      </div>
     </div>
 
     <div id="view-ressources" style="display:none">
