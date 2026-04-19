@@ -99,6 +99,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 .btn-home{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
 .btn-home:hover{background:rgba(255,255,255,.25);}
 </style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8BKS8L5MS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y8BKS8L5MS');
+
+  // Tracking événements
+  function trackGen(aeronef, theme, niveau){
+    gtag('event', 'generer_fiche', {
+      'aeronef': aeronef,
+      'theme': theme,
+      'niveau': niveau
+    });
+  }
+  function trackPrint(){
+    gtag('event', 'imprimer_fiche');
+  }
+</script>
 </head>
 <body>
 
@@ -184,7 +204,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 
       <div class="div"></div>
       <button class="btn-gen" onclick="gen()">⚡ Générer la fiche</button>
-      <button class="btn-prt" onclick="window.print()">🖨 Imprimer / PDF</button>
+      <button class="btn-prt" onclick="trackPrint();window.print()">🖨 Imprimer / PDF</button>
     </div>
   </aside>
 
