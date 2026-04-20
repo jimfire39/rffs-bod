@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiches d'Évaluation RFFS BOD</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8BKS8L5MS"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Y8BKS8L5MS');</script>
+<style>
+:root{--navy:#1F3864;--navy-l:#2a4a80;--orange:#C55A11;--orange-l:#e06820;--red:#C00000;--green:#375623;--amber:#E36C09;--gray:#595959;--lgray:#f5f5f5;--lblue:#D6E4F7;--border:#ddd;--text:#1a1a1a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--text);min-height:100vh;}
+.app-header{background:var(--navy);box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.hdr-inner{max-width:1100px;margin:0 auto;display:flex;align-items:stretch;}
+.hdr-brand{padding:14px 24px;display:flex;flex-direction:column;justify-content:center;}
+.hdr-brand h1{font-size:17px;font-weight:700;color:#fff;letter-spacing:.5px;}
+.hdr-brand span{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;}
+.hdr-badge{background:var(--orange);padding:14px 16px;margin-left:auto;display:flex;align-items:center;}
+.btn-home{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;}
+.btn-home:hover{background:rgba(255,255,255,.25);}
+.app-body{max-width:1100px;margin:0 auto;padding:20px 14px;display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;}
+.panel{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;position:sticky;top:16px;}
+.panel-title{background:var(--navy);padding:12px 16px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.8px;text-transform:uppercase;}
+.panel-body{padding:16px;}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fg select,.fg input{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:#fff;appearance:none;}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--navy);}
+.sw{position:relative;}.sw::after{content:'▾';position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none;font-size:11px;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tg{display:flex;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;}
+.tg input{display:none;}
+.tg label{flex:1;padding:6px 3px;text-align:center;font-size:11px;font-weight:500;color:var(--gray);cursor:pointer;margin:0;border:none;}
+.tg input:checked+label{background:var(--navy);color:#fff;}
+.tc-card{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.tc-card.active{border-color:var(--navy);background:#eef2f7;}
+.tc-card:hover{border-color:var(--navy-l);}
+.tc-card .ico{font-size:18px;}
+.tc-card .lbl{font-size:12px;font-weight:700;color:var(--navy);}
+.tc-card .sub{font-size:10px;color:var(--gray);}
+.dv{height:1px;background:var(--border);margin:11px 0;}
+.section-label{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.section-label::after{content:'';flex:1;height:1px;background:#f0c8a0;}
+.manual-toggle{font-size:10px;color:var(--navy);cursor:pointer;text-decoration:underline;margin-top:4px;display:block;text-align:right;}
+.manual-field{display:none;margin-top:6px;}
+.manual-field.show{display:block;}
+.btn-gen{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px;}
+.btn-gen:hover{background:var(--navy-l);}
+.btn-prt{width:100%;padding:8px;background:#fff;color:var(--navy);border:1.5px solid var(--navy);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;}
+.btn-prt:hover{background:var(--navy);color:#fff;}
+/* FICHE */
+.eval-wrap{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+.ph{padding:60px 20px;text-align:center;color:var(--gray);}
+.ph .ico{font-size:36px;margin-bottom:12px;opacity:.2;}
+.ph h3{font-size:16px;font-weight:500;margin-bottom:6px;}
+.ph p{font-size:12px;color:#999;}
+.fhdr{display:grid;grid-template-columns:1fr auto;}
+.fhl{background:var(--navy);padding:12px 16px;}
+.fhl h2{font-size:12px;font-weight:700;color:#fff;}
+.fhl span{font-size:9px;color:rgba(255,255,255,.55);display:block;margin-top:1px;}
+.fhr{background:var(--orange);padding:12px 14px;display:flex;align-items:center;}
+.fhr span{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;}
+.fb{padding:14px;}
+.idt{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;}
+.idt td{padding:5px 8px;border:1px solid #ccc;}
+.lbl{background:#f0f0f0;font-weight:600;color:var(--gray);font-size:9px;text-transform:uppercase;white-space:nowrap;}
+.bgb{background:var(--lblue);}
+.role-block{border:2px solid var(--navy);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.role-hdr{padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.role-hdr h3{font-size:12px;font-weight:700;color:#fff;}
+.role-id{padding:5px 14px;background:#f8f8f8;display:flex;gap:16px;font-size:10px;border-bottom:1px solid #ddd;flex-wrap:wrap;}
+.et{width:100%;border-collapse:collapse;font-size:11px;}
+.et th{background:var(--navy);color:#fff;padding:6px 9px;border:1px solid var(--navy);text-align:left;font-size:9px;text-transform:uppercase;}
+.et th.chk{width:40px;text-align:center;}
+.et td{border:1px solid #ccc;padding:5px 9px;vertical-align:top;}
+.et .cr td{background:var(--gray);color:#fff;font-weight:700;font-size:10px;padding:5px 9px;}
+.et tr:nth-child(even):not(.cr) td{background:var(--lgray);}
+.et .cc{text-align:center;width:40px;}
+.note-box{padding:9px 14px 11px;}
+.note-box label{font-size:10px;font-weight:700;color:var(--gray);display:block;margin-bottom:4px;}
+.note-box textarea{width:100%;border:1px solid #ddd;border-radius:5px;padding:6px;font-size:11px;resize:vertical;min-height:50px;font-family:inherit;}
+.res-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:9px 14px;background:#f8f8f8;border-top:1px solid #ddd;}
+.res-cell{border:1px solid #ccc;border-radius:5px;padding:7px 9px;background:#fff;font-size:10px;color:var(--gray);}
+.res-cell.bold{font-weight:700;font-size:11px;}
+.bilan-box{border:1px solid #ddd;border-radius:8px;padding:11px 14px;margin-bottom:12px;background:#f8f8f8;}
+.bilan-box label{font-size:11px;font-weight:700;color:var(--navy);display:block;margin-bottom:5px;}
+.bilan-box textarea{width:100%;border:1px solid #ddd;border-radius:5px;padding:7px;font-size:11px;resize:vertical;min-height:65px;font-family:inherit;}
+.fiche-footer{border-top:1px solid var(--border);padding:7px 14px;font-size:9px;color:#999;display:flex;justify-content:space-between;background:var(--lgray);}
+@media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.eval-wrap{border:none;border-radius:0;}body{background:#fff;}}
+@media(max-width:768px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.res-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="hdr-inner">
+    <div class="hdr-brand"><h1>RFFS BOD</h1><span>Fiches d'évaluation</span></div>
+    <div class="hdr-badge"><a href="index.html" class="btn-home">← Accueil</a></div>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="panel no-print">
+    <div class="panel-title">Paramètres</div>
+    <div class="panel-body">
+
+      <div class="fg">
+        <label>Type de fiche</label>
+        <div class="tc-card active" id="tc-cm" onclick="setType('cm')">
+          <span class="ico">🎖️</span>
+          <div><div class="lbl">Chef de manœuvre</div><div class="sub">Niveaux 5 / 7 / 8</div></div>
+        </div>
+        <div class="tc-card" id="tc-eq" onclick="setType('eq')">
+          <span class="ico">🚒</span>
+          <div><div class="lbl">Équipage VIM</div><div class="sub">Conducteur + Opérateur</div></div>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>Niveau RFFS</label>
+        <div class="tg">
+          <input type="radio" name="niv" id="n5" value="5"><label for="n5">Niv. 5</label>
+          <input type="radio" name="niv" id="n7" value="7"><label for="n7">Niv. 7</label>
+          <input type="radio" name="niv" id="n8" value="8" checked><label for="n8">Niv. 8</label>
+        </div>
+      </div>
+
+      <div class="dv"></div>
+      <div class="section-label">Aéronef</div>
+
+      <div class="fg">
+        <div class="sw"><select id="aeronef-sel" onchange="syncAeronef()"></select></div>
+        <span class="manual-toggle" onclick="toggleManual('aeronef')">✏️ Saisir manuellement</span>
+        <div class="manual-field" id="manual-aeronef">
+          <input type="text" id="aeronef-txt" placeholder="Ex: ATR 72, A320 CEO...">
+        </div>
+      </div>
+
+      <div class="dv"></div>
+      <div class="section-label">Thème d'intervention</div>
+
+      <div class="fg">
+        <label>Catégorie</label>
+        <div class="sw"><select id="categorie" onchange="updThemes()">
+          <option value="incendie">🔥 Incendie aéronef</option>
+          <option value="structure">✈️ Structure / train / hydraulique</option>
+          <option value="soute">📦 Soutes / détection</option>
+          <option value="sauvetage">🚨 Sauvetage / urgence</option>
+          <option value="special">⚠️ Situations spéciales</option>
+          <option value="militaire">💣 Aviation militaire</option>
+        </select></div>
+      </div>
+      <div class="fg">
+        <label>Thème</label>
+        <div class="sw"><select id="theme-sel" onchange="syncTheme()"></select></div>
+        <span class="manual-toggle" onclick="toggleManual('theme')">✏️ Saisir manuellement</span>
+        <div class="manual-field" id="manual-theme">
+          <input type="text" id="theme-txt" placeholder="Ex: Train non verrouillé">
+        </div>
+      </div>
+
+      <div class="dv"></div>
+
+      <div class="fg">
+        <label>Localisation</label>
+        <div class="sw"><select id="loc">
+          <option>Piste 23</option><option>Piste 05</option><option>Piste 11</option><option>Piste 29</option>
+          <option>Seuil 05</option><option>Seuil 23</option><option>Seuil 29</option>
+          <option>Parking Alpha</option><option>Parking Yankee</option><option>Parking Kilo</option>
+          <option>Parking Lima</option><option>Parking Fox</option><option>La FATO</option>
+          <option>Zone essencier</option>
+        </select></div>
+      </div>
+
+      <div class="r2">
+        <div class="fg"><label>PN</label><input type="number" id="pn" value="3" min="1" max="10"></div>
+        <div class="fg"><label>PAX</label><input type="number" id="pax" value="120" min="0" max="500"></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Carburant</label><input type="text" id="cbrt" value="10 t"></div>
+        <div class="fg"><label>Figurants</label><input type="number" id="fig" value="0" min="0"></div>
+      </div>
+
+      <div class="fg">
+        <label>Conditions</label>
+        <div class="tg">
+          <input type="radio" name="cond" id="cj" value="Jour" checked><label for="cj">Jour</label>
+          <input type="radio" name="cond" id="cn" value="Nuit"><label for="cn">Nuit</label>
+        </div>
+      </div>
+
+      <div class="dv"></div>
+      <button class="btn-gen" onclick="gen()">📊 Générer la fiche</button>
+      <button class="btn-prt" onclick="window.print()">🖨 Imprimer / PDF</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="eval-wrap" id="ew">
+      <div class="ph">
+        <div class="ico">📊</div>
+        <h3>Configurez la fiche d'évaluation</h3>
+        <p>Choisissez le type, sélectionnez ou saisissez les paramètres<br>puis cliquez sur <strong>📊 Générer la fiche</strong></p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let currentType='cm';
+
+function setType(t){
+  currentType=t;
+  document.querySelectorAll('.tc-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tc-'+t).classList.add('active');
+}
+
+function toggleManual(field){
+  const el=document.getElementById('manual-'+field);
+  el.classList.toggle('show');
+}
+
+function syncAeronef(){
+  const v=document.getElementById('aeronef-sel').value;
+  if(v) document.getElementById('aeronef-txt').value='';
+}
+function syncTheme(){
+  const v=document.getElementById('theme-sel').value;
+  if(v) document.getElementById('theme-txt').value='';
+}
+
+function getAeronef(){
+  const txt=document.getElementById('aeronef-txt').value.trim();
+  if(txt) return txt;
+  const sel=document.getElementById('aeronef-sel').value;
+  return sel.split(' — ')[0];
+}
+function getTheme(){
+  const txt=document.getElementById('theme-txt').value.trim();
+  if(txt) return txt;
+  const sel=document.getElementById('theme-sel').value;
+  const k=document.getElementById('theme-sel').options[document.getElementById('theme-sel').selectedIndex].getAttribute('data-key');
+  return TH[k]?TH[k].l:sel;
+}
+
+// ── DONNÉES AÉRONEFS ──────────────────────────────────────────────────────────
+const AV=[
+  {n:"── Avions légers / turbopropulseurs ──",sep:true},
+  {n:"Cessna 172",t:"monomoteur à pistons",c:""},
+  {n:"TBM 700",t:"turbopropulseur monoréacteur",c:""},
+  {n:"Pilatus PC-12",t:"turbopropulseur monoréacteur",c:""},
+  {n:"Beechcraft King Air",t:"turbopropulseur biréacteur",c:""},
+  {n:"Dash 8 Milan 24",t:"turbopropulseur biréacteur",c:"armée de l'air"},
+  {n:"Dash 8 Q400",t:"turbopropulseur biréacteur",c:""},
+  {n:"── Hélicoptères ──",sep:true},
+  {n:"EC 125",t:"hélicoptère monomoteur",c:"sécurité civile / gendarmerie"},
+  {n:"EC 135",t:"hélicoptère biréacteur",c:"SAMU / sécurité civile"},
+  {n:"Puma AS 330",t:"hélicoptère biréacteur",c:"armée de l'air"},
+  {n:"Caracal EC 725",t:"hélicoptère biréacteur",c:"armée de l'air — base 106"},
+  {n:"── Avions régionaux ──",sep:true},
+  {n:"ATR 42",t:"turbopropulseur biréacteur",c:"Air France / HOP!"},
+  {n:"ATR 72",t:"turbopropulseur biréacteur",c:"Air France / HOP!"},
+  {n:"ERJ 145",t:"biréacteur régional",c:"HOP!"},
+  {n:"CRJ 700",t:"biréacteur régional",c:"HOP!"},
+  {n:"Embraer E175",t:"biréacteur régional",c:"HOP!"},
+  {n:"── Avions commerciaux ──",sep:true},
+  {n:"A318",t:"biréacteur — 107 pax",c:"Air France"},
+  {n:"A219 CEO",t:"biréacteur — 140 pax",c:"EasyJet / Volotea"},
+  {n:"A220-300",t:"biréacteur — 149 pax",c:"Air France / Swiss"},
+  {n:"A320 CEO",t:"biréacteur — 180 pax",c:"EasyJet / Volotea / Vueling"},
+  {n:"A320neo",t:"biréacteur — 180 pax",c:"Transavia / Vueling / Air Arabia"},
+  {n:"A321 CEO",t:"biréacteur — 220 pax",c:"EasyJet / Air France"},
+  {n:"A321neo",t:"biréacteur — 220 pax",c:"Wizz Air / Turkish / KLM"},
+  {n:"A321LR",t:"biréacteur — 180 pax long courrier",c:"Air Transat (BOD-Montréal)"},
+  {n:"A350",t:"biréacteur — 440 pax",c:"Air France (occasionnel)"},
+  {n:"Boeing 737-800",t:"biréacteur — 162 pax",c:"KLM / Transavia / Royal Air Maroc / Air Algérie"},
+  {n:"Boeing 737 MAX 8",t:"biréacteur — 162 pax",c:"Turkish Airlines / Royal Air Maroc"},
+  {n:"Boeing 737F",t:"biréacteur cargo",c:"fret / charters"},
+  {n:"Boeing 777F",t:"biréacteur cargo long courrier",c:"fret international"},
+  {n:"A330 MRTT",t:"biréacteur — ravitaillement",c:"armée de l'air — base 106"},
+  {n:"── Aviation militaire ──",sep:true},
+  {n:"Rafale",t:"biréacteur chasseur",c:"armée de l'air — base 106"},
+];
+
+// ── DONNÉES THÈMES ────────────────────────────────────────────────────────────
+const TH={
+  feu_moteur:{l:"Feu moteur"},feu_generalise:{l:"Feu généralisé"},feu_apu:{l:"Feu APU"},
+  feu_avitaillement:{l:"Feu suite avitaillement"},feu_nappe:{l:"Feu nappe carburant sol"},
+  train_non_verrouille:{l:"Train non verrouillé"},feu_train:{l:"Feu de train / T° élevée"},
+  pb_hydraulique:{l:"Problème hydraulique"},sortie_de_piste:{l:"Sortie de piste"},
+  feu_soute_avant:{l:"Feu soute avant"},feu_soute_arriere:{l:"Feu soute arrière"},
+  detection_soute_avant:{l:"Alarme feu soute avant"},detection_soute_arriere:{l:"Alarme feu soute arrière"},
+  detection_soute_avionique:{l:"Alarme feu soute avionique"},
+  fumee_a_bord:{l:"Fumée à bord"},atterrissage_urgence:{l:"Atterrissage d'urgence (MAY DAY)"},
+  accident_fato:{l:"Accident FATO / hélitreuillage"},collision_aviaire:{l:"Collision aviaire"},
+  matieres_dangereuses:{l:"Incident matières dangereuses"},
+  crash_ejection:{l:"Crash / éjection pilote"},aeronef_arme:{l:"Aéronef militaire armé"},
+};
+const CATS={
+  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","feu_nappe"],
+  structure:["train_non_verrouille","feu_train","pb_hydraulique","sortie_de_piste"],
+  soute:["feu_soute_avant","feu_soute_arriere","detection_soute_avant","detection_soute_arriere","detection_soute_avionique"],
+  sauvetage:["fumee_a_bord","atterrissage_urgence","accident_fato","collision_aviaire"],
+  special:["matieres_dangereuses"],
+  militaire:["crash_ejection","aeronef_arme","collision_aviaire"],
+};
+
+function updThemes(){
+  const cat=document.getElementById('categorie').value;
+  const keys=CATS[cat]||[];
+  document.getElementById('theme-sel').innerHTML=keys.filter(k=>TH[k]).map(k=>`<option value="${TH[k].l}" data-key="${k}">${TH[k].l}</option>`).join('');
+}
+
+function upd(){
+  document.getElementById('aeronef-sel').innerHTML=AV.map(a=>a.sep?`<option disabled style="font-weight:700;color:#888">${a.n}</option>`:`<option value="${a.n}">${a.n}${a.c?' — '+a.c:''}</option>`).join('');
+  updThemes();
+}
+
+// ── GRILLES ───────────────────────────────────────────────────────────────────
+function grille(crits){
+  let h=`<table class="et"><thead><tr><th>Critères d'évaluation</th><th class="chk">✓</th><th class="chk">✗</th><th style="min-width:110px">Observation</th></tr></thead><tbody>`;
+  crits.forEach(c=>{
+    h+=`<tr class="cr"><td colspan="4">${c.cat}</td></tr>`;
+    c.items.forEach(it=>h+=`<tr><td>${it}</td><td class="cc"></td><td class="cc"></td><td></td></tr>`);
+  });
+  return h+`</tbody></table>`;
+}
+
+const critCM=[
+  {cat:"1. Prise d'alerte & renseignements",items:["Déclenche la procédure d'alerte correctement","Recueille : aéronef, POB, carburant, avarie, fret","Pose les questions réglementaires à la TWR","Identifie et évalue les risques spécifiques","Déclenche les renforts si nécessaire (SDIS, SAMU)"]},
+  {cat:"2. Ordre initial — Méthode SIMS",items:["Formule la Situation clairement et avec précision","Complète les Informations manquantes","Donne la Mission à chaque VIM (secteur + action adaptée)","Énonce les consignes de Sécurité spécifiques au sinistre","Utilise la phraséologie radio RFFS correcte"]},
+  {cat:"3. Commandement & positionnement",items:["Utilise l'ordre graphique (ZI, sinistre, moyens, actions)","Positionne les VIM dans les secteurs adaptés","Gère les zones de danger (hélice, ingestion, axe jante, armement)","Compte rendu régulier et structuré à la TWR","Veille en permanence à la sécurité du personnel"]},
+  {cat:"4. Gestion de l'évolution",items:["Surveille l'évolution du sinistre en temps réel","Émet un ordre d'évolution SIMS si aggravation","Adapte le dispositif selon l'évolution","Coordonne les intervenants extérieurs (SDIS, SAMU, armée)","Maintient le contact radio avec tous les VIM"]},
+  {cat:"5. Retour & débriefing",items:["Annonce la fin d'intervention à la TWR","Vérifie le reconditionnement de tous les VIM","Conduit le débriefing en 4 phases","Identifie les points positifs et axes d'amélioration","Révalorisation du groupe assurée"]},
+];
+const critConducteur=[
+  {cat:"1. Cheminement & positionnement",items:["Cheminement correct — hors zones de danger","Positionnement VIM conforme à l'ordre du CM","Respect de la zone d'exclusion (hélice, ingestion, axe jante...)","Adaptation au terrain (sol meuble, obstacles, vent)"]},
+  {cat:"2. Conduite & manœuvre du VIM",items:["Approche progressive et contrôlée","Positionnement optimal pour l'attaque ou le sauvetage","Gestion des contraintes (vent, pente, obstacles, autres VIM)","Repositionnement sur ordre CM ou évolution sinistre"]},
+  {cat:"3. Communication radio",items:["Accusé de réception des ordres du CM","Compte rendu continu de l'évolution depuis son secteur","Phraséologie RFFS correcte","Signale immédiatement tout danger ou évolution critique"]},
+  {cat:"4. Sécurité & vigilance",items:["Port des EPI adaptés (ARI, gants, casque...)","Surveille son équipe et le secteur en permanence","N'engage pas le VIM sans ordre ou en zone non sécurisée","Contact visuel maintenu avec le CM et les autres VIM"]},
+  {cat:"5. Fin d'intervention",items:["Signale la fin de mission au CM","Reconditionnement du VIM vérifié","Participation au débriefing (phase Mission)","Disponibilité rendue compte"]},
+];
+const critOperateur=[
+  {cat:"1. Mise en œuvre des agents extincteurs",items:["Déploiement rapide et correct de la lance (LDV, poudre, mousse...)","Technique d'attaque adaptée (jet plein, diffusé, tapis moussant)","Débit et distance d'attaque cohérents","Gestion de l'autonomie des agents"]},
+  {cat:"2. Sauvetage & assistance aux victimes",items:["Approche sécurisée pour l'accès cabine (ARI, hors zones danger)","Techniques d'extraction adaptées (porte, trappe, brise-glace)","Prise en charge médicale — position d'attente SAMU","Coordination avec le conducteur"]},
+  {cat:"3. Application des consignes de sécurité",items:["Zones de danger respectées (hélice, ingestion, axe jante, armement)","ARI si espace enfumé ou confiné","Ne s'interpose pas entre réservoirs et foyer","Signale tout risque au conducteur"]},
+  {cat:"4. Travail en équipe",items:["Coordonne ses actions avec le conducteur","Appui aux autres VIM si demandé","Adaptation aux ordres d'évolution du CM","Communication maintenue — jamais isolé"]},
+  {cat:"5. Fin d'intervention",items:["Surveillance post-extinction (risque reprise de feu)","Reconditionnement du matériel (lance, équipements, ARI)","Participation au débriefing (phase Sécurité)","Signale tout incident ou anomalie constaté"]},
+];
+
+const NV={5:1,7:2,8:3};
+const sects=["S1 — Secteur 1 (avant gauche)","S2 — Secteur 2 (avant droit)","S4 — Secteur 4 (arrière)"];
+
+function gen(){
+  const niv=+document.querySelector('input[name="niv"]:checked').value;
+  const nbv=NV[niv];
+  const ncol={5:"color:#375623",7:"color:#E36C09",8:"color:#C00000"}[niv];
+  const aeronef=getAeronef()||'—';
+  const theme=getTheme()||'—';
+  const loc=document.getElementById('loc').value;
+  const pn=+document.getElementById('pn').value;
+  const pax=+document.getElementById('pax').value;
+  const pob=pn+pax;
+  const cbrt=document.getElementById('cbrt').value;
+  const fig=document.getElementById('fig').value;
+  const cond=document.querySelector('input[name="cond"]:checked').value;
+  const titre=currentType==='cm'?'Chef de manœuvre':'Équipage VIM';
+  const sous=currentType==='cm'?`Niveau ${niv} — ${nbv} VIM`:`Conducteur + Opérateur — ${nbv} VIM`;
+
+  const entete=`
+  <div class="fhdr">
+    <div class="fhl"><h2>RFFS BOD — FICHE D'ÉVALUATION</h2><span>${cond} — ${sous}</span></div>
+    <div class="fhr"><span>${titre.toUpperCase()}</span></div>
+  </div>
+  <div class="fb">
+    <table class="idt">
+      <tr><td class="lbl">AÉRONEF</td><td class="bgb" style="font-weight:700;color:var(--navy)" colspan="3">${aeronef}</td><td class="lbl">NIVEAU RFFS</td><td class="bgb" style="font-weight:800;font-size:16px;text-align:center;${ncol}">${niv}</td></tr>
+      <tr><td class="lbl">THÈME</td><td style="font-weight:700;color:var(--orange)" colspan="3">${theme}</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>
+      <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="bgb" style="font-weight:800;color:var(--red);font-size:14px">${pob}</td></tr>
+      <tr><td class="lbl">CARBURANT</td><td style="font-weight:700;color:var(--orange)">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td><td class="lbl">DATE</td><td>………………………</td></tr>
+      <tr><td class="lbl">CONDITIONS</td><td>${cond}</td><td class="lbl">ÉVALUATEUR</td><td colspan="3">………………………………………………………</td></tr>
+    </table>`;
+
+  let html=entete;
+
+  if(currentType==='cm'){
+    html+=`<div class="role-block">
+      <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
+      <div class="role-id">
+        <span>Nom : <strong>…………………………………………</strong></span>
+        <span>Grade : <strong>………………………</strong></span>
+        <span>Matricule : <strong>……………………</strong></span>
+      </div>
+      ${grille(critCM)}
+      <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
+      <div class="res-row">
+        <div class="res-cell">Éléments maîtrisés : ………………………</div>
+        <div class="res-cell">Points à améliorer : ………………………</div>
+        <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+      </div>
+    </div>`;
+  } else {
+    for(let i=0;i<nbv;i++){
+      html+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id">
+            <span>Nom : <strong>…………………………………………</strong></span>
+            <span>Grade : <strong>………………………</strong></span>
+            <span>Matricule : <strong>……………………</strong></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id">
+            <span>Nom : <strong>…………………………………………</strong></span>
+            <span>Grade : <strong>………………………</strong></span>
+            <span>Matricule : <strong>……………………</strong></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  html+=`
+    <div class="bilan-box">
+      <label>Bilan général de l'évaluateur</label>
+      <textarea placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
+    </div>
+  </div>
+  <div class="fiche-footer">
+    <span>FJ  |  Réf. RFFS/EVAL  |  Doc. interne — ne pas diffuser</span>
+    <span>RFFS BOD — Niv. ${niv} — ${aeronef} — ${theme}</span>
+  </div>`;
+
+  document.getElementById('ew').innerHTML=html;
+  gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
+}
+
+upd();
+</script>
+</body>
+</html>
