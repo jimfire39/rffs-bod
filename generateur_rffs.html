@@ -82,15 +82,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 .tc ul{list-style:none;padding:0;}
 .tc ul li{padding:2px 0;color:var(--text-m);line-height:1.5;}
 .tc ul li::before{content:'› ';color:var(--navy);}
-.et{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px;}
-.et th{background:var(--navy);color:#fff;padding:7px 9px;border:1px solid var(--navy);text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
-.et th.sm{width:44px;text-align:center;}
-.et td{border:1px solid #ccc;padding:6px 9px;}
-.et .cr td{background:var(--gray);color:#fff;font-weight:600;font-size:11px;padding:6px 9px;}
-.et tr:nth-child(even):not(.cr) td{background:var(--lgray);}
-.et .cc{text-align:center;width:44px;}
-.sr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:14px;}
-.sb{border:1px solid #ccc;border-radius:5px;padding:9px;background:var(--lgray);font-size:11px;color:var(--gray);}
+
 .fiche-footer{border-top:1px solid var(--border);padding:8px 18px;font-size:10px;color:var(--text-m);display:flex;justify-content:space-between;background:var(--lgray);}
 .obs div{border-bottom:1px solid #ccc;height:24px;margin-bottom:3px;}
 @media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
@@ -422,19 +414,6 @@ function gen(){
 
   const techH=th.tc.map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
 
-  const ecats=[
-    {c:"1. Prise d'alerte & renseignements",i:["Déclenche la procédure d'alerte correctement","Recueille : type d'incident, aéronef, POB, carburant, avarie","Pose les questions réglementaires à la TWR","Évalue et demande renforts si nécessaire"]},
-    {c:"2. Ordre initial — SIMS",i:["Formule la Situation clairement (SIMS radio)","Complète les Informations manquantes","Donne la Mission à chaque VIM (secteur + action)","Énonce les consignes de Sécurité"]},
-    {c:"3. Positionnement & intervention",i:[`VIM positionnés correctement (${nbv} VIM — secteurs adaptés)`,"Approche sécurisée — zones de danger respectées","Techniques d'extinction adaptées au sinistre","Surveillance continue de l'évolution"]},
-    {c:"4. Commandement & communication",i:["Utilise l'ordre graphique (ZI, sinistre, moyens, actions)","Compte rendu régulier à la TWR","Gère l'évolution — ordre d'évolution SIMS si besoin","Veille à la sécurité du personnel intervenant"]},
-    {c:"5. Retour & débriefing",i:["Reconditionnement des véhicules vérifié","Disponibilité des moyens rendue compte","Débriefing en 4 phases conduit","Révalorisation du groupe assurée"]},
-  ];
-  let evH='';
-  ecats.forEach(c=>{
-    evH+=`<tr class="cr"><td colspan="4">${c.c}</td></tr>`;
-    c.i.forEach(it=>evH+=`<tr><td>${it}</td><td class="cc"></td><td class="cc"></td><td class="cc"></td></tr>`);
-  });
-
   document.getElementById('fw').innerHTML=`
   <div class="fiche">
     <div class="fiche-hdr">
@@ -460,15 +439,7 @@ function gen(){
       <p style="font-size:10px;color:#999;font-style:italic;margin-bottom:12px">Sectorisation cadran horaire — S1 avant gauche / S2 avant droit / S4 arrière</p>
       <div class="shdr or">Points techniques clés — ${aNom} — ${th.l}</div>
       <div class="tg2" style="margin-top:8px">${techH}</div>
-      <div class="shdr nv">Grille d'évaluation — Chef de manœuvre</div>
-      <table class="et" style="margin-top:8px"><thead><tr><th>Critères d'évaluation</th><th class="sm">✓</th><th class="sm">✗</th><th class="sm">Obs.</th></tr></thead><tbody>${evH}</tbody></table>
-      <p style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Observations de l'évaluateur :</p>
-      <div class="obs"><div></div><div></div><div></div><div></div></div>
-      <div class="sr">
-        <div class="sb">Évaluateur : ……………………………</div>
-        <div class="sb">Date : ………………………………………</div>
-        <div class="sb" style="font-weight:700">Résultat : ✓ VALIDÉ &nbsp; ✗ NON VALIDÉ</div>
-      </div>
+
     </div>
     <div class="fiche-footer">
       <span>FJ  |  Réf. RFFS/FICHE  |  Doc. interne — ne pas diffuser</span>
