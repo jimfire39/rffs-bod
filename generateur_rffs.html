@@ -85,6 +85,50 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 
 .fiche-footer{border-top:1px solid var(--border);padding:8px 18px;font-size:10px;color:var(--text-m);display:flex;justify-content:space-between;background:var(--lgray);}
 .obs div{border-bottom:1px solid #ccc;height:24px;margin-bottom:3px;}
+
+/* FICHE FORMATIVE */
+.ff-wrap{border:2px solid var(--navy);border-radius:8px;overflow:hidden;margin-top:20px;}
+.ff-hdr{background:var(--navy);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.ff-hdr h3{font-size:13px;font-weight:700;color:#fff;}
+.ff-hdr span{font-size:10px;color:rgba(255,255,255,.6);}
+.ff-body{padding:14px;}
+.ff-section{margin-bottom:14px;}
+.ff-section-title{background:var(--gray);color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:3px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;}
+.ff-interv{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+.ff-interv th{background:#f0f0f0;padding:5px 8px;border:1px solid #ccc;font-size:10px;font-weight:700;color:var(--gray);text-align:center;}
+.ff-interv td{border:1px solid #ccc;padding:5px 8px;vertical-align:top;}
+.ff-interv .vim-hdr{background:var(--navy);color:#fff;text-align:center;font-weight:700;}
+.ff-interv .cdm-hdr{background:var(--orange);color:#fff;text-align:center;font-weight:700;}
+.ff-interv input[type=text]{width:100%;border:none;outline:none;font-size:11px;background:transparent;font-family:inherit;}
+/* PRISE DE RENSEIGNEMENTS */
+.ff-etat{display:flex;gap:20px;margin-bottom:10px;align-items:center;}
+.ff-etat label{font-size:12px;font-weight:600;color:var(--navy);}
+.ff-radio-grp{display:flex;gap:14px;}
+.ff-radio-grp label{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;}
+.ff-checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.ff-check-row{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border:1px solid #eee;border-radius:4px;background:#fafafa;font-size:12px;}
+.ff-check-row .label{font-weight:500;color:var(--text);}
+.ff-oui-non{display:flex;gap:12px;}
+.ff-oui-non label{display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;}
+/* SCHÉMA SVG */
+.ff-schema{position:relative;margin:10px 0;}
+.ff-schema svg{width:100%;height:auto;display:block;}
+.vim-label{position:absolute;background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:3px 7px;border-radius:4px;cursor:move;user-select:none;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.vim-placed{background:var(--navy);}
+/* ATTAQUE */
+.ff-attaque{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.ff-attaque-item{display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px;border:1px solid #eee;border-radius:4px;background:#fafafa;}
+.ff-attaque-item input{accent-color:var(--navy);}
+/* GESTION */
+.ff-gestion{width:100%;border-collapse:collapse;font-size:12px;}
+.ff-gestion th{background:var(--navy);color:#fff;padding:6px 8px;font-size:10px;text-transform:uppercase;border:1px solid var(--navy);text-align:center;}
+.ff-gestion td{border:1px solid #ddd;padding:5px 8px;}
+.ff-gestion tr:nth-child(even) td{background:#f8f8f8;}
+.ff-gestion .item-lbl{font-weight:500;}
+.ff-gestion input[type=checkbox]{accent-color:var(--navy);width:14px;height:14px;}
+.ff-obs{width:100%;border:1px solid #ddd;border-radius:5px;padding:7px;font-size:12px;resize:vertical;min-height:55px;font-family:inherit;margin-top:6px;}
+@media print{.ff-schema .vim-label{display:block!important;}}
+
 @media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
 @media(max-width:768px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.tg2{grid-template-columns:1fr;}.sr{grid-template-columns:1fr;}}
 /* BOUTON RETOUR */
@@ -379,6 +423,207 @@ function upd(){
   updThemes();
 }
 
+function buildFormative(niv, nbv, aeronef, theme, cond){
+  const vims = ['VIM 1','VIM 2','VIM 3'].slice(0, nbv);
+  
+  // ── INTERVENANTS ──────────────────────────────────────────────────────────
+  let intervRows = `
+    <tr>
+      ${vims.map(v=>`<th class="vim-hdr">${v}</th>`).join('')}
+      ${nbv<3?`<th class="vim-hdr" style="opacity:.3">VIM 3</th>`:``}
+      <th class="cdm-hdr">CDM</th>
+    </tr>
+    <tr>
+      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><input type="text" placeholder="Nom..."></td>`).join('')}
+      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><input type="text" disabled></td>`:``}
+      <td rowspan="2" style="vertical-align:middle"><input type="text" placeholder="Nom CDM..."></td>
+    </tr>
+    <tr>
+      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><input type="text" placeholder="Nom..."></td>`).join('')}
+      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><input type="text" disabled></td>`:``}
+    </tr>`;
+
+  // ── CHECKLIST RENSEIGNEMENTS ───────────────────────────────────────────────
+  const checks = ['Type d\'aéronef','Avarie','SOB','Carburant','Fret','Vent','Manœuvres sécu'];
+  const checkHTML = checks.map(c=>`
+    <div class="ff-check-row">
+      <span class="label">${c}</span>
+      <div class="ff-oui-non">
+        <label><input type="radio" name="chk_${c.replace(/\s/g,'_')}" value="oui"> oui</label>
+        <label><input type="radio" name="chk_${c.replace(/\s/g,'_')}" value="non"> non</label>
+      </div>
+    </div>`).join('');
+
+  // ── SCHÉMA SVG AVION ──────────────────────────────────────────────────────
+  const svgAvion = `
+  <div style="background:#111;border-radius:8px;padding:10px;margin:8px 0;">
+    <div style="font-size:10px;color:#aaa;margin-bottom:6px;text-align:center">① Sélectionner le VIM · ② Cliquer sur sa position</div>
+    <svg viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" id="svg-schema" style="max-width:100%;display:block;margin:0 auto;cursor:crosshair;">
+      <!-- Image avion orientée nez à gauche -->
+      <image href="data:image/jpeg;base64,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"
+             x="90" y="10" width="300" height="260"
+             transform="rotate(-90,240,140)"
+             preserveAspectRatio="xMidYMid meet"/>
+      <!-- Lignes sectorisation -->
+      <line x1="240" y1="0" x2="240" y2="280" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="0" y1="140" x2="480" y2="140" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <!-- Numéros secteurs : 2=avant haut, 1=avant bas, 3=arrière haut, 4=arrière bas -->
+      <text x="14"  y="38"  font-size="28" font-weight="bold" fill="white" opacity="0.4" font-family="Arial">2</text>
+      <text x="14"  y="270" font-size="28" font-weight="bold" fill="white" opacity="0.4" font-family="Arial">1</text>
+      <text x="418" y="38"  font-size="28" font-weight="bold" fill="white" opacity="0.4" font-family="Arial">3</text>
+      <text x="418" y="270" font-size="28" font-weight="bold" fill="white" opacity="0.4" font-family="Arial">4</text>
+      <!-- Zones cliquables -->
+      <rect x="0"   y="0"   width="240" height="140" fill="transparent" onclick="placeVim('S2',event)" cursor="crosshair"/>
+      <rect x="0"   y="140" width="240" height="140" fill="transparent" onclick="placeVim('S1',event)" cursor="crosshair"/>
+      <rect x="240" y="0"   width="240" height="140" fill="transparent" onclick="placeVim('S3',event)" cursor="crosshair"/>
+      <rect x="240" y="140" width="240" height="140" fill="transparent" onclick="placeVim('S4',event)" cursor="crosshair"/>
+    </svg>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+      ${vims.map((v,i)=>`<span class="vim-badge" data-vim="${i+1}" onclick="selectVim(${i+1})" id="badge-vim${i+1}">${v}</span>`).join('')}
+    </div>
+    <div id="vim-positions" style="margin-top:6px;font-size:10px;color:#aaa;text-align:center;min-height:18px;"></div>
+  </div>`;
+
+  // ── MISSIONS ──────────────────────────────────────────────────────────────
+  const missionsHTML = `
+  <div style="display:flex;gap:20px;flex-wrap:wrap;">
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox"> Couloir d'évacuation</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox"> Préservation du fuselage</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox"> Sauvetage occupants</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;"><input type="checkbox"> Tapis moussant</label>
+  </div>`;
+
+  // ── PLACEMENT & ATTAQUE ───────────────────────────────────────────────────
+  const placementHTML = `
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;">
+    <strong style="font-size:12px;align-self:center">Placement :</strong>
+    <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement" value="adapté"> Adapté</label>
+    <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement" value="trop_loin"> Trop loin</label>
+    <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement" value="trop_pres"> Trop près</label>
+  </div>
+  <div class="ff-attaque">
+    <label class="ff-attaque-item"><input type="checkbox"> En dynamique</label>
+    <label class="ff-attaque-item"><input type="checkbox"> En statique</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Moyens adaptés</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Moyens non adaptés</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Mise en œuvre rapide</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Mise en œuvre lente</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Efficacité des moyens</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Moyens inefficaces</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Bonne gestion des AE</label>
+    <label class="ff-attaque-item"><input type="checkbox"> Mauvaise gestion des AE</label>
+  </div>`;
+
+  // ── GESTION DE L'INTERVENTION ─────────────────────────────────────────────
+  const gestionItems = ['Respect zones de dangers','Port des EPI','Feu maîtrisé','Feu éteint','Refroidissement','Demande de renfort','Reconnaissance','Sauvetage','Surveillance'];
+  const gestionRows = gestionItems.map((item,i)=>`
+    <tr>
+      <td class="item-lbl">${item}</td>
+      <td style="text-align:center"><input type="checkbox" title="oui"></td>
+      <td style="text-align:center"><input type="checkbox" title="non"></td>
+      <td style="text-align:center"><input type="checkbox" title="sans objet"></td>
+    </tr>`).join('');
+
+  return `
+  <div class="ff-wrap" id="fiche-formative">
+    <div class="ff-hdr">
+      <h3>📋 ÉVALUATION FORMATIVE — SUIVI AU FIL DE L'EAU</h3>
+      <span>${aeronef} — ${theme} — ${cond}</span>
+    </div>
+    <div class="ff-body">
+
+      <!-- INTERVENANTS -->
+      <div class="ff-section">
+        <div class="ff-section-title">Intervenants</div>
+        <table class="ff-interv">${intervRows}</table>
+      </div>
+
+      <!-- PRISE DE RENSEIGNEMENTS -->
+      <div class="ff-section">
+        <div class="ff-section-title">
+          Prise de renseignements
+          <div class="ff-radio-grp" style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:0">
+            État SSLIA :
+            <label><input type="radio" name="etat_sslia" value="veille"> Veille</label>
+            <label><input type="radio" name="etat_sslia" value="alerte" checked> Alerte</label>
+            <label><input type="radio" name="etat_sslia" value="accident"> Accident</label>
+          </div>
+        </div>
+        <div class="ff-checklist">${checkHTML}</div>
+        <textarea class="ff-obs" placeholder="Observations prise de renseignements..."></textarea>
+      </div>
+
+      <!-- SECTORISATION -->
+      <div class="ff-section">
+        <div class="ff-section-title">Sectorisation et attaque</div>
+        ${svgAvion}
+        <div style="margin-top:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Missions</div>
+          ${missionsHTML}
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Placement & Attaque</div>
+          ${placementHTML}
+        </div>
+        <textarea class="ff-obs" placeholder="Observations sectorisation et attaque..."></textarea>
+      </div>
+
+      <!-- GESTION DE L'INTERVENTION -->
+      <div class="ff-section">
+        <div class="ff-section-title">Gestion de l'intervention</div>
+        <table class="ff-gestion">
+          <thead><tr><th style="text-align:left">Critère</th><th>Oui</th><th>Non</th><th>Sans objet</th></tr></thead>
+          <tbody>${gestionRows}</tbody>
+        </table>
+        <textarea class="ff-obs" placeholder="Observations gestion de l'intervention..."></textarea>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+// Gestion du placement VIM sur le schéma
+let selectedVim = 1;
+const vimPositions = {};
+
+function selectVim(n){
+  selectedVim = n;
+  document.querySelectorAll('.vim-badge').forEach(b=>{
+    b.style.borderColor = b.dataset.vim == n ? '#e06820' : 'transparent';
+    b.style.background = b.dataset.vim == n ? 'var(--orange)' : 'var(--navy)';
+    b.style.color = '#fff';
+  });
+}
+
+function placeVim(secteur, event){
+  const svg = document.getElementById('svg-schema');
+  if(!svg) return;
+  const rect = svg.getBoundingClientRect();
+  const svgW = svg.viewBox.baseVal.width || 480;
+  const svgH = svg.viewBox.baseVal.height || 280;
+  const scaleX = svgW / rect.width;
+  const scaleY = svgH / rect.height;
+  const svgX = (event.clientX - rect.left) * scaleX;
+  const svgY = (event.clientY - rect.top) * scaleY;
+
+  // Supprimer ancien marqueur de ce VIM
+  const old = document.getElementById('marker-vim'+selectedVim);
+  if(old) old.remove();
+
+  // Créer cercle SVG
+  const circle = document.createElementNS('http://www.w3.org/2000/svg','g');
+  circle.setAttribute('id','marker-vim'+selectedVim);
+  circle.innerHTML = `
+    <circle cx="${svgX}" cy="${svgY}" r="18" fill="var(--orange)" stroke="#fff" stroke-width="2" opacity="0.9"/>
+    <text x="${svgX}" y="${svgY+1}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="bold" fill="#fff" font-family="Arial">V${selectedVim}</text>
+  `;
+  svg.appendChild(circle);
+
+  vimPositions[selectedVim] = secteur;
+  const pos = document.getElementById('vim-positions');
+  if(pos) pos.innerHTML = Object.entries(vimPositions).map(([v,s])=>`<span style="margin:0 6px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">VIM ${v} → ${s}</span>`).join('');
+}
+
 function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
 
 function gen(){
@@ -439,6 +684,8 @@ function gen(){
       <p style="font-size:10px;color:#999;font-style:italic;margin-bottom:12px">Sectorisation cadran horaire — S1 avant gauche / S2 avant droit / S4 arrière</p>
       <div class="shdr or">Points techniques clés — ${aNom} — ${th.l}</div>
       <div class="tg2" style="margin-top:8px">${techH}</div>
+
+      ${buildFormative(niv, nbv, aNom, th.l, cond)}
 
     </div>
     <div class="fiche-footer">
