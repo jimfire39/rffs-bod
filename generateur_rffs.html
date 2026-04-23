@@ -674,7 +674,13 @@ function switchTab(tab){
   document.getElementById('tab-sims').style.color      = isSims ? '#fff' : 'var(--navy)';
   document.getElementById('tab-eval').style.background = isSims ? '#fff' : 'var(--navy)';
   document.getElementById('tab-eval').style.color      = isSims ? 'var(--navy)' : '#fff';
-  if(!isSims) setTimeout(()=>initBadges(document.querySelectorAll('[id^="grp-left-"]').length||1), 50);
+  if(!isSims){
+    const gl = document.querySelector('[id^="grp-left-"]');
+    if(gl){
+      const nbv = +gl.id.replace('grp-left-','');
+      if(!gl.querySelector('span')) setTimeout(()=>initBadges(nbv), 50);
+    }
+  }
 }
 
 function truckBadgeSVG(n,dir){
