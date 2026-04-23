@@ -108,7 +108,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
         <label>Type de fiche</label>
         <div class="tc-card active" id="tc-cm" onclick="setType('cm')">
           <span class="ico">🎖️</span>
-          <div><div class="lbl">Chef de manœuvre</div><div class="sub">Niveaux 5 / 7 / 8</div></div>
+          <div><div class="lbl">Chef de manœuvre</div><div class="sub">Niveaux 6 / 7 / 8</div></div>
         </div>
         <div class="tc-card" id="tc-eq" onclick="setType('eq')">
           <span class="ico">🚒</span>
@@ -211,6 +211,7 @@ let currentType='cm';
 
 function setType(t){
   currentType=t;
+  upd();
   document.querySelectorAll('.tc-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('tc-'+t).classList.add('active');
 }
@@ -312,6 +313,19 @@ function updThemes(){
 }
 
 function upd(){
+  // Masquer Niv.5 pour fiche CM (réglementation : CM requis à partir du niveau 6)
+  const n5 = document.getElementById('n5');
+  const n5label = document.querySelector('label[for="n5"]');
+  if(n5 && n5label){
+    const hide = currentType==='cm';
+    // Masquer uniquement le radio + son label, pas le conteneur parent
+    n5.style.display = hide ? 'none' : '';
+    n5label.style.display = hide ? 'none' : '';
+    // Si niv5 était sélectionné et qu'on passe en CM, basculer sur niv7
+    if(hide && n5.checked){ 
+      document.getElementById('n7').checked = true;
+    }
+  }
   document.getElementById('aeronef-sel').innerHTML=AV.map(a=>a.sep?`<option disabled style="font-weight:700;color:#888">${a.n}</option>`:`<option value="${a.n}">${a.n}${a.c?' — '+a.c:''}</option>`).join('');
   updThemes();
 }
