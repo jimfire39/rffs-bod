@@ -667,20 +667,14 @@ function placeVim(secteur, event){
 }
 
 function switchTab(tab){
-  const isSims = tab==='sims';
-  // Afficher/masquer les panneaux
-  document.getElementById('panel-sims').style.display = isSims ? 'block' : 'none';
-  document.getElementById('panel-eval').style.display  = isSims ? 'block' : 'none';
-  document.getElementById('tab-sims').style.background = isSims ? 'var(--navy)' : '#fff';
-  document.getElementById('tab-sims').style.color      = isSims ? '#fff' : 'var(--navy)';
-  document.getElementById('tab-eval').style.background = isSims ? '#fff' : 'var(--navy)';
-  document.getElementById('tab-eval').style.color      = isSims ? 'var(--navy)' : '#fff';
-  // Masquer le bon panneau APRES avoir rendu visible (pour que getElementById fonctionne)
-  if(isSims){
-    document.getElementById('panel-eval').style.display = 'none';
-  } else {
-    document.getElementById('panel-sims').style.display = 'none';
-    // Initialiser les badges maintenant que le DOM est visible
+  const isEval = tab==='eval';
+  document.getElementById('panel-sims').style.display = isEval ? 'none' : 'block';
+  document.getElementById('panel-eval').style.display = isEval ? 'block' : 'none';
+  document.getElementById('tab-sims').style.background = isEval ? '#fff' : 'var(--navy)';
+  document.getElementById('tab-sims').style.color      = isEval ? 'var(--navy)' : '#fff';
+  document.getElementById('tab-eval').style.background = isEval ? 'var(--navy)' : '#fff';
+  document.getElementById('tab-eval').style.color      = isEval ? '#fff' : 'var(--navy)';
+  if(isEval){
     const gl = document.querySelector('[id^="grp-left-"]');
     if(gl && !gl.querySelector('span')){
       const nbv = +gl.id.replace('grp-left-','');
