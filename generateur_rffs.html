@@ -426,6 +426,19 @@ function upd(){
 function buildFormative(niv, nbv, aeronef, theme, cond){
   const vims = ['VIM 1','VIM 2','VIM 3'].slice(0, nbv);
   
+  // ── LISTE AGENTS PAR ÉQUIPE ───────────────────────────────────────────────
+  const AGENTS = {
+    'Équipe 1': ['DUBARD','BESSAGUET','LASSALLE','MAURIN','ETCHEBERIGARAY','JAGIELO','MALABAT','VACHER','CAILLE','SIMOES ELIAS','PETIT'],
+    'Équipe 2': ['FENELON','HIGUERAS','LAFON','LAGNEY','HINCELIN','FAYARD','FORET','ROMAN','FABRIS','VOGE','DAMOUR'],
+    'Équipe 3': ['GUERIN','ROGERS','MECHAIN','DELTIL','BARBE','BEYNARD','CHALOPIN','LE ROUZIC','BERNARD','FAUX','VAUDRION','TRUAISCH'],
+    'Équipe 4': ['MOPTY','HENIN','FERELLEC','ANTOINE','BONNET','CLAVERIE','BARRERO','FERRIER','CAMPAGNOL','GESLIN','BALLION'],
+  };
+  const agentOpts = '<option value="">-- Choisir --</option>'
+    + Object.entries(AGENTS).map(([eq, agents])=>
+        `<optgroup label="${eq}">${agents.map(a=>`<option value="${a}">${a}</option>`).join('')}</optgroup>`
+      ).join('');
+  const selStyle = 'width:100%;border:1.5px solid #ddd;border-radius:4px;font-size:11px;padding:3px 5px;background:#fff;font-family:inherit;';
+
   // ── INTERVENANTS ──────────────────────────────────────────────────────────
   let intervRows = `
     <tr>
@@ -434,13 +447,13 @@ function buildFormative(niv, nbv, aeronef, theme, cond){
       <th class="cdm-hdr">CDM</th>
     </tr>
     <tr>
-      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><input type="text" placeholder="Nom..."></td>`).join('')}
-      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><input type="text" disabled></td>`:``}
-      <td rowspan="2" style="vertical-align:middle"><input type="text" placeholder="Nom CDM..."></td>
+      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><select style="${selStyle}">${agentOpts}</select></td>`).join('')}
+      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">COND.</div><select disabled style="${selStyle}"><option>--</option></select></td>`:``}
+      <td rowspan="2" style="vertical-align:middle"><select style="${selStyle}">${agentOpts}</select></td>
     </tr>
     <tr>
-      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><input type="text" placeholder="Nom..."></td>`).join('')}
-      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><input type="text" disabled></td>`:``}
+      ${vims.map((_,i)=>`<td><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><select style="${selStyle}">${agentOpts}</select></td>`).join('')}
+      ${nbv<3?`<td style="opacity:.3"><div style="font-size:9px;color:#888;margin-bottom:2px">OPER.</div><select disabled style="${selStyle}"><option>--</option></select></td>`:``}
     </tr>`;
 
   // ── CHECKLIST RENSEIGNEMENTS ───────────────────────────────────────────────
@@ -653,6 +666,17 @@ function placeVim(secteur, event){
   if(pos) pos.innerHTML = Object.entries(vimPositions).map(([v,s])=>`<span style="margin:0 6px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">VIM ${v} → ${s}</span>`).join('');
 }
 
+function switchTab(tab){
+  const isSims = tab==='sims';
+  document.getElementById('panel-sims').style.display = isSims ? 'block' : 'none';
+  document.getElementById('panel-eval').style.display  = isSims ? 'none'  : 'block';
+  document.getElementById('tab-sims').style.background = isSims ? 'var(--navy)' : '#fff';
+  document.getElementById('tab-sims').style.color      = isSims ? '#fff' : 'var(--navy)';
+  document.getElementById('tab-eval').style.background = isSims ? '#fff' : 'var(--navy)';
+  document.getElementById('tab-eval').style.color      = isSims ? 'var(--navy)' : '#fff';
+  if(!isSims) setTimeout(()=>initBadges(document.querySelectorAll('[id^="grp-left-"]').length||1), 50);
+}
+
 function truckBadgeSVG(n,dir){
   var cabL=dir==='L',W=70,H=50;
   var cabX=cabL?4:W-26,cabW=22,bodyY=18,bodyH=20,ry=bodyY+bodyH+3;
@@ -762,7 +786,29 @@ function gen(){
       <div class="shdr or">Points techniques clés — ${aNom} — ${th.l}</div>
       <div class="tg2" style="margin-top:8px">${techH}</div>
 
-      ${buildFormative(niv, nbv, aNom, th.l, cond)}
+      <!-- ONGLETS -->
+      <div style="display:flex;gap:0;margin-top:18px;border-bottom:2px solid var(--navy);">
+        <button id="tab-sims" onclick="switchTab('sims')"
+          style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
+          📋 Fiche SIMS
+        </button>
+        <button id="tab-eval" onclick="switchTab('eval')"
+          style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
+          📊 Évaluation formative
+        </button>
+      </div>
+
+      <!-- CONTENU ONGLET SIMS (actif par défaut) -->
+      <div id="panel-sims" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+        <p style="font-size:12px;color:#666;text-align:center;padding:20px 0;">
+          ✅ La fiche SIMS ci-dessus contient toutes les informations pour conduire l'exercice.
+        </p>
+      </div>
+
+      <!-- CONTENU ONGLET ÉVALUATION (masqué par défaut) -->
+      <div id="panel-eval" style="display:none;">
+        ${buildFormative(niv, nbv, aNom, th.l, cond)}
+      </div>
 
     </div>
     <div class="fiche-footer">
@@ -770,8 +816,8 @@ function gen(){
       <span>RFFS BOD — Niveau ${niv} — ${aNom} — ${th.l}</span>
     </div>
   </div>`;
-  // Initialiser les badges camion après injection HTML
-  setTimeout(()=>initBadges(nbv), 50);
+  // Initialiser les badges si onglet éval déjà visible
+  setTimeout(()=>switchTab('sims'), 50);
 }
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
