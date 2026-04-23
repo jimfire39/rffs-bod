@@ -794,11 +794,11 @@ function gen(){
 
       <!-- ONGLETS -->
       <div style="display:flex;gap:0;margin-top:18px;border-bottom:2px solid var(--navy);">
-        <button id="tab-sims" onclick="switchTab('sims')"
+        <button id="tab-sims" data-tab="sims"
           style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
           📋 Fiche SIMS
         </button>
-        <button id="tab-eval" onclick="switchTab('eval')"
+        <button id="tab-eval" data-tab="eval"
           style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
           📊 Évaluation formative
         </button>
@@ -822,8 +822,14 @@ function gen(){
       <span>RFFS BOD — Niveau ${niv} — ${aNom} — ${th.l}</span>
     </div>
   </div>`;
-  // Initialiser les badges si onglet éval déjà visible
-  setTimeout(()=>switchTab('sims'), 50);
+  // Attacher les listeners sur les boutons onglets après injection HTML
+  setTimeout(function(){
+    const btnSims = document.getElementById('tab-sims');
+    const btnEval = document.getElementById('tab-eval');
+    if(btnSims) btnSims.addEventListener('click', function(){ switchTab('sims'); });
+    if(btnEval) btnEval.addEventListener('click', function(){ switchTab('eval'); });
+    switchTab('sims');
+  }, 50);
 }
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
