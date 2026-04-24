@@ -589,8 +589,30 @@ function gen(){
   html+=`
     <div class="bilan-box">
       <label>Bilan général de l'évaluateur</label>
-      <textarea placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
+      <textarea id="eval-bilan" placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
     </div>
+
+    <!-- RÉSULTAT & ENREGISTREMENT -->
+    <div style="background:#f8f8f8;border-radius:6px;padding:14px;margin:12px 0;border:1px solid #e0e0e0;">
+      <div style="font-size:11px;font-weight:700;color:#595959;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Résultat de l'évaluation</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #375623;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C00000;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C55A11;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="en_cours"> <span style="color:#C55A11;font-weight:700;">⟳ EN COURS</span>
+        </label>
+      </div>
+      <button onclick="saveEvaluation('${aeronef}','${theme}',${niv},'${cond}','${currentType}')"
+        style="width:100%;padding:10px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+        💾 Enregistrer la fiche
+      </button>
+      <div id="eval-save-confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+    </div>
+
   </div>
   <div class="fiche-footer">
     <span>FJ  |  Réf. RFFS/EVAL  |  Doc. interne — ne pas diffuser</span>
@@ -602,7 +624,30 @@ function gen(){
   gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
 }
 
+function saveEvaluation(aeronef, theme, niv, cond, type){
+  const agents = [];
+  document.querySelectorAll('#ew select[id^="cm-nom"], #ew select[id^="cond-nom"], #ew select[id^="oper-nom"]').forEach(sel=>{
+    if(sel.value) agents.push(sel.value);
+  });
+  const resEl = document.querySelector('input[name="eval_resultat"]:checked');
+  const resultat = resEl ? resEl.value : 'non_renseigné';
+  const bilan = document.getElementById('eval-bilan') ? document.getElementById('eval-bilan').value : '';
+  const typeLabel = type==='cm' ? 'Éval. CM' : 'Éval. Équipage';
+  const fiche = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('fr-FR'),
+    heure: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+    aeronef, theme: typeLabel + ' — ' + theme,
+    niveau: niv, conditions: cond,
+    agents: agents.join(' | '),
+    resultat, observations: bilan
+  };
+  const existing = JSON.parse(localStorage.getItem('rffs_formatives') || '[]');
+  existing.push(fiche);
+  localStorage.setItem('rffs_formatives', JSON.stringify(existing));
+  const conf = document.getElementById('eval-save-confirm');
+  if(conf){ conf.style.display='block'; setTimeout(()=>conf.style.display='none', 3000); }
+}
+
 upd();
 </script>
-</body>
-</html>
