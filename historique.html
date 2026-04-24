@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historique formations — RFFS BOD</title>
+<style>
+:root{--navy:#1F3864;--orange:#C55A11;--green:#375623;--red:#C00000;--gray:#595959;--border:#e0e0e0;--bg:#f0f4f8;--card:#fff;--text:#1a1a1a;--muted:#666;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;padding:1.5rem;}
+.screen.active{display:block;}
+/* LOGIN */
+.login-wrap{max-width:380px;margin:4rem auto;}
+.login-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:2rem;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.login-icon{text-align:center;font-size:36px;margin-bottom:1rem;}
+.login-title{text-align:center;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.login-sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:1.5rem;}
+/* MAIN */
+.main-wrap{max-width:860px;margin:0 auto;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px;}
+.page-hdr h1{font-size:18px;font-weight:700;color:var(--navy);}
+.hdr-actions{display:flex;gap:8px;flex-wrap:wrap;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;}
+.stat-n{font-size:26px;font-weight:700;color:var(--navy);}
+.stat-n.ok{color:var(--green);}
+.stat-n.ko{color:var(--red);}
+.stat-n.wip{color:var(--orange);}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.4px;}
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem;}
+/* TABS MOIS */
+.month-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.m-tab{font-size:12px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;}
+.m-tab:hover{border-color:var(--navy);color:var(--navy);}
+.m-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+/* TABLE FICHES */
+.fiches-hdr{display:grid;grid-template-columns:100px 1fr 70px 130px 90px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:6px 0;border-bottom:2px solid var(--border);margin-bottom:4px;}
+.fiche-row{display:grid;grid-template-columns:100px 1fr 70px 130px 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
+.fiche-row:last-child{border-bottom:none;}
+.col-date{color:var(--muted);}
+.col-theme{font-size:11px;color:var(--muted);}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;}
+.badge-ok{background:#e8f5e9;color:var(--green);}
+.badge-ko{background:#fce4e4;color:var(--red);}
+.badge-wip{background:#fff3e0;color:var(--orange);}
+.empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:13px;}
+/* FORMS */
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;margin-top:10px;}
+label:first-child{margin-top:0;}
+input[type=password],input[type=text]{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+input:focus{border-color:var(--navy);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:inherit;}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-navy:hover{background:#162d52;}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green);}
+.btn-green:hover{background:#2a4f1b;}
+.btn-red{background:#fff;color:var(--red);border-color:var(--red);}
+.btn-red:hover{background:#fce4e4;}
+.btn-ghost{background:#fff;color:var(--gray);border-color:var(--border);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-full{width:100%;justify-content:center;margin-top:8px;}
+.err{font-size:12px;color:var(--red);min-height:18px;margin-top:4px;}
+.suc{font-size:12px;color:var(--green);min-height:18px;margin-top:4px;}
+.dv{height:1px;background:var(--border);margin:1.2rem 0;}
+/* ADMIN */
+.admin-wrap{max-width:440px;margin:0 auto;}
+.admin-section-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+/* APP HEADER */
+.app-bar{background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-bar-title{font-size:13px;font-weight:700;color:#fff;}
+.app-bar-sub{font-size:10px;color:rgba(255,255,255,.5);}
+.back-link{font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;text-decoration:underline;}
+/* ANNÉE TITRE */
+.year-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .fiches-hdr,.fiche-row{grid-template-columns:80px 1fr 60px 80px;}
+  .fiche-row>:nth-child(4){display:none;}
+  .fiches-hdr>:nth-child(4){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- Login supprimé — accès direct -->
+
+<!-- ── MAIN ──────────────────────────────────────────────────────────────── -->
+<div id="screen-main" class="screen active">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Historique formations — RFFS BOD</div>
+      <div class="app-bar-sub">Suivi réglementaire annuel</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" onclick="showAdmin()">⚙ Admin</span>
+    </div>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="main-wrap">
+      <div class="page-hdr">
+        <h1 id="year-counter">2026 — 0 fiche</h1>
+        <div class="hdr-actions">
+          <button class="btn btn-green" onclick="exportCSVProtected()">⬇ Exporter CSV</button>
+          <button class="btn btn-red" onclick="clearAll()">🗑 Effacer l'historique</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats" id="stats-block"></div>
+
+      <!-- FICHES PAR MOIS -->
+      <div class="card">
+        <div class="month-tabs" id="month-tabs"></div>
+        <div id="fiches-content"><div class="empty">Aucune fiche enregistrée.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN ─────────────────────────────────────────────────────────────── -->
+<div id="screen-admin" class="screen">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Administration</div>
+    </div>
+    <span class="back-link" onclick="showMain()">← Retour</span>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="admin-wrap">
+
+      <div class="card">
+        <div class="admin-section-title">Mot de passe historique</div>
+        <label>Mot de passe actuel</label>
+        <input type="password" id="pw-current" placeholder="Mot de passe actuel">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="pw-new" placeholder="Nouveau mot de passe">
+        <label>Confirmer</label>
+        <input type="password" id="pw-confirm" placeholder="Confirmer">
+        <div class="err" id="pw-msg"></div>
+        <button class="btn btn-navy btn-full" onclick="changePw()">Enregistrer</button>
+      </div>
+
+      <div class="card">
+        <div class="admin-section-title">Mot de passe administrateur</div>
+        <label>Mot de passe admin actuel</label>
+        <input type="password" id="adm-current" placeholder="Mot de passe admin actuel">
+        <label>Nouveau mot de passe admin</label>
+        <input type="password" id="adm-new" placeholder="Nouveau mot de passe admin">
+        <label>Confirmer</label>
+        <input type="password" id="adm-confirm" placeholder="Confirmer">
+        <div class="err" id="adm-msg"></div>
+        <button class="btn btn-navy btn-full" onclick="changeAdmPw()">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY_DATA = 'rffs_formatives';
+const KEY_PW   = 'rffs_hist_pw';
+const KEY_ADM  = 'rffs_admin_pw';
+const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+let activeMonth = null;
+
+function getPw()  { return localStorage.getItem(KEY_PW)  || 'RFFSBOD96'; }
+function getAdm() { return localStorage.getItem(KEY_ADM) || 'RFFSBOD96'; }
+function getData(){ return JSON.parse(localStorage.getItem(KEY_DATA) || '[]'); }
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function exportCSVProtected(){
+  const pw = prompt('Mot de passe pour exporter le CSV :');
+  if(pw === null) return;
+  if(pw !== getPw()){ alert('Mot de passe incorrect.'); return; }
+  exportCSV();
+}
+
+function showAdmin(){
+  const adm = prompt('Mot de passe administrateur :');
+  if(adm === getAdm()) show('screen-admin');
+  else if(adm !== null) alert('Mot de passe admin incorrect.');
+}
+
+function showMain(){ show('screen-main'); renderAll(); }
+
+function msg(id, txt, ok){
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  el.className = ok ? 'suc' : 'err';
+  if(ok) setTimeout(()=>el.textContent='', 3000);
+}
+
+function changePw(){
+  const cur = document.getElementById('pw-current').value;
+  const nw  = document.getElementById('pw-new').value;
+  const cf  = document.getElementById('pw-confirm').value;
+  if(cur !== getPw()){ msg('pw-msg','Mot de passe actuel incorrect.',false); return; }
+  if(!nw){ msg('pw-msg','Nouveau mot de passe vide.',false); return; }
+  if(nw !== cf){ msg('pw-msg','Les mots de passe ne correspondent pas.',false); return; }
+  localStorage.setItem(KEY_PW, nw);
+  msg('pw-msg','Mot de passe mis à jour.',true);
+  ['pw-current','pw-new','pw-confirm'].forEach(i=>document.getElementById(i).value='');
+}
+
+function changeAdmPw(){
+  const cur = document.getElementById('adm-current').value;
+  const nw  = document.getElementById('adm-new').value;
+  const cf  = document.getElementById('adm-confirm').value;
+  if(cur !== getAdm()){ msg('adm-msg','Mot de passe admin incorrect.',false); return; }
+  if(!nw){ msg('adm-msg','Nouveau mot de passe vide.',false); return; }
+  if(nw !== cf){ msg('adm-msg','Les mots de passe ne correspondent pas.',false); return; }
+  localStorage.setItem(KEY_ADM, nw);
+  msg('adm-msg','Mot de passe admin mis à jour.',true);
+  ['adm-current','adm-new','adm-confirm'].forEach(i=>document.getElementById(i).value='');
+}
+
+function renderAll(){
+  const data = getData();
+  const total = data.length;
+  const val   = data.filter(f=>f.resultat==='validé').length;
+  const nval  = data.filter(f=>f.resultat==='non_validé').length;
+  const wip   = data.filter(f=>f.resultat==='en_cours').length;
+
+  // Compteur année
+  document.getElementById('year-counter').textContent = `2026 — ${total} fiche${total>1?'s':''}`;
+
+  // Stats
+  document.getElementById('stats-block').innerHTML = `
+    <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">Total fiches</div></div>
+    <div class="stat"><div class="stat-n ok">${val}</div><div class="stat-l">Validées</div></div>
+    <div class="stat"><div class="stat-n ko">${nval}</div><div class="stat-l">Non validées</div></div>
+    <div class="stat"><div class="stat-n wip">${wip}</div><div class="stat-l">En cours</div></div>`;
+
+  // Grouper par mois
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts = (f.date||'').split('/');
+    const m = parts.length===3 ? parseInt(parts[1])-1 : new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+
+  const months = Object.keys(byMonth).map(Number).sort((a,b)=>a-b);
+  if(!months.length){
+    document.getElementById('month-tabs').innerHTML='';
+    document.getElementById('fiches-content').innerHTML='<div class="empty">Aucune fiche enregistrée pour le moment.</div>';
+    return;
+  }
+
+  if(activeMonth===null || !byMonth[activeMonth]) activeMonth = months[months.length-1];
+
+  document.getElementById('month-tabs').innerHTML = months.map(m=>
+    `<div class="m-tab ${m===activeMonth?'active':''}" onclick="setMonth(${m})">${MOIS[m]} (${byMonth[m].length})</div>`
+  ).join('');
+
+  renderMonth(byMonth[activeMonth]||[]);
+}
+
+function setMonth(m){ activeMonth=m; renderAll(); }
+
+function renderMonth(fiches){
+  if(!fiches.length){
+    document.getElementById('fiches-content').innerHTML='<div class="empty">Aucune fiche ce mois.</div>';
+    return;
+  }
+  document.getElementById('fiches-content').innerHTML = `
+    <div class="fiches-hdr">
+      <span>Date</span><span>Aéronef / Thème</span><span>Niveau</span><span>Agents</span><span>Résultat</span>
+    </div>
+    ${[...fiches].reverse().map(f=>{
+      const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+      const label = f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
+      const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+      return `<div class="fiche-row">
+        <span class="col-date">${f.date||''}<br><span style="font-size:10px;">${f.heure||''}</span></span>
+        <span><strong style="font-size:12px;">${f.aeronef||'—'}</strong><br><span class="col-theme">${f.theme||''}</span></span>
+        <span style="color:var(--muted);font-size:12px;">Niv. ${f.niveau||'—'}</span>
+        <span style="color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${agents}</span>
+        <span><div class="badge ${badge}">${label}</div></span>
+      </div>`;
+    }).join('')}`;
+}
+
+function exportCSV(){
+  const data = getData();
+  if(!data.length){ alert('Aucune fiche à exporter.'); return; }
+  const cols = ['Date','Heure','Aéronef','Thème','Niveau','Conditions','Agents','Résultat','Observations'];
+  const rows = data.map(f=>[
+    f.date||'', f.heure||'', f.aeronef||'', f.theme||'',
+    f.niveau||'', f.conditions||'', (f.agents||'').replace(/\|/g,','),
+    f.resultat||'', (f.observations||'').replace(/\n/g,' ')
+  ]);
+  const csv = [cols,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'RFFS_BOD_Formations_2026.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function clearAll(){
+  const conf = confirm('Êtes-vous sûr de vouloir supprimer tout l\'historique ?\n\nCette action est irréversible.');
+  if(conf){
+    localStorage.removeItem(KEY_DATA);
+    activeMonth = null;
+    renderAll();
+  }
+}
+  renderAll();
+</script>
+</body>
+</html>
