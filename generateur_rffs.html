@@ -729,6 +729,27 @@ function saveFormative(aeronef, theme, niv, cond){
 
 // Historique géré dans historique.html
 
+function scrollToPanel(){
+  const panel = document.querySelector('.panel');
+  if(panel) panel.scrollIntoView({behavior:'smooth', block:'start'});
+  // Highlight le panel
+  panel.style.boxShadow='0 0 0 3px var(--orange)';
+  setTimeout(()=>panel.style.boxShadow='', 1500);
+}
+
+function resetGen(){
+  if(!confirm('Effacer la fiche et recommencer ?')) return;
+  // Remettre les champs par défaut
+  document.getElementById('fw').innerHTML=`
+    <div class="fiche-placeholder">
+      <div class="ph-icon">📋</div>
+      <p>Sélectionnez les paramètres à gauche<br>puis cliquez sur <strong>Générer la fiche</strong></p>
+    </div>`;
+  // Scroll vers le panel
+  const panel = document.querySelector('.panel');
+  if(panel){ panel.scrollIntoView({behavior:'smooth'}); panel.style.boxShadow='0 0 0 3px var(--orange)'; setTimeout(()=>panel.style.boxShadow='',1500); }
+}
+
 function switchTab(tab){
   const isEval = tab==='eval';
   document.getElementById('panel-sims').style.display = isEval ? 'none' : 'block';
@@ -832,6 +853,13 @@ function gen(){
   document.getElementById('fw').innerHTML=`
   <div class="fiche">
     <div class="fiche-hdr">
+      <div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;" class="no-print">
+        <span style="font-size:11px;color:#C55A11;font-weight:600;">⚠ Vérifiez les paramètres avant utilisation</span>
+        <div style="display:flex;gap:8px;">
+          <button onclick="scrollToPanel()" style="background:#C55A11;color:#fff;border:none;border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">✏️ Modifier</button>
+          <button onclick="resetGen()" style="background:#fff;color:#C00000;border:1.5px solid #C00000;border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">↺ Nouvelle fiche</button>
+        </div>
+      </div>
       <div class="fhdr-l"><h2>RFFS BOD — FICHE D'EXERCICE</h2><span>${cond} — Niveau RFFS ${niv} — ${nbv} × VIM 108 P2.5</span></div>
       <div class="fhdr-r"><span>${th.l.toUpperCase()}</span></div>
     </div>
