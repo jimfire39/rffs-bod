@@ -241,6 +241,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
       <div class="div"></div>
       <button class="btn-gen" onclick="gen()">⚡ Générer la fiche</button>
       <button class="btn-prt" onclick="trackPrint();window.print()">🖨 Imprimer / PDF</button>
+      <div class="dv"></div>
+      <a href="historique.html" style="display:block;width:100%;padding:8px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;margin-top:4px;">📋 Voir l'historique</a>
     </div>
   </aside>
 
@@ -600,6 +602,28 @@ function buildFormative(niv, nbv, aeronef, theme, cond){
         <textarea class="ff-obs" placeholder="Observations gestion de l'intervention..."></textarea>
       </div>
 
+      <!-- RÉSULTAT & ENREGISTREMENT -->
+      <div class="ff-section" style="background:#f8f8f8;border-radius:6px;padding:12px;border:1px solid #e0e0e0;">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Résultat de l'exercice</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #375623;border-radius:6px;background:#fff;">
+            <input type="radio" name="ff_resultat" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C00000;border-radius:6px;background:#fff;">
+            <input type="radio" name="ff_resultat" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid var(--orange);border-radius:6px;background:#fff;">
+            <input type="radio" name="ff_resultat" value="en_cours"> <span style="color:var(--orange);font-weight:700;">⟳ EN COURS</span>
+          </label>
+        </div>
+        <textarea id="ff_obs_generale" class="ff-obs" placeholder="Observations générales de l'évaluateur..." style="margin-bottom:10px;"></textarea>
+        <button onclick="saveFormative('${aeronef}','${theme}',${niv},'${cond}')"
+          style="width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+          💾 Enregistrer la fiche
+        </button>
+        <div id="ff_save_confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+      </div>
+
     </div>
   </div>`;
 }
@@ -665,6 +689,45 @@ function placeVim(secteur, event){
   const pos = document.getElementById('vim-positions');
   if(pos) pos.innerHTML = Object.entries(vimPositions).map(([v,s])=>`<span style="margin:0 6px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">VIM ${v} → ${s}</span>`).join('');
 }
+
+// ── STOCKAGE LOCAL & EXPORT ───────────────────────────────────────────────────
+function saveFormative(aeronef, theme, niv, cond){
+  // Récupérer les agents sélectionnés
+  const agents = [];
+  document.querySelectorAll('.ff-interv select').forEach(sel=>{
+    if(sel.value) agents.push(sel.value);
+  });
+  // Récupérer le résultat
+  const resEl = document.querySelector('input[name="ff_resultat"]:checked');
+  const resultat = resEl ? resEl.value : 'non_renseigné';
+  const obs = document.getElementById('ff_obs_generale') ? document.getElementById('ff_obs_generale').value : '';
+
+  const fiche = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('fr-FR'),
+    heure: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}),
+    aeronef,
+    theme,
+    niveau: niv,
+    conditions: cond,
+    agents: agents.join(' | '),
+    resultat,
+    observations: obs
+  };
+
+  // Sauvegarder dans localStorage
+  const key = 'rffs_formatives';
+  const existing = JSON.parse(localStorage.getItem(key) || '[]');
+  existing.push(fiche);
+  localStorage.setItem(key, JSON.stringify(existing));
+
+  // Confirmer
+  const confirm = document.getElementById('ff_save_confirm');
+  if(confirm){ confirm.style.display='block'; setTimeout(()=>confirm.style.display='none', 3000); }
+
+}
+
+// Historique géré dans historique.html
 
 function switchTab(tab){
   const isEval = tab==='eval';
@@ -834,6 +897,7 @@ function gen(){
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
 upd();
+
 
 </script>
 </body>
