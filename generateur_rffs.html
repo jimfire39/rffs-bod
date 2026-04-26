@@ -750,18 +750,190 @@ function resetGen(){
   if(panel){ panel.scrollIntoView({behavior:'smooth'}); panel.style.boxShadow='0 0 0 3px var(--orange)'; setTimeout(()=>panel.style.boxShadow='',1500); }
 }
 
+
+// ── GRILLES D'ÉVALUATION CM & POMPIERS ───────────────────────────────────────
+function grille(crits){
+  let h=`<table class="et"><thead><tr><th>Critères d'évaluation</th><th class="chk">✓</th><th class="chk">✗</th><th style="min-width:110px">Observation</th></tr></thead><tbody>`;
+  crits.forEach(c=>{
+    h+=`<tr class="cr"><td colspan="4">${c.cat}</td></tr>`;
+    c.items.forEach(it=>h+=`<tr><td>${it}</td><td class="cc"></td><td class="cc"></td><td></td></tr>`);
+  });
+  return h+`</tbody></table>`;
+}
+
+const critCM=[
+  {cat:"1. Prise d'alerte & renseignements",items:["Déclenche la procédure d'alerte correctement","Recueille : aéronef, POB, carburant, avarie, fret","Pose les questions réglementaires à la TWR","Identifie et évalue les risques spécifiques","Déclenche les renforts si nécessaire (SDIS, SAMU)"]},
+  {cat:"2. Ordre initial — Méthode SIMS",items:["Formule la Situation clairement et avec précision","Complète les Informations manquantes","Donne la Mission à chaque VIM (secteur + action adaptée)","Énonce les consignes de Sécurité spécifiques au sinistre","Utilise la phraséologie radio RFFS correcte"]},
+  {cat:"3. Commandement & positionnement",items:["Utilise l'ordre graphique (ZI, sinistre, moyens, actions)","Positionne les VIM dans les secteurs adaptés","Gère les zones de danger (hélice, ingestion, axe jante, armement)","Compte rendu régulier et structuré à la TWR","Veille en permanence à la sécurité du personnel"]},
+  {cat:"4. Gestion de l'évolution",items:["Surveille l'évolution du sinistre en temps réel","Émet un ordre d'évolution SIMS si aggravation","Adapte le dispositif selon l'évolution","Coordonne les intervenants extérieurs (SDIS, SAMU, armée)","Maintient le contact radio avec tous les VIM"]},
+  {cat:"5. Retour & débriefing",items:["Annonce la fin d'intervention à la TWR","Vérifie le reconditionnement de tous les VIM","Conduit le débriefing en 4 phases","Identifie les points positifs et axes d'amélioration","Révalorisation du groupe assurée"]},
+];
+const critConducteur=[
+  {cat:"1. Cheminement & positionnement",items:["Cheminement correct — hors zones de danger","Positionnement VIM conforme à l'ordre du CM","Respect de la zone d'exclusion (hélice, ingestion, axe jante...)","Adaptation au terrain (sol meuble, obstacles, vent)"]},
+  {cat:"2. Conduite & manœuvre du VIM",items:["Approche progressive et contrôlée","Positionnement optimal pour l'attaque ou le sauvetage","Gestion des contraintes (vent, pente, obstacles, autres VIM)","Repositionnement sur ordre CM ou évolution sinistre"]},
+  {cat:"3. Communication radio",items:["Accusé de réception des ordres du CM","Compte rendu continu de l'évolution depuis son secteur","Phraséologie RFFS correcte","Signale immédiatement tout danger ou évolution critique"]},
+  {cat:"4. Sécurité & vigilance",items:["Port des EPI adaptés (ARI, gants, casque...)","Surveille son équipe et le secteur en permanence","N'engage pas le VIM sans ordre ou en zone non sécurisée","Contact visuel maintenu avec le CM et les autres VIM"]},
+  {cat:"5. Fin d'intervention",items:["Signale la fin de mission au CM","Reconditionnement du VIM vérifié","Participation au débriefing (phase Mission)","Disponibilité rendue compte"]},
+];
+function buildEvalCMPompiers(niv, nbv, aeronef, theme, cond){
+  const vims=['VIM 1','VIM 2','VIM 3'].slice(0,nbv);
+  const selStyle='width:100%;border:1.5px solid #ddd;border-radius:4px;font-size:11px;padding:3px 5px;background:#fff;font-family:inherit;';
+  const agentOpts='<option value="">-- Choisir --</option>'
+    +Object.entries(AGENTS).map(([eq,agents])=>
+      `<optgroup label="${eq}">${agents.map(a=>`<option value="${a}">${a}</option>`).join('')}</optgroup>`
+    ).join('');
+
+  // Grille CM (sauf niv 5)
+  const cmSection = niv>5 ? `
+    <div style="background:#f0f4f8;border-radius:6px;padding:12px;margin-bottom:14px;border:1px solid #c8d4e0;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">🎖️ Chef de Manœuvre</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="font-size:12px;">Nom : <select id="evp-cm-nom" style="${selStyle}">${agentOpts}</select></span>
+        <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:90px;"></span>
+      </div>
+      ${grille(critCM)}
+      <div style="margin-top:8px;display:flex;gap:10px;">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 12px;border:2px solid #375623;border-radius:5px;background:#fff;"><input type="radio" name="evp_cm_res" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span></label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 12px;border:2px solid #C00000;border-radius:5px;background:#fff;"><input type="radio" name="evp_cm_res" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span></label>
+      </div>
+    </div>` : `<div style="background:#fff3e0;border:1px solid #ffe0b2;border-radius:5px;padding:8px 10px;font-size:11px;color:#C55A11;margin-bottom:14px;">⚖️ Niveau 5 : pas de Chef de Manœuvre — le conducteur VIM 1 assure le commandement.</div>`;
+
+  // Grilles équipages VIM
+  const vimSections = vims.map((v,i) => `
+    <div style="background:#f8f8f8;border-radius:6px;padding:12px;margin-bottom:14px;border:1px solid #ddd;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">🚒 ${v}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:10px;color:#888;margin-bottom:3px;">CONDUCTEUR</div>
+          <select id="evp-cond-${i+1}" style="${selStyle}">${agentOpts}</select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:#888;margin-bottom:3px;">OPÉRATEUR</div>
+          <select id="evp-oper-${i+1}" style="${selStyle}">${agentOpts}</select>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:#595959;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Conducteur</div>
+      ${grille(critConducteur)}
+      <div style="font-size:11px;font-weight:600;color:#595959;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.3px;">Opérateur</div>
+      ${grille(critOperateur)}
+      <div style="margin-top:8px;display:flex;gap:10px;">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 12px;border:2px solid #375623;border-radius:5px;background:#fff;"><input type="radio" name="evp_vim${i+1}_res" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span></label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 12px;border:2px solid #C00000;border-radius:5px;background:#fff;"><input type="radio" name="evp_vim${i+1}_res" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span></label>
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="ff-wrap" style="border:2px solid var(--navy);border-radius:8px;overflow:hidden;margin-top:14px;">
+    <div style="background:var(--navy);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <h3 style="font-size:12px;font-weight:700;color:#fff;">🎖️ ÉVALUATION CM & POMPIERS</h3>
+      <span style="font-size:9px;color:rgba(255,255,255,.6);">${aeronef} — ${theme} — ${cond}</span>
+    </div>
+    <div style="padding:12px;">
+
+      <!-- SÉLECTEUR TYPE DE FICHE -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <div onclick="evpSetType('cm')" id="evp-card-cm"
+          style="flex:1;border:2px solid var(--navy);border-radius:7px;padding:9px 12px;cursor:pointer;background:#eef2f7;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">🎖️</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy);">Chef de manœuvre</div>
+            <div style="font-size:10px;color:#595959;">Niveaux 6 / 7 / 8</div>
+          </div>
+        </div>
+        <div onclick="evpSetType('vim')" id="evp-card-vim"
+          style="flex:1;border:2px solid var(--border);border-radius:7px;padding:9px 12px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">🚒</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy);">Équipage VIM</div>
+            <div style="font-size:10px;color:#595959;">Conducteur + Opérateur</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAISIE MANUELLE AÉRONEF/THÈME -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:10px;color:var(--navy);cursor:pointer;text-decoration:underline;display:inline;" onclick="evpToggleManual()">
+          ✏️ Saisie manuelle aéronef / thème
+        </div>
+        <div id="evp-manual" style="display:none;margin-top:6px;display:none;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="evp-aeronef-manual" placeholder="Aéronef (ex: A320 CEO)" value="${aeronef}"
+            style="flex:1;min-width:140px;padding:6px 9px;border:1.5px solid #ddd;border-radius:5px;font-size:12px;font-family:inherit;">
+          <input type="text" id="evp-theme-manual" placeholder="Thème (ex: Feu moteur)" value="${theme}"
+            style="flex:1;min-width:140px;padding:6px 9px;border:1.5px solid #ddd;border-radius:5px;font-size:12px;font-family:inherit;">
+        </div>
+      </div>
+
+      <!-- CONTENU CM -->
+      <div id="evp-section-cm">
+        ${cmSection}
+      </div>
+
+      <!-- CONTENU ÉQUIPAGE VIM -->
+      <div id="evp-section-vim" style="display:none;">
+        ${vimSections}
+      </div>
+
+      <button onclick="saveEvalCMPompiers('${aeronef}','${theme}',${niv},'${cond}')"
+        style="width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;">
+        💾 Enregistrer l'évaluation
+      </button>
+      <div id="evp-confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Évaluation enregistrée !</div>
+    </div>
+  </div>`;
+}
+
+function evpSetType(type){
+  const isCM = type==='cm';
+  document.getElementById('evp-section-cm').style.display  = isCM ? 'block' : 'none';
+  document.getElementById('evp-section-vim').style.display = isCM ? 'none' : 'block';
+  const cardCM  = document.getElementById('evp-card-cm');
+  const cardVIM = document.getElementById('evp-card-vim');
+  if(cardCM)  { cardCM.style.borderColor  = isCM  ? 'var(--navy)' : 'var(--border)'; cardCM.style.background  = isCM  ? '#eef2f7' : '#fff'; }
+  if(cardVIM) { cardVIM.style.borderColor = !isCM ? 'var(--navy)' : 'var(--border)'; cardVIM.style.background = !isCM ? '#eef2f7' : '#fff'; }
+}
+
+function evpToggleManual(){
+  const el = document.getElementById('evp-manual');
+  if(el) el.style.display = el.style.display==='none' ? 'flex' : 'none';
+}
+
+function saveEvalCMPompiers(aeronef, theme, niv, cond){
+  const agents=[];
+  document.querySelectorAll('[id^="evp-"]').forEach(s=>{if(s.value)agents.push(s.value);});
+  const resEl=document.querySelector('input[name="evp_cm_res"]:checked');
+  const resultat=resEl?resEl.value:'non_renseigné';
+  const fiche={
+    id:Date.now(),
+    date:new Date().toLocaleDateString('fr-FR'),
+    heure:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+    aeronef, theme:'Éval. CM/Pompiers — '+theme,
+    niveau:niv, conditions:cond,
+    agents:agents.join(' | '),
+    resultat, observations:''
+  };
+  const existing=JSON.parse(localStorage.getItem('rffs_formatives')||'[]');
+  existing.push(fiche);
+  localStorage.setItem('rffs_formatives',JSON.stringify(existing));
+  const conf=document.getElementById('evp-confirm');
+  if(conf){conf.style.display='block';setTimeout(()=>conf.style.display='none',3000);}
+}
+
+
 function switchTab(tab){
-  const isEval = tab==='eval';
-  document.getElementById('panel-sims').style.display = isEval ? 'none' : 'block';
-  document.getElementById('panel-eval').style.display = isEval ? 'block' : 'none';
-  document.getElementById('tab-sims').style.background = isEval ? '#fff' : 'var(--navy)';
-  document.getElementById('tab-sims').style.color      = isEval ? 'var(--navy)' : '#fff';
-  document.getElementById('tab-eval').style.background = isEval ? 'var(--navy)' : '#fff';
-  document.getElementById('tab-eval').style.color      = isEval ? '#fff' : 'var(--navy)';
-  if(isEval){
-    const gl = document.querySelector('[id^="grp-left-"]');
+  const tabs=['sims','eval','evp'];
+  tabs.forEach(t=>{
+    const panel=document.getElementById('panel-'+t);
+    const btn=document.getElementById('tab-'+t);
+    if(panel) panel.style.display = t===tab ? 'block' : 'none';
+    if(btn){
+      btn.style.background = t===tab ? 'var(--navy)' : '#fff';
+      btn.style.color      = t===tab ? '#fff' : 'var(--navy)';
+    }
+  });
+  if(tab==='eval'){
+    const gl=document.querySelector('[id^="grp-left-"]');
     if(gl && !gl.querySelector('span')){
-      const nbv = +gl.id.replace('grp-left-','');
+      const nbv=+gl.id.replace('grp-left-','');
       initBadges(nbv);
     }
   }
@@ -884,27 +1056,36 @@ function gen(){
       <div class="tg2" style="margin-top:8px">${techH}</div>
 
       <!-- ONGLETS -->
-      <div style="display:flex;gap:0;margin-top:18px;border-bottom:2px solid var(--navy);">
+      <div style="display:flex;gap:0;margin-top:18px;border-bottom:2px solid var(--navy);flex-wrap:wrap;">
         <button id="tab-sims" data-tab="sims"
-          style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
+          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
           📋 Fiche SIMS
         </button>
         <button id="tab-eval" data-tab="eval"
-          style="padding:8px 18px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
-          📊 Évaluation formative
+          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;margin-right:4px;">
+          📊 Éval. formative
+        </button>
+        <button id="tab-evp" data-tab="evp"
+          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
+          🎖️ Éval. CM & Pompiers
         </button>
       </div>
 
-      <!-- CONTENU ONGLET SIMS (actif par défaut) -->
+      <!-- ONGLET SIMS -->
       <div id="panel-sims" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
         <p style="font-size:12px;color:#666;text-align:center;padding:20px 0;">
           ✅ La fiche SIMS ci-dessus contient toutes les informations pour conduire l'exercice.
         </p>
       </div>
 
-      <!-- CONTENU ONGLET ÉVALUATION (masqué par défaut) -->
+      <!-- ONGLET ÉVAL. FORMATIVE -->
       <div id="panel-eval" style="display:none;">
         ${buildFormative(niv, nbv, aNom, th.l, cond)}
+      </div>
+
+      <!-- ONGLET ÉVAL. CM & POMPIERS -->
+      <div id="panel-evp" style="display:none;">
+        ${buildEvalCMPompiers(niv, nbv, aNom, th.l, cond)}
       </div>
 
     </div>
@@ -917,8 +1098,10 @@ function gen(){
   setTimeout(function(){
     const btnSims = document.getElementById('tab-sims');
     const btnEval = document.getElementById('tab-eval');
+    const btnEvp  = document.getElementById('tab-evp');
     if(btnSims) btnSims.addEventListener('click', function(){ switchTab('sims'); });
     if(btnEval) btnEval.addEventListener('click', function(){ switchTab('eval'); });
+    if(btnEvp)  btnEvp.addEventListener('click',  function(){ switchTab('evp');  });
     switchTab('sims');
   }, 50);
 }
