@@ -820,6 +820,13 @@ const critConducteur=[
   {cat:"4. Sécurité & vigilance",items:["Port des EPI adaptés (ARI, gants, casque...)","Surveille son équipe et le secteur en permanence","N'engage pas le VIM sans ordre ou en zone non sécurisée","Contact visuel maintenu avec le CM et les autres VIM"]},
   {cat:"5. Fin d'intervention",items:["Signale la fin de mission au CM","Reconditionnement du VIM vérifié","Participation au débriefing (phase Mission)","Disponibilité rendue compte"]},
 ];
+const critOperateur=[
+  {cat:"1. Mise en œuvre des agents extincteurs",items:["Déploiement rapide et correct de la lance (LDV, poudre, mousse...)","Technique d'attaque adaptée (jet plein, diffusé, tapis moussant)","Débit et distance d'attaque cohérents","Gestion de l'autonomie des agents"]},
+  {cat:"2. Sauvetage & assistance aux victimes",items:["Approche sécurisée pour l'accès cabine (ARI, hors zones danger)","Techniques d'extraction adaptées (porte, trappe, brise-glace)","Prise en charge médicale — position d'attente SAMU","Coordination avec le conducteur"]},
+  {cat:"3. Application des consignes de sécurité",items:["Zones de danger respectées (hélice, ingestion, axe jante, armement)","ARI si espace enfumé ou confiné","Ne s'interpose pas entre réservoirs et foyer","Signale tout risque au conducteur"]},
+  {cat:"4. Travail en équipe",items:["Coordonne ses actions avec le conducteur","Appui aux autres VIM si demandé","Adaptation aux ordres d'évolution du CM","Communication maintenue — jamais isolé"]},
+  {cat:"5. Fin d'intervention",items:["Surveillance post-extinction (risque reprise de feu)","Reconditionnement du matériel (lance, équipements, ARI)","Participation au débriefing (phase Sécurité)","Signale tout incident ou anomalie constaté"]},
+];
 function buildEvalCMPompiers(niv, nbv, aeronef, theme, cond){
   const vims=['VIM 1','VIM 2','VIM 3'].slice(0,nbv);
   const selStyle='width:100%;border:1.5px solid #ddd;border-radius:4px;font-size:11px;padding:3px 5px;background:#fff;font-family:inherit;';
