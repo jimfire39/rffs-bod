@@ -260,8 +260,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 
 <script>
 const AV=[
-  {n:"── Avions légers / turbopropulseurs ──",sep:true},
+  {n:"── Avions légers (pistons) ──",sep:true},
   {n:"Cessna 172",t:"monomoteur à pistons",c:""},
+  {n:"── Turbopropulseurs ──",sep:true},
   {n:"TBM 700",t:"turbopropulseur monoréacteur",c:""},
   {n:"Pilatus PC-12",t:"turbopropulseur monoréacteur",c:""},
   {n:"Beechcraft King Air",t:"turbopropulseur biréacteur",c:""},
@@ -474,16 +475,18 @@ function getAeronefImg(aeronef){
 }
 
 
+// ── LISTE AGENTS GLOBALE ─────────────────────────────────────────────────────
+const AGENTS = {
+  'Équipe 1': ['DUBARD','BESSAGUET','LASSALLE','MAURIN','ETCHEBERIGARAY','JAGIELO','MALABAT','VACHER','CAILLE','SIMOES ELIAS','PETIT'],
+  'Équipe 2': ['FENELON','HIGUERAS','LAFON','LAGNEY','HINCELIN','FAYARD','FORET','ROMAN','FABRIS','VOGE','DAMOUR'],
+  'Équipe 3': ['GUERIN','ROGERS','MECHAIN','DELTIL','BARBE','BEYNARD','CHALOPIN','LE ROUZIC','BERNARD','FAUX','VAUDRION','TRUAISCH'],
+  'Équipe 4': ['MOPTY','HENIN','FERELLEC','ANTOINE','BONNET','CLAVERIE','BARRERO','FERRIER','CAMPAGNOL','GESLIN','BALLION'],
+};
+
 function buildFormative(niv, nbv, aeronef, theme, cond){
   const vims = ['VIM 1','VIM 2','VIM 3'].slice(0, nbv);
   
-  // ── LISTE AGENTS PAR ÉQUIPE ───────────────────────────────────────────────
-  const AGENTS = {
-    'Équipe 1': ['DUBARD','BESSAGUET','LASSALLE','MAURIN','ETCHEBERIGARAY','JAGIELO','MALABAT','VACHER','CAILLE','SIMOES ELIAS','PETIT'],
-    'Équipe 2': ['FENELON','HIGUERAS','LAFON','LAGNEY','HINCELIN','FAYARD','FORET','ROMAN','FABRIS','VOGE','DAMOUR'],
-    'Équipe 3': ['GUERIN','ROGERS','MECHAIN','DELTIL','BARBE','BEYNARD','CHALOPIN','LE ROUZIC','BERNARD','FAUX','VAUDRION','TRUAISCH'],
-    'Équipe 4': ['MOPTY','HENIN','FERELLEC','ANTOINE','BONNET','CLAVERIE','BARRERO','FERRIER','CAMPAGNOL','GESLIN','BALLION'],
-  };
+  // ── LISTE AGENTS (globale) ────────────────────────────────────────────────
   const agentOpts = '<option value="">-- Choisir --</option>'
     + Object.entries(AGENTS).map(([eq, agents])=>
         `<optgroup label="${eq}">${agents.map(a=>`<option value="${a}">${a}</option>`).join('')}</optgroup>`
