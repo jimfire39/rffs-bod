@@ -439,33 +439,37 @@ var AERONEF_IMGS = {
 function getAeronefImg(aeronef){
   var a = (aeronef||'').toLowerCase();
 
-  // Hélicoptères
-  if(a.indexOf('ec1')>=0||a.indexOf('ec3')>=0||a.indexOf('as350')>=0||a.indexOf('h145')>=0||
-     a.indexOf('h125')>=0||a.indexOf('bell')>=0||a.indexOf('aw')>=0||a.indexOf('helico')>=0||a.indexOf('sikorsky')>=0)
+  // Hélicoptères — noms exacts de la liste
+  if(a.indexOf('ec 125')>=0||a.indexOf('ec 135')>=0||a.indexOf('ec125')>=0||a.indexOf('ec135')>=0||
+     a.indexOf('puma')>=0||a.indexOf('caracal')>=0||a.indexOf('as350')>=0||a.indexOf('h145')>=0||
+     a.indexOf('h125')>=0||a.indexOf('bell')>=0||a.indexOf('sikorsky')>=0||a.indexOf('hélico')>=0||
+     a.indexOf('ec 725')>=0||a.indexOf('aw139')>=0||a.indexOf('nh90')>=0)
     return AERONEF_IMGS.helicoptere;
 
-  // Militaires chasseurs
+  // Militaires
   if(a.indexOf('rafale')>=0||a.indexOf('f-16')>=0||a.indexOf('eurofighter')>=0||
-     a.indexOf('mirage')>=0||a.indexOf('typhoon')>=0||a.indexOf('gripen')>=0)
+     a.indexOf('mirage')>=0||a.indexOf('typhoon')>=0||a.indexOf('gripen')>=0||
+     a.indexOf('f/a')>=0||a.indexOf('su-')>=0)
     return AERONEF_IMGS.militaire;
 
-  // Turbopropulseurs régionaux (ATR, Dash, Saab, C-130...)
-  if(a.indexOf('atr')>=0||a.indexOf('dash')>=0||a.indexOf('saab')>=0||
-     a.indexOf('c-130')>=0||a.indexOf('c130')>=0||a.indexOf('cn-235')>=0||a.indexOf('fokker 5')>=0)
-    return AERONEF_IMGS.turboprop;
-
-  // Monomoteurs / petits bimoteurs légers
-  if(a.indexOf('cessna')>=0||a.indexOf('tbm')>=0||a.indexOf('piper')>=0||a.indexOf('sr2')>=0||
-     a.indexOf('da40')>=0||a.indexOf('robin')>=0||a.indexOf('king air')>=0||a.indexOf('pc-12')>=0||
-     a.indexOf('beech')>=0||a.indexOf('socata')>=0)
-    return AERONEF_IMGS.monomoteur;
-
-  // Quadriréacteurs (A340, A380, B747, A330 MRTT...)
+  // Quadriréacteurs
   if(a.indexOf('a340')>=0||a.indexOf('a380')>=0||a.indexOf('b747')>=0||
      a.indexOf('mrtt')>=0||a.indexOf('awacs')>=0||a.indexOf('b-52')>=0)
     return AERONEF_IMGS.quadrireacteur;
 
-  // Défaut : biréacteur jetliner (A320, B737, A350...)
+  // Turbopropulseurs régionaux
+  if(a.indexOf('atr')>=0||a.indexOf('dash')>=0||a.indexOf('saab')>=0||
+     a.indexOf('c-130')>=0||a.indexOf('c130')>=0||a.indexOf('cn-235')>=0||
+     a.indexOf('fokker 5')>=0||a.indexOf('milan')>=0)
+    return AERONEF_IMGS.turboprop;
+
+  // Monomoteurs / légers
+  if(a.indexOf('cessna')>=0||a.indexOf('tbm')>=0||a.indexOf('piper')>=0||a.indexOf('sr2')>=0||
+     a.indexOf('da40')>=0||a.indexOf('robin')>=0||a.indexOf('king air')>=0||a.indexOf('pc-12')>=0||
+     a.indexOf('beechcraft')>=0||a.indexOf('socata')>=0||a.indexOf('pilatus')>=0)
+    return AERONEF_IMGS.monomoteur;
+
+  // Défaut : biréacteur jetliner
   return AERONEF_IMGS.bireacteur;
 }
 
