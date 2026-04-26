@@ -535,19 +535,71 @@ function gen(){
   let html=entete;
 
   if(currentType==='cm'){
-    html+=`<div class="role-block">
-      <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
-      <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <span style="font-size:12px;">Nom : ${agentSelect('cm-nom')}</span>
-        <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+    // Générer les sections équipage VIM
+    let vimHtml='';
+    for(let i=0;i<nbv;i++){
+      vimHtml+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    html+=`
+    <!-- ONGLETS CM + ÉQUIPAGE -->
+    <div style="display:flex;gap:0;margin-top:14px;border-bottom:2px solid var(--navy);">
+      <button id="ev-tab-cm" onclick="evSwitchTab('cm')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
+        🎖️ Chef de manœuvre
+      </button>
+      <button id="ev-tab-vim" onclick="evSwitchTab('vim')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
+        🚒 Équipage VIM
+      </button>
+    </div>
+    <div id="ev-panel-cm" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      <div class="role-block" style="margin:0;">
+        <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
+        <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:12px;">Nom : ${agentSelect('cm-nom')}</span>
+          <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+        </div>
+        ${grille(critCM)}
+        <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
+        <div class="res-row">
+          <div class="res-cell">Éléments maîtrisés : ………………………</div>
+          <div class="res-cell">Points à améliorer : ………………………</div>
+          <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+        </div>
       </div>
-      ${grille(critCM)}
-      <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
-      <div class="res-row">
-        <div class="res-cell">Éléments maîtrisés : ………………………</div>
-        <div class="res-cell">Points à améliorer : ………………………</div>
-        <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-      </div>
+    </div>
+    <div id="ev-panel-vim" style="display:none;border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      ${vimHtml}
     </div>`;
   } else {
     for(let i=0;i<nbv;i++){
@@ -620,8 +672,31 @@ function gen(){
   </div>`;
 
   document.getElementById('ew').innerHTML=html;
+
+  // Attacher listeners onglets CM/VIM si fiche CM
+  if(currentType==='cm'){
+    setTimeout(function(){
+      const tCM  = document.getElementById('ev-tab-cm');
+      const tVIM = document.getElementById('ev-tab-vim');
+      if(tCM)  tCM.addEventListener('click',  function(){ evSwitchTab('cm'); });
+      if(tVIM) tVIM.addEventListener('click', function(){ evSwitchTab('vim'); });
+    }, 50);
+  }
+
   setTimeout(()=>initEvalBadges(nbv), 50);
   gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
+}
+
+function evSwitchTab(tab){
+  const isCM = tab==='cm';
+  const pCM  = document.getElementById('ev-panel-cm');
+  const pVIM = document.getElementById('ev-panel-vim');
+  const tCM  = document.getElementById('ev-tab-cm');
+  const tVIM = document.getElementById('ev-tab-vim');
+  if(pCM)  pCM.style.display  = isCM ? 'block' : 'none';
+  if(pVIM) pVIM.style.display = isCM ? 'none'  : 'block';
+  if(tCM)  { tCM.style.background  = isCM ? 'var(--navy)' : '#fff'; tCM.style.color  = isCM ? '#fff' : 'var(--navy)'; }
+  if(tVIM) { tVIM.style.background = isCM ? '#fff' : 'var(--navy)'; tVIM.style.color = isCM ? 'var(--navy)' : '#fff'; }
 }
 
 function saveEvaluation(aeronef, theme, niv, cond, type){
