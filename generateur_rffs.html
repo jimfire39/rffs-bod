@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Générateur de Fiches d'Exercice RFFS BOD</title>
+<!-- v2.1 VIM SVG -->
 <style>
 :root{--navy:#1F3864;--navy-l:#2a4a80;--orange:#C55A11;--orange-l:#e06820;--red:#C00000;--green:#375623;--amber:#E36C09;--gray:#595959;--lgray:#f5f5f5;--lblue:#D6E4F7;--border:#ddd;--text:#1a1a1a;--text-m:#666;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1246,8 +1247,11 @@ function truckBadgeSVG(n, dir){
   <!-- Position miroir : x original 425 -> 700 - 425 - largeur_texte ≈ 215 -->
   <text x="215" y="148" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" stroke="#1a1a1a" stroke-width="0.5">VIM</text>`;
   var inner = dir==='L' ? innerL : innerR;
-  // Remplacer le texte VIM par VIM n
-  inner = inner.replace(/>VIM<\/text>/, '>VIM '+n+'<\/text>');
+  // Remplacer le texte VIM par VIM + numéro
+  inner = inner.replace(/>VIM<\/text>/, '>VIM ' + n + '<\/text>');
+  inner = inner.replace(/>VIM<\/text>/, '>VIM ' + n + '<\/text>');
+  // Fallback si le replace ne fonctionne pas (encodage différent)
+  inner = inner.split('>VIM</text>').join('>VIM ' + n + '</text>');
   return '<svg width="120" height="55" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="display:block;">'
     + inner + '</svg>';
 }
