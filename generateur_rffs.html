@@ -240,7 +240,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
       </div>
 
       <div class="div"></div>
-      <button class="btn-gen" onclick="gen()">⚡ Générer la fiche</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-gen" onclick="gen()" style="flex:3;">⚡ Générer la fiche</button>
+        <button class="btn-gen" onclick="genRandom()" style="flex:1;background:var(--navy);" title="Tirage aléatoire">🎲</button>
+      </div>
       <button class="btn-prt" onclick="trackPrint();window.print()">🖨 Imprimer / PDF</button>
       <div class="dv"></div>
       <a href="historique.html" style="display:block;width:100%;padding:8px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;margin-top:4px;">📋 Voir l'historique</a>
@@ -1274,6 +1277,54 @@ function initBadges(nbv){
 }
 
 function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
+
+function genRandom(){
+  // Aéronef aléatoire (sans les séparateurs)
+  const avions = AV.filter(a=>!a.sep);
+  const av = avions[Math.floor(Math.random()*avions.length)];
+
+  // Remplir le select aéronef
+  const selAv = document.getElementById('aeronef');
+  if(selAv){
+    for(let i=0;i<selAv.options.length;i++){
+      if(selAv.options[i].value===av.n){ selAv.selectedIndex=i; break; }
+    }
+  }
+
+  // Thème aléatoire
+  const themes = Object.values(TH).filter(t=>!t.sep);
+  const th = themes[Math.floor(Math.random()*themes.length)];
+  const selCat = document.getElementById('cat');
+  const selTh  = document.getElementById('theme');
+  if(selCat && selTh){
+    selCat.value = th.cat || '';
+    // Déclencher le changement de catégorie
+    selCat.dispatchEvent(new Event('change'));
+    setTimeout(()=>{
+      const selThNew = document.getElementById('theme');
+      if(selThNew){
+        for(let i=0;i<selThNew.options.length;i++){
+          if(selThNew.options[i].value===th.id){ selThNew.selectedIndex=i; break; }
+        }
+      }
+    }, 50);
+  }
+
+  // Niveau aléatoire (5, 7 ou 8)
+  const niveaux = ['5','7','8'];
+  const niv = niveaux[Math.floor(Math.random()*niveaux.length)];
+  document.querySelectorAll('input[name="niv"]').forEach(r=>{ r.checked = r.value===niv; });
+  upd();
+
+  // Conditions aléatoires
+  const conds = ['Jour','Nuit','Crépuscule'];
+  const cond = conds[Math.floor(Math.random()*conds.length)];
+  const selCond = document.getElementById('cond');
+  if(selCond) selCond.value = cond;
+
+  // Générer après un court délai
+  setTimeout(()=>gen(), 120);
+}
 
 function gen(){
   const niv=+document.querySelector('input[name="niv"]:checked').value;
