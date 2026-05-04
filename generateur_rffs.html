@@ -1278,52 +1278,108 @@ function initBadges(nbv){
 
 function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
 
+// ── DONNÉES PN/PAX/CARBURANT PAR AÉRONEF ────────────────────────────────────
+const AV_DATA = {
+  "Cessna 172":         {pn:[1,1], pax:[0,3],   cbrt:[0.1,0.2]},
+  "TBM 700":            {pn:[1,1], pax:[0,5],   cbrt:[0.5,1.0]},
+  "Pilatus PC-12":      {pn:[1,1], pax:[0,8],   cbrt:[0.8,1.5]},
+  "Beechcraft King Air":{pn:[1,2], pax:[0,8],   cbrt:[1.0,2.0]},
+  "ATR 42":             {pn:[2,3], pax:[30,48],  cbrt:[3.0,6.0]},
+  "ATR 72":             {pn:[2,3], pax:[50,78],  cbrt:[4.0,8.0]},
+  "Dash 8 Milan 24":    {pn:[2,3], pax:[0,0],   cbrt:[4.0,8.0]},
+  "Dash 8 Q400":        {pn:[2,3], pax:[60,86],  cbrt:[5.0,9.0]},
+  "EC 125":             {pn:[1,1], pax:[0,5],   cbrt:[0.3,0.5]},
+  "EC 135":             {pn:[1,2], pax:[0,7],   cbrt:[0.5,0.8]},
+  "Puma AS 330":        {pn:[2,3], pax:[0,16],  cbrt:[1.5,2.5]},
+  "Caracal EC 725":     {pn:[2,4], pax:[0,29],  cbrt:[2.5,4.0]},
+  "ERJ 145":            {pn:[2,3], pax:[30,50],  cbrt:[5.0,9.0]},
+  "CRJ 700":            {pn:[2,3], pax:[44,78],  cbrt:[8.0,13.0]},
+  "Embraer E175":       {pn:[2,3], pax:[60,88],  cbrt:[8.0,13.0]},
+  "A318":               {pn:[2,6], pax:[80,132],  cbrt:[10.0,18.0]},
+  "A219 CEO":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},
+  "A220-300":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},
+  "A320 CEO":           {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},
+  "A320neo":            {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},
+  "A321 CEO":           {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},
+  "A321neo":            {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},
+  "A321LR":             {pn:[2,6], pax:[150,220], cbrt:[18.0,28.0]},
+  "A350":               {pn:[2,9], pax:[250,440], cbrt:[60.0,110.0]},
+  "Boeing 737-800":     {pn:[2,6], pax:[120,189], cbrt:[14.0,22.0]},
+  "Boeing 737 MAX 8":   {pn:[2,6], pax:[120,200], cbrt:[14.0,22.0]},
+  "Boeing 737F":        {pn:[2,3], pax:[0,0],    cbrt:[14.0,22.0]},
+  "Boeing 777F":        {pn:[2,4], pax:[0,0],    cbrt:[70.0,120.0]},
+  "A330 MRTT":          {pn:[3,8], pax:[0,45],   cbrt:[60.0,100.0]},
+  "Rafale":             {pn:[1,1], pax:[0,1],   cbrt:[4.0,7.0]},
+};
+
+function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function rndF(min,max){ return (Math.random()*(max-min)+min).toFixed(1); }
+
+
 function genRandom(){
-  // Aéronef aléatoire (sans les séparateurs)
+  // 1. Aéronef aléatoire (sans séparateurs)
   const avions = AV.filter(a=>!a.sep);
   const av = avions[Math.floor(Math.random()*avions.length)];
-
-  // Remplir le select aéronef
   const selAv = document.getElementById('aeronef');
   if(selAv){
     for(let i=0;i<selAv.options.length;i++){
-      if(selAv.options[i].value===av.n){ selAv.selectedIndex=i; break; }
+      if(selAv.options[i].text.startsWith(av.n)){
+        selAv.selectedIndex=i; break;
+      }
     }
   }
 
-  // Thème aléatoire
-  const themes = Object.values(TH).filter(t=>!t.sep);
-  const th = themes[Math.floor(Math.random()*themes.length)];
-  const selCat = document.getElementById('cat');
-  const selTh  = document.getElementById('theme');
-  if(selCat && selTh){
-    selCat.value = th.cat || '';
-    // Déclencher le changement de catégorie
-    selCat.dispatchEvent(new Event('change'));
-    setTimeout(()=>{
-      const selThNew = document.getElementById('theme');
-      if(selThNew){
-        for(let i=0;i<selThNew.options.length;i++){
-          if(selThNew.options[i].value===th.id){ selThNew.selectedIndex=i; break; }
-        }
-      }
-    }, 50);
+  // 2. Catégorie aléatoire
+  const catKeys = Object.keys(CATS);
+  const catKey  = catKeys[Math.floor(Math.random()*catKeys.length)];
+  const selCat  = document.getElementById('categorie');
+  if(selCat) selCat.value = catKey;
+  updThemes(); // Rafraîchir les thèmes
+
+  // 3. Thème aléatoire dans la catégorie choisie
+  const selTh = document.getElementById('theme');
+  if(selTh && selTh.options.length>0){
+    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);
   }
 
-  // Niveau aléatoire (5, 7 ou 8)
+  // 4. Niveau aléatoire (5, 7 ou 8)
   const niveaux = ['5','7','8'];
   const niv = niveaux[Math.floor(Math.random()*niveaux.length)];
-  document.querySelectorAll('input[name="niv"]').forEach(r=>{ r.checked = r.value===niv; });
+  document.querySelectorAll('input[name="niv"]').forEach(r=>{ r.checked=(r.value===niv); });
   upd();
+  // Restaurer les sélections après upd() qui recharge les selects
+  if(selAv){
+    for(let i=0;i<selAv.options.length;i++){
+      if(selAv.options[i].text.startsWith(av.n)){ selAv.selectedIndex=i; break; }
+    }
+  }
+  if(selCat) selCat.value = catKey;
+  updThemes();
+  if(selTh && selTh.options.length>0){
+    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);
+  }
 
-  // Conditions aléatoires
+  // 5. Conditions aléatoires
   const conds = ['Jour','Nuit','Crépuscule'];
-  const cond = conds[Math.floor(Math.random()*conds.length)];
   const selCond = document.getElementById('cond');
-  if(selCond) selCond.value = cond;
+  if(selCond) selCond.value = conds[Math.floor(Math.random()*conds.length)];
 
-  // Générer après un court délai
-  setTimeout(()=>gen(), 120);
+  // 6. PN / PAX / Carburant selon l'aéronef
+  const avData = AV_DATA[av.n];
+  if(avData){
+    const pn  = rnd(avData.pn[0],  avData.pn[1]);
+    const pax = rnd(avData.pax[0], avData.pax[1]);
+    const cbrt = rndF(avData.cbrt[0], avData.cbrt[1]);
+    const elPn   = document.getElementById('pn');
+    const elPax  = document.getElementById('pax');
+    const elCbrt = document.getElementById('cbrt');
+    if(elPn)   elPn.value   = pn;
+    if(elPax)  elPax.value  = pax;
+    if(elCbrt) elCbrt.value = cbrt + ' t';
+  }
+
+  // 7. Générer
+  setTimeout(()=>gen(), 100);
 }
 
 function gen(){
@@ -1445,6 +1501,25 @@ function gen(){
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
 upd();
+
+// Préselection PN/PAX/carburant quand on change l'aéronef
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id==='aeronef'){
+    const avName = e.target.value;
+    const avData = AV_DATA[avName];
+    if(avData){
+      const pn   = rnd(avData.pn[0],   avData.pn[1]);
+      const pax  = rnd(avData.pax[0],  avData.pax[1]);
+      const cbrt = rndF(avData.cbrt[0], avData.cbrt[1]);
+      const elPn   = document.getElementById('pn');
+      const elPax  = document.getElementById('pax');
+      const elCbrt = document.getElementById('cbrt');
+      if(elPn)   elPn.value   = pn;
+      if(elPax)  elPax.value  = pax;
+      if(elCbrt) elCbrt.value = cbrt + ' t';
+    }
+  }
+});
 
 
 </script>
