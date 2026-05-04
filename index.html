@@ -196,6 +196,30 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
 .modal-btn-sec{background:#f5f5f5;color:#666;border:1.5px solid #ddd;border-radius:8px;padding:9px 20px;font-size:14px;cursor:pointer;width:100%}
 .modal-error{color:#c0392b;font-size:13px;margin-bottom:8px;display:none}
 .modal-success{color:#27ae60;font-size:13px;margin-bottom:8px;display:none}
+
+/* ── TUTORIEL PYRO ── */
+@keyframes pyro-idle{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+@keyframes pyro-wave{0%,100%{transform:rotate(0deg);}25%{transform:rotate(18deg);}75%{transform:rotate(-8deg);}}
+@keyframes pyro-jump{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+@keyframes pyro-point{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+@keyframes pyro-nod{0%,100%{transform:rotate(0deg);}30%{transform:rotate(7deg);}60%{transform:rotate(-4deg);}}
+.pyro-wave{animation:pyro-wave 0.6s ease-in-out 3!important;}
+.pyro-jump{animation:pyro-jump 0.5s ease-in-out 2!important;}
+.pyro-point{animation:pyro-point 0.7s ease-in-out 3!important;}
+.pyro-nod{animation:pyro-nod 0.5s ease-in-out 3!important;}
+.tuto-tab{padding:6px 16px;border-radius:20px;border:1px solid #ddd;font-size:12px;cursor:pointer;background:#fff;color:#888;transition:all .15s;font-family:'Source Sans 3',sans-serif;}
+.tuto-tab.active{background:#1F3864;color:#fff;border-color:#1F3864;}
+.tuto-tab.disabled{opacity:.45;cursor:not-allowed;}
+.tuto-step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:8px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;transition:all .15s;}
+.tuto-step:hover{border-color:#1F3864;}
+.tuto-step.active{border-color:#1F3864;background:#f0f4f8;}
+.tuto-step-num{width:26px;height:26px;border-radius:50%;background:#e0e0e0;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Source Sans 3',sans-serif;}
+.tuto-step.active .tuto-step-num{background:#1F3864;color:#fff;}
+.tuto-step-title{font-size:13px;font-weight:600;color:#1F3864;margin-bottom:2px;font-family:'Source Sans 3',sans-serif;}
+.tuto-step-desc{font-size:12px;color:#666;font-family:'Source Sans 3',sans-serif;}
+.tuto-step-detail{display:none;margin-top:8px;padding:10px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;color:#555;line-height:1.6;font-family:'Source Sans 3',sans-serif;}
+.tuto-step.active .tuto-step-detail{display:block;}
+.tuto-tip{color:#375623;font-weight:600;margin-top:5px;font-size:11px;}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8BKS8L5MS"></script>
@@ -225,160 +249,85 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
   <div class="hero">
     <div class="hero-inner">
       <div class="hero-badge">Guide d'utilisation</div>
-      <h1>Comment utiliser<br>le site RFFS-BOD ?</h1>
-      <p>En 3 étapes simples, découvre comment accéder aux ressources pédagogiques et télécharger tes fiches formateur.</p>
+      <h1>Tutoriel RFFS BOD</h1>
+      <p>Pyro te guide pas à pas pour utiliser le générateur de fiches et enregistrer tes exercices.</p>
     </div>
   </div>
   <div class="main">
-    <div class="section-title"><span>🎬</span> Tutoriel animé</div>
-    <div class="anim-card">
-      <div class="anim-header">
-        <div class="anim-dot"></div><div class="anim-dot"></div><div class="anim-dot"></div>
-        <span>Pyro te guide — clique sur les flèches pour naviguer</span>
+
+    <!-- PYRO + BULLES -->
+    <div style="display:flex;gap:20px;align-items:flex-end;margin-bottom:2rem;flex-wrap:wrap;">
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div id="pyro-anim" style="animation:pyro-idle 2.5s ease-in-out infinite;">
+          <svg width="100" height="155" viewBox="0 0 110 160" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="55" cy="68" rx="20" ry="20" fill="#f5c89a"/>
+            <ellipse cx="35" cy="68" rx="4.5" ry="5.5" fill="#f0b888"/>
+            <ellipse cx="75" cy="68" rx="4.5" ry="5.5" fill="#f0b888"/>
+            <path d="M35 54 Q55 44 75 54 Q75 50 55 48 Q35 50 35 54Z" fill="#e8b430"/>
+            <path d="M40 56 Q44 52 46 57" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M48 54 Q52 49 54 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M56 54 Q60 49 62 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M64 56 Q67 52 69 57" fill="#e8b430" stroke="#d4a020" stroke-width="0.5"/>
+            <circle cx="46" cy="64" r="4.5" fill="white"/>
+            <circle cx="64" cy="64" r="4.5" fill="white"/>
+            <circle cx="47" cy="64" r="2.5" fill="#2c1a0e"/>
+            <circle cx="65" cy="64" r="2.5" fill="#2c1a0e"/>
+            <circle cx="48" cy="63" r="1" fill="white"/>
+            <circle cx="66" cy="63" r="1" fill="white"/>
+            <path d="M42 59 Q46 57 50 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path d="M60 59 Q64 57 68 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <ellipse cx="55" cy="71" rx="3" ry="2.2" fill="#e0a070"/>
+            <path d="M45 78 Q55 86 65 78" fill="none" stroke="#c0785a" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M48 79 Q55 84 62 79 Q55 83 48 79Z" fill="white" opacity=".7"/>
+            <ellipse cx="40" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
+            <ellipse cx="70" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
+            <rect x="32" y="96" width="46" height="42" rx="7" fill="#1F3864"/>
+            <path d="M42 96 Q55 104 68 96" fill="#162d52"/>
+            <rect x="32" y="109" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
+            <rect x="32" y="122" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
+            <rect x="37" y="98" width="14" height="9" rx="1.5" fill="#C55A11"/>
+            <text x="44" y="105" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">BOD</text>
+            <rect x="58" y="98" width="14" height="9" rx="1.5" fill="#375623"/>
+            <text x="65" y="105" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">RFFS</text>
+            <rect x="13" y="96" width="19" height="10" rx="5" fill="#1F3864"/>
+            <rect x="78" y="96" width="19" height="10" rx="5" fill="#1F3864"/>
+            <circle cx="13" cy="101" r="7" fill="#f5c89a"/>
+            <circle cx="97" cy="101" r="7" fill="#f5c89a"/>
+            <rect x="34" y="136" width="17" height="18" rx="5" fill="#162d52"/>
+            <rect x="59" y="136" width="17" height="18" rx="5" fill="#162d52"/>
+            <rect x="31" y="148" width="22" height="11" rx="3" fill="#111"/>
+            <rect x="57" y="148" width="22" height="11" rx="3" fill="#111"/>
+            <rect x="29" y="157" width="26" height="3" rx="1.5" fill="#333"/>
+            <rect x="55" y="157" width="26" height="3" rx="1.5" fill="#333"/>
+          </svg>
+        </div>
+        <div style="font-size:11px;color:#888;font-weight:600;">Pyro</div>
       </div>
-      <div class="anim-body">
-
-        <div id="s0" class="scene active">
-          <div class="stage">
-            <div class="bubble">"Salut ! Je suis Pyro,<br>ton guide sur<br>RFFS-BOD !"</div>
-            <div class="pompier" style="animation:pbounce 0.9s ease-in-out infinite">
-              <div class="helmet"><div class="hbadge"></div></div>
-              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
-              <div class="pbody" style="position:relative"><div class="parm-l"></div><div class="parm-r" style="transform-origin:top center;animation:pwave 0.5s ease-in-out 4"></div><div class="pbelt"></div></div>
-              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="s1" class="scene">
-          <div class="stage">
-            <div class="bubble">"Scanne ce QR code<br>pour arriver sur<br>le site !"</div>
-            <div class="pompier" style="animation:pbounce 1s ease-in-out infinite">
-              <div class="helmet"><div class="hbadge"></div></div>
-              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
-              <div class="pbody" style="position:relative"><div class="parm-l"></div><div class="parm-r" style="transform:rotate(-35deg);transform-origin:top center;right:-14px"></div><div class="pbelt"></div></div>
-              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
-            </div>
-            <div class="prop">
-              <div class="phone-frame">
-                <div class="phone-screen">
-                  <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="44" height="44" fill="white"/>
-                    <rect x="2" y="2" width="16" height="16" fill="#1F3864" rx="1"/>
-                    <rect x="4" y="4" width="12" height="12" fill="white" rx="1"/>
-                    <rect x="6" y="6" width="8" height="8" fill="#1F3864"/>
-                    <rect x="26" y="2" width="16" height="16" fill="#1F3864" rx="1"/>
-                    <rect x="28" y="4" width="12" height="12" fill="white" rx="1"/>
-                    <rect x="30" y="6" width="8" height="8" fill="#1F3864"/>
-                    <rect x="2" y="26" width="16" height="16" fill="#1F3864" rx="1"/>
-                    <rect x="4" y="28" width="12" height="12" fill="white" rx="1"/>
-                    <rect x="6" y="30" width="8" height="8" fill="#1F3864"/>
-                    <rect x="20" y="2" width="4" height="4" fill="#1F3864"/>
-                    <rect x="20" y="8" width="4" height="4" fill="#1F3864"/>
-                    <rect x="20" y="14" width="4" height="4" fill="#1F3864"/>
-                    <rect x="26" y="20" width="4" height="4" fill="#1F3864"/>
-                    <rect x="32" y="20" width="4" height="4" fill="#1F3864"/>
-                    <rect x="38" y="20" width="4" height="4" fill="#1F3864"/>
-                    <rect x="20" y="26" width="4" height="4" fill="#1F3864"/>
-                    <rect x="26" y="26" width="4" height="4" fill="#1F3864"/>
-                    <rect x="20" y="32" width="4" height="4" fill="#1F3864"/>
-                    <rect x="32" y="32" width="4" height="4" fill="#1F3864"/>
-                    <rect x="38" y="38" width="4" height="4" fill="#1F3864"/>
-                    <rect x="26" y="38" width="4" height="4" fill="#1F3864"/>
-                    <rect x="2" y="20" width="4" height="4" fill="#1F3864"/>
-                    <rect x="8" y="20" width="4" height="4" fill="#1F3864"/>
-                    <rect x="14" y="20" width="4" height="4" fill="#1F3864"/>
-                  </svg>
-                  <div class="scan-line"></div>
-                </div>
-              </div>
-              <div style="font-size:9px;color:#1F3864;font-weight:700;margin-top:4px;z-index:2">jimfire39.github.io/rffs-bod</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="s2" class="scene">
-          <div class="stage">
-            <div class="bubble">"Choisis ton thème :<br>incendie, secours,<br>RFFS..."</div>
-            <div class="pompier" style="animation:pfloat 1.5s ease-in-out infinite">
-              <div class="helmet"><div class="hbadge"></div></div>
-              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
-              <div class="pbody" style="position:relative"><div class="parm-l" style="transform:rotate(30deg);transform-origin:top center"></div><div class="parm-r"></div><div class="pbelt"></div></div>
-              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
-            </div>
-            <div class="prop" style="flex-direction:row;gap:7px;align-items:flex-end;margin-bottom:10px">
-              <div class="theme-card-sm sel" style="background:#fadbd8;border-color:var(--rouge)"><div class="tbar" style="background:var(--rouge)"></div><div class="tbar" style="background:#f5b7b1;width:70%"></div><div class="tbar" style="background:#f5b7b1"></div></div>
-              <div class="theme-card-sm" style="background:#fef3e2;border-color:var(--orange)"><div class="tbar" style="background:var(--orange)"></div><div class="tbar" style="background:#fad7a0;width:70%"></div><div class="tbar" style="background:#fad7a0"></div></div>
-              <div class="theme-card-sm" style="background:#eaf4fb;border-color:var(--bleu)"><div class="tbar" style="background:var(--bleu)"></div><div class="tbar" style="background:#aed6f1;width:70%"></div><div class="tbar" style="background:#aed6f1"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="s3" class="scene">
-          <div class="stage">
-            <div class="bubble">"Un clic et ta fiche<br>formateur est<br>téléchargée !"</div>
-            <div class="pompier" style="animation:pbounce 0.8s ease-in-out infinite">
-              <div class="helmet"><div class="hbadge"></div></div>
-              <div class="phead"><div class="pbrow l"></div><div class="pbrow r"></div><div class="peye l"></div><div class="peye r"></div><div class="psmile"></div></div>
-              <div class="pbody" style="position:relative"><div class="parm-l" style="transform:rotate(-20deg);transform-origin:top center"></div><div class="parm-r" style="transform:rotate(20deg);transform-origin:top center"></div><div class="pbelt"></div></div>
-              <div class="plegs"><div class="pleg"><div class="pboot"></div></div><div class="pleg"><div class="pboot"></div></div></div>
-            </div>
-            <div class="fiche-sm">
-              <div class="fiche-top"></div>
-              <div class="fiche-line"></div><div class="fiche-line s"></div>
-              <div class="fiche-line"></div><div class="fiche-line s"></div>
-              <div class="dl-arrow">↓</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="scene-nav">
-          <button class="scene-btn" id="btnPrev" onclick="goScene(cur-1)" disabled>← Précédent</button>
-          <div class="scene-dots">
-            <div class="sdot active" id="d0"></div>
-            <div class="sdot" id="d1"></div>
-            <div class="sdot" id="d2"></div>
-            <div class="sdot" id="d3"></div>
-          </div>
-          <button class="scene-btn" id="btnNext" onclick="goScene(cur+1)">Suivant →</button>
-        </div>
-
+      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#333;line-height:1.6;position:relative;">
+        Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
+        <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
+        <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
       </div>
     </div>
 
-    <div class="section-title"><span>📋</span> Les 3 étapes en détail</div>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-ico">📱</div>
-        <h3>Scanner le QR code</h3>
-        <p>Utilise l'appareil photo de ton smartphone pour scanner et accéder directement au site.</p>
-        <div class="qr-wrap">
-          <div id="qrcode-tuto" style="border-radius:6px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);background:#fff;padding:4px;display:inline-block"></div>
-          <span class="qr-url">jimfire39.github.io/rffs-bod</span>
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-ico">🗂️</div>
-        <h3>Choisir un thème</h3>
-        <p>Parcours les thèmes : incendie, secours, RFFS… et sélectionne celui qui correspond à ta formation.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-ico">📄</div>
-        <h3>Télécharger la fiche</h3>
-        <p>Clique sur la fiche formateur souhaitée et télécharge-la en un clic. Prête à l'emploi !</p>
-      </div>
+    <!-- ONGLETS TUTORIELS -->
+    <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <div class="tuto-tab active" onclick="setTutoTab('rffs')">RFFS BOD</div>
+      <div class="tuto-tab disabled">Incendie — bientôt</div>
+      <div class="tuto-tab disabled">SUAP — bientôt</div>
     </div>
 
-    <div class="section-title"><span>💡</span> Conseils</div>
-    <div class="tip-box"><div class="tip-icon">💡</div><p>Les fiches sont optimisées pour l'impression A4. Ouvre le PDF et imprime en qualité haute depuis ton navigateur.</p></div>
-    <div class="tip-box"><div class="tip-icon">📶</div><p>Le site fonctionne aussi depuis une connexion mobile. Pas besoin de Wi-Fi pour consulter les fiches une fois téléchargées.</p></div>
+    <!-- ÉTAPES GÉNÉRER -->
+    <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Générer une fiche d'exercice</div>
+    <div id="tuto-steps-gen" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;"></div>
+
+    <!-- ÉTAPES ENREGISTRER -->
+    <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Enregistrer et consulter l'historique</div>
+    <div id="tuto-steps-save" style="display:flex;flex-direction:column;gap:10px;"></div>
+
   </div>
 </div>
 
-<!-- ===== THÈMES ===== -->
 <div id="section-themes" class="section-page">
   <div class="hero">
     <div class="hero-inner">
@@ -920,6 +869,73 @@ window.addEventListener('DOMContentLoaded', function() {
   var savedBanner = localStorage.getItem('rffs-banner');
   if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
 });
+
+// ── TUTORIEL PYRO ────────────────────────────────────────────────────────────
+const TUTO_GEN = [
+  {icon:"🛩", title:"Choisir le niveau RFFS", desc:"Sélectionnez le niveau 5, 7 ou 8 dans le panneau de gauche.", detail:"Niv.5 = 1 VIM, Niv.7 = 2 VIM, Niv.8 = 3 VIM. En niveau 5 pas de Chef de Manoeuvre.", tip:"", anim:"nod"},
+  {icon:"✈", title:"Sélectionner l'aéronef", desc:"Choisissez l'aéronef. PN, PAX et carburant se remplissent automatiquement.", detail:"Les données sont pré-renseignées selon l'aéronef. Modifiables manuellement.", tip:"Le bouton 🎲 génère une fiche aléatoire !", anim:"wave"},
+  {icon:"🔥", title:"Choisir le thème", desc:"Sélectionnez une catégorie puis un thème d'intervention.", detail:"6 catégories disponibles : Incendie, Structure, Soute, Sauvetage, Spécial, Militaire.", tip:"", anim:"point"},
+  {icon:"⚡", title:"Générer la fiche", desc:"Cliquez sur Générer la fiche. Trois onglets apparaissent.", detail:"Fiche SIMS, Éval. formative avec badges VIM, Éval. CM et Pompiers avec grilles complètes.", tip:"Le schéma affiche l'image de l'aéronef automatiquement.", anim:"jump"},
+  {icon:"📍", title:"Positionner les VIM", desc:"Sélectionnez un badge VIM puis cliquez sur le schéma.", detail:"Cliquez sur un badge VIM gauche ou droite, puis cliquez dans le schéma pour le placer.", tip:"", anim:"point"},
+];
+const TUTO_SAVE = [
+  {icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé, Non validé ou En cours en bas de la fiche.", detail:"Le résultat alimente les statistiques de l'historique. Ajoutez vos observations.", tip:"", anim:"nod"},
+  {icon:"💾", title:"Enregistrer la fiche", desc:"Cliquez sur Enregistrer. Sauvegarde locale et cloud.", detail:"La fiche est enregistrée localement ET synchronisée sur Supabase. Accessible depuis tous les appareils.", tip:"Un message de confirmation s'affiche 3 secondes.", anim:"jump"},
+  {icon:"📋", title:"Consulter l'historique", desc:"Accédez à l'historique depuis le menu principal.", detail:"Fiches groupées par mois. Bouton Sync pour récupérer les fiches cloud sur un nouvel appareil.", tip:"Le Chef de service peut supprimer des fiches.", anim:"point"},
+  {icon:"⬇", title:"Exporter en CSV", desc:"Le Chef de service exporte toutes les fiches en Excel.", detail:"Export CSV protégé par mot de passe Chef de service. Fichier Excel complet.", tip:"", anim:"nod"},
+];
+
+let activeGenIdx=-1, activeSaveIdx=-1;
+
+function renderTutoSteps(steps, containerId, activeIdx, prefix){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = steps.map((s,i)=>`
+    <div class="tuto-step ${i===activeIdx?'active':''}" onclick="toggleTutoStep('${prefix}',${i})">
+      <div style="font-size:16px;margin-top:2px;">${s.icon}</div>
+      <div style="flex:1;">
+        <div class="tuto-step-num">${i+1}</div>
+        <div class="tuto-step-title">${s.title}</div>
+        <div class="tuto-step-desc">${s.desc}</div>
+        <div class="tuto-step-detail">${s.detail.replace(/\n/g,'<br>')}${s.tip?'<div class="tuto-tip">💡 '+s.tip+'</div>':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleTutoStep(prefix, idx){
+  const steps = prefix==='gen' ? TUTO_GEN : TUTO_SAVE;
+  if(prefix==='gen'){
+    activeGenIdx = activeGenIdx===idx ? -1 : idx;
+    renderTutoSteps(TUTO_GEN, 'tuto-steps-gen', activeGenIdx, 'gen');
+    if(activeGenIdx>=0) pyroSay(steps[activeGenIdx].anim, steps[activeGenIdx].detail.split('\n')[0] + (steps[activeGenIdx].tip ? '<br><em style="color:#375623;">💡 '+steps[activeGenIdx].tip+'</em>' : ''));
+  } else {
+    activeSaveIdx = activeSaveIdx===idx ? -1 : idx;
+    renderTutoSteps(TUTO_SAVE, 'tuto-steps-save', activeSaveIdx, 'save');
+    if(activeSaveIdx>=0) pyroSay(steps[activeSaveIdx].anim, steps[activeSaveIdx].detail.split('\n')[0] + (steps[activeSaveIdx].tip ? '<br><em style="color:#375623;">💡 '+steps[activeSaveIdx].tip+'</em>' : ''));
+  }
+}
+
+function pyroSay(anim, text){
+  const p = document.getElementById('pyro-anim');
+  const b = document.getElementById('pyro-bubble');
+  if(!p || !b) return;
+  p.className = '';
+  void p.offsetWidth;
+  p.className = 'pyro-' + anim;
+  b.innerHTML = text + '<div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div><div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>';
+  setTimeout(()=>{ if(p) p.style.animation='pyro-idle 2.5s ease-in-out infinite'; }, 2000);
+}
+
+function setTutoTab(name){
+  document.querySelectorAll('.tuto-tab').forEach((t,i)=>{
+    if(!t.classList.contains('disabled')) t.classList.toggle('active', i===0);
+  });
+}
+
+// Init tutoriel
+renderTutoSteps(TUTO_GEN, 'tuto-steps-gen', -1, 'gen');
+renderTutoSteps(TUTO_SAVE, 'tuto-steps-save', -1, 'save');
+
 </script>
 </body>
 </html>
