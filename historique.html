@@ -22,7 +22,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .page-hdr h1{font-size:18px;font-weight:700;color:var(--navy);}
 .hdr-actions{display:flex;gap:8px;flex-wrap:wrap;}
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;}
 .stat-n{font-size:26px;font-weight:700;color:var(--navy);}
 .stat-n.ok{color:var(--green);}
@@ -346,7 +346,6 @@ function renderAll(){
   const total = data.length;
   const val   = data.filter(f=>f.resultat==='validé').length;
   const nval  = data.filter(f=>f.resultat==='non_validé').length;
-  const wip   = data.filter(f=>f.resultat==='en_cours').length;
 
   // Compteur année
   document.getElementById('year-counter').textContent = `2026 — ${total} fiche${total>1?'s':''}`;
@@ -356,7 +355,7 @@ function renderAll(){
     <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">Total fiches</div></div>
     <div class="stat"><div class="stat-n ok">${val}</div><div class="stat-l">Validées</div></div>
     <div class="stat"><div class="stat-n ko">${nval}</div><div class="stat-l">Non validées</div></div>
-    <div class="stat"><div class="stat-n wip">${wip}</div><div class="stat-l">En cours</div></div>`;
+`;
 
   // Grouper par mois
   const byMonth = {};
@@ -459,6 +458,7 @@ function renderMonth(fiches){
         <span style="display:flex;gap:5px;align-items:center;">
           <div class="badge ${badge}">${label}</div>
           <button onclick="openFiche('${f.id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+          <button onclick="pdfFiche('${f.id}')" style="background:none;border:1px solid var(--green);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--green);" title="PDF">📄</button>
         </span>
       </div>`;
     }).join('')}`;
@@ -526,6 +526,48 @@ function showChef(){
   renderChef();
 }
 
+function exportPDFChefMois(mois){
+  const data = getData();
+  const fiches = data.filter(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    return m===mois;
+  });
+  if(!fiches.length){ alert('Aucune fiche ce mois.'); return; }
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiches ${MOIS[mois]} 2026</title>
+  <style>body{font-family:Arial,sans-serif;font-size:11px;color:#222;margin:20px;}
+  h1{font-size:14px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:6px;margin-bottom:14px;}
+  .fiche{border:1px solid #ddd;border-radius:6px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+  .fiche-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .fiche-title{font-weight:700;font-size:12px;color:#1F3864;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+  .lbl{font-size:9px;color:#888;text-transform:uppercase;}.val{font-size:11px;}
+  .obs{background:#f8f8f8;border-radius:4px;padding:6px;font-style:italic;color:#555;margin-top:6px;font-size:10px;}
+  @media print{body{margin:10px;}}</style></head><body>
+  <h1>RFFS BOD — Fiches ${MOIS[mois]} 2026 (${fiches.length} fiche${fiches.length>1?'s':''})</h1>
+  ${fiches.map(f=>{
+    const badge=f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+    const label=f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+    const agents=(f.agents||'—').split('|').filter(Boolean).join(', ');
+    return `<div class="fiche">
+      <div class="fiche-hdr"><span class="fiche-title">${f.aeronef||'—'} — ${f.theme||'—'}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="grid">
+        <div><div class="lbl">Date</div><div class="val">${f.date||'—'} ${f.heure||''}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${f.source||'Web'}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+      </div>
+      ${f.observations?`<div class="obs">${f.observations}</div>`:''}
+    </div>`;
+  }).join('')}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
 function renderChef(){
   // Même contenu que l'historique mais avec cases à cocher et suppression
   const data = getData();
@@ -544,8 +586,9 @@ function renderChef(){
   let html='';
   months.reverse().forEach(m=>{
     html+=`<div style="margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid var(--border);">
-        ${MOIS[m]} — ${byMonth[m].length} fiche${byMonth[m].length>1?'s':''}
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span>${MOIS[m]} — ${byMonth[m].length} fiche${byMonth[m].length>1?'s':''}</span>
+        <button onclick="exportPDFChefMois(${m})" style="font-size:10px;padding:3px 8px;background:#fff;color:var(--green);border:1px solid var(--green);border-radius:4px;cursor:pointer;">📄 PDF</button>
       </div>`;
     [...byMonth[m]].reverse().forEach(f=>{
       const badge=f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
@@ -556,7 +599,10 @@ function renderChef(){
           <div style="font-size:12px;font-weight:600;">${f.aeronef||'—'} <span style="color:var(--muted);font-weight:400;">— ${f.theme||''}</span></div>
           <div style="font-size:10px;color:var(--muted);">${f.date||''} ${f.heure||''} · Niv.${f.niveau||'—'}</div>
         </div>
-        <div class="badge ${badge}" style="flex-shrink:0;">${label}</div>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
+          <div class="badge ${badge}">${label}</div>
+          <button onclick="openFiche('${f.id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+        </div>
       </div>`;
     });
     html+='</div>';
@@ -614,6 +660,42 @@ async function syncFromSupabase(){
   renderAll();
   if(btn) btn.textContent = '🔄 Sync';
   alert(`✓ ${fiches.length} fiche(s) synchronisée(s) depuis Supabase.`);
+}
+
+function pdfFiche(id){
+  const data = getData();
+  const f = data.find(x=>String(x.id)===String(id));
+  if(!f) return;
+  const badge = f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+  const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+  const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiche ${f.aeronef} ${f.date}</title>
+  <style>body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:30px;}
+  h1{font-size:16px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:8px;margin-bottom:16px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:12px;}
+  .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px;}
+  .val{font-size:13px;color:#222;font-weight:500;}
+  .badge{display:inline-block;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .obs{background:#f8f8f8;border-radius:6px;padding:10px;font-style:italic;color:#555;margin-top:12px;font-size:11px;}
+  .footer{margin-top:20px;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:8px;}
+  @media print{body{margin:15px;}}</style></head><body>
+  <h1>RFFS BOD — Fiche d'exercice</h1>
+  <div class="grid">
+    <div><div class="lbl">Date / Heure</div><div class="val">${f.date||'—'} à ${f.heure||'—'}</div></div>
+    <div><div class="lbl">Résultat</div><div class="val"><span class="badge ${badge}">${label}</span></div></div>
+    <div><div class="lbl">Aéronef</div><div class="val">${f.aeronef||'—'}</div></div>
+    <div><div class="lbl">Niveau RFFS</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
+    <div><div class="lbl">Thème</div><div class="val">${f.theme||'—'}</div></div>
+    <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
+    <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+  </div>
+  ${f.observations?`<div class="obs"><strong>Observations :</strong><br>${f.observations}</div>`:''}
+  <div class="footer">RFFS BOD · Fiche enregistrée le ${f.date} · Source : ${f.source||'Web'}</div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 400);
 }
 
 function openFiche(id){
