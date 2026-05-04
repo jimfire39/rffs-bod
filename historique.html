@@ -47,6 +47,21 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .badge-ko{background:#fce4e4;color:var(--red);}
 .badge-wip{background:#fff3e0;color:var(--orange);}
 .empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:13px;}
+/* Modale lecture fiche */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+.modal-hdr{background:var(--navy);color:#fff;padding:14px 18px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;}
+.modal-hdr h3{font-size:14px;font-weight:500;}
+.modal-body{padding:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.modal-value{font-size:13px;color:var(--text);}
+.modal-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+@media print{.modal-overlay{display:block!important;position:static;background:none;padding:0;}
+.modal{box-shadow:none;max-height:none;border-radius:0;}
+.modal-footer,.modal-hdr button,.app-bar,.hdr-actions{display:none!important;}
+body>*:not(.modal-overlay){display:none!important;}}
 /* FORMS */
 label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;margin-top:10px;}
 label:first-child{margin-top:0;}
@@ -370,6 +385,54 @@ function renderAll(){
 
 function setMonth(m){ activeMonth=m; renderAll(); }
 
+function exportPDFMois(){
+  const data = getData();
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+  const fiches = byMonth[activeMonth]||[];
+  if(!fiches.length){ alert('Aucune fiche ce mois.'); return; }
+  const w = window.open('','_blank');
+  const MOIS_NOMS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiches ${MOIS_NOMS[activeMonth]} 2026</title>
+  <style>body{font-family:Arial,sans-serif;font-size:11px;color:#222;margin:20px;}
+  h1{font-size:14px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:6px;margin-bottom:14px;}
+  .fiche{border:1px solid #ddd;border-radius:6px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+  .fiche-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .fiche-title{font-weight:700;font-size:12px;color:#1F3864;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+  .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.3px;}
+  .val{font-size:11px;color:#222;}
+  .obs{background:#f8f8f8;border-radius:4px;padding:6px;font-style:italic;color:#555;margin-top:6px;font-size:10px;}
+  @media print{body{margin:10px;}}</style></head><body>
+  <h1>RFFS BOD — Fiches ${MOIS_NOMS[activeMonth]} 2026 (${fiches.length} fiche${fiches.length>1?'s':''})</h1>
+  ${fiches.map(f=>{
+    const badge = f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+    const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+    const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+    return `<div class="fiche">
+      <div class="fiche-hdr"><span class="fiche-title">${f.aeronef||'—'} — ${f.theme||'—'}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="grid">
+        <div><div class="lbl">Date</div><div class="val">${f.date||'—'} ${f.heure||''}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${f.source||'Web'}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+      </div>
+      ${f.observations?`<div class="obs">${f.observations}</div>`:''}
+    </div>`;
+  }).join('')}
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
 function renderMonth(fiches){
   if(!fiches.length){
     document.getElementById('fiches-content').innerHTML='<div class="empty">Aucune fiche ce mois.</div>';
@@ -380,7 +443,7 @@ function renderMonth(fiches){
       <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;">
         <input type="checkbox" id="chk-all" onchange="toggleAll(this.checked)"> Tout sélectionner
       </label>
-      <button onclick="deleteSelected()" style="font-size:11px;padding:5px 12px;background:#fff;color:var(--red);border:1.5px solid var(--red);border-radius:6px;cursor:pointer;font-weight:600;">🗑 Supprimer la sélection</button>
+      <button onclick="exportPDFMois()" style="font-size:11px;padding:5px 12px;background:#fff;color:var(--green);border:1.5px solid var(--green);border-radius:6px;cursor:pointer;font-weight:600;">📄 PDF du mois</button>
     </div>
     <div class="fiches-hdr" style="grid-template-columns:28px 100px 1fr 70px 90px;">
       <span></span><span>Date</span><span>Aéronef / Thème</span><span>Niveau</span><span>Résultat</span>
@@ -393,7 +456,10 @@ function renderMonth(fiches){
         <span class="col-date">${f.date||''}<br><span style="font-size:10px;">${f.heure||''}</span></span>
         <span><strong style="font-size:12px;">${f.aeronef||'—'}</strong><br><span class="col-theme">${f.theme||''}</span></span>
         <span style="color:var(--muted);font-size:12px;">Niv. ${f.niveau||'—'}</span>
-        <span><div class="badge ${badge}">${label}</div></span>
+        <span style="display:flex;gap:5px;align-items:center;">
+          <div class="badge ${badge}">${label}</div>
+          <button onclick="openFiche('${f.id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+        </span>
       </div>`;
     }).join('')}`;
 }
@@ -550,6 +616,42 @@ async function syncFromSupabase(){
   alert(`✓ ${fiches.length} fiche(s) synchronisée(s) depuis Supabase.`);
 }
 
+function openFiche(id){
+  const data = getData();
+  const f = data.find(x=>String(x.id)===String(id));
+  if(!f) return;
+  const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+  const label = f.resultat==='validé'?'✓ VALIDÉ':f.resultat==='non_validé'?'✗ NON VALIDÉ':'⟳ EN COURS';
+  const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+  document.getElementById('modal-title').textContent = f.aeronef + ' — ' + f.date;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field"><div class="modal-label">Date / Heure</div><div class="modal-value">${f.date||'—'} à ${f.heure||'—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Aéronef</div><div class="modal-value" style="font-size:15px;font-weight:600;color:var(--navy);">${f.aeronef||'—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Thème</div><div class="modal-value">${f.theme||'—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Niveau RFFS</div><div class="modal-value">Niv. ${f.niveau||'—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Conditions</div><div class="modal-value">${f.conditions||'—'}</div></div>
+    <div class="modal-field"><div class="modal-label">Agents</div><div class="modal-value">${agents}</div></div>
+    <div class="modal-field"><div class="modal-label">Résultat</div><div class="modal-value"><span class="badge ${badge}">${label}</span></div></div>
+    <div class="modal-field"><div class="modal-label">Observations</div><div class="modal-value" style="background:var(--bg);border-radius:6px;padding:8px;font-style:${f.observations?'normal':'italic'};color:${f.observations?'var(--text)':'var(--muted)'};">${f.observations||'Aucune observation'}</div></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:right;">Source : ${f.source||'Web'} · ID : ${f.id}</div>
+  `;
+  document.getElementById('modal-fiche').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal-fiche').classList.remove('open');
+}
+
+function printFiche(){
+  window.print();
+}
+
+// Fermer en cliquant en dehors
+document.addEventListener('DOMContentLoaded', function(){
+  const m = document.getElementById('modal-fiche');
+  if(m) m.addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+});
+
 function clearAll(){
   const conf = confirm('Êtes-vous sûr de vouloir supprimer tout l\'historique ?\n\nCette action est irréversible.');
   if(conf){
@@ -560,5 +662,21 @@ function clearAll(){
 }
   renderAll();
 </script>
+
+<!-- ── MODALE LECTURE FICHE ── -->
+<div class="modal-overlay" id="modal-fiche">
+  <div class="modal" id="modal-content">
+    <div class="modal-hdr">
+      <h3 id="modal-title">Détail de la fiche</h3>
+      <button onclick="closeModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Fermer</button>
+      <button class="btn btn-green" onclick="printFiche()">📄 Exporter PDF</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
