@@ -105,7 +105,7 @@ input:focus{border-color:var(--navy);}
         <h1 id="year-counter">2026 — 0 fiche</h1>
         <div class="hdr-actions">
           <button class="btn btn-green" onclick="exportCSVProtected()">⬇ Exporter CSV</button>
-          <button class="btn btn-red" onclick="clearAll()">🗑 Effacer l'historique</button>
+          <button class="btn btn-navy" onclick="showChef()" style="background:var(--navy);">👨‍✈️ Chef de service</button>
         </div>
       </div>
 
@@ -117,6 +117,33 @@ input:focus{border-color:var(--navy);}
         <div class="month-tabs" id="month-tabs"></div>
         <div id="fiches-content"><div class="empty">Aucune fiche enregistrée.</div></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHEF DE SERVICE ───────────────────────────────────────────────────── -->
+<div id="screen-chef" class="screen">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Chef de service — Gestion des fiches</div>
+    </div>
+    <span class="back-link" onclick="showMain()">← Retour</span>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="main-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;">
+            <input type="checkbox" id="chk-chef-all" onchange="document.querySelectorAll('.chk-chef').forEach(c=>c.checked=this.checked)">
+            Tout sélectionner
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-green" onclick="exportCSV()">⬇ Exporter CSV</button>
+          <button class="btn btn-red" onclick="deleteChefSelected()">🗑 Supprimer la sélection</button>
+        </div>
+      </div>
+      <div class="card" id="chef-content"></div>
     </div>
   </div>
 </div>
@@ -142,6 +169,18 @@ input:focus{border-color:var(--navy);}
         <input type="password" id="pw-confirm" placeholder="Confirmer">
         <div class="err" id="pw-msg"></div>
         <button class="btn btn-navy btn-full" onclick="changePw()">Enregistrer</button>
+      </div>
+
+      <div class="card">
+        <div class="admin-section-title">Mot de passe Chef de service</div>
+        <label>Mot de passe actuel</label>
+        <input type="password" id="chef-current" placeholder="Mot de passe actuel">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="chef-new" placeholder="Nouveau mot de passe">
+        <label>Confirmer</label>
+        <input type="password" id="chef-confirm" placeholder="Confirmer">
+        <div class="err" id="chef-msg"></div>
+        <button class="btn btn-navy btn-full" onclick="changeChefPw()">Enregistrer</button>
       </div>
 
       <div class="card">
@@ -213,6 +252,7 @@ async function supabaseGetAll() {
 }
 
 const KEY_DATA = 'rffs_formatives';
+const KEY_CHEF = 'rffs_chef_pw';
 const KEY_PW   = 'rffs_hist_pw';
 const KEY_ADM  = 'rffs_admin_pw';
 const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -229,9 +269,9 @@ function show(id){
 }
 
 function exportCSVProtected(){
-  const pw = prompt('Mot de passe pour exporter le CSV :');
+  const pw = prompt('Mot de passe Chef de service :');
   if(pw === null) return;
-  if(pw !== getPw()){ alert('Mot de passe incorrect.'); return; }
+  if(pw !== getChefPw()){ alert('Mot de passe incorrect.'); return; }
   exportCSV();
 }
 
@@ -260,6 +300,18 @@ function changePw(){
   localStorage.setItem(KEY_PW, nw);
   msg('pw-msg','Mot de passe mis à jour.',true);
   ['pw-current','pw-new','pw-confirm'].forEach(i=>document.getElementById(i).value='');
+}
+
+function changeChefPw(){
+  const cur=document.getElementById('chef-current').value;
+  const nw =document.getElementById('chef-new').value;
+  const cf =document.getElementById('chef-confirm').value;
+  if(cur!==getChefPw()){msg('chef-msg','Mot de passe actuel incorrect.',false);return;}
+  if(!nw){msg('chef-msg','Nouveau mot de passe vide.',false);return;}
+  if(nw!==cf){msg('chef-msg','Les mots de passe ne correspondent pas.',false);return;}
+  localStorage.setItem(KEY_CHEF,nw);
+  msg('chef-msg','Mot de passe Chef mis à jour.',true);
+  ['chef-current','chef-new','chef-confirm'].forEach(i=>document.getElementById(i).value='');
 }
 
 function changeAdmPw(){
@@ -396,6 +448,77 @@ function exportCSV(){
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+}
+
+function getChefPw(){ return localStorage.getItem(KEY_CHEF) || 'CHEF2026'; }
+
+function showChef(){
+  const pw = prompt('Mot de passe Chef de service :');
+  if(pw === null) return;
+  if(pw !== getChefPw()){ alert('Mot de passe incorrect.'); return; }
+  show('screen-chef');
+  renderChef();
+}
+
+function renderChef(){
+  // Même contenu que l'historique mais avec cases à cocher et suppression
+  const data = getData();
+  if(!data.length){
+    document.getElementById('chef-content').innerHTML='<div class="empty">Aucune fiche enregistrée.</div>';
+    return;
+  }
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+  const months=Object.keys(byMonth).map(Number).sort((a,b)=>a-b);
+  let html='';
+  months.reverse().forEach(m=>{
+    html+=`<div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid var(--border);">
+        ${MOIS[m]} — ${byMonth[m].length} fiche${byMonth[m].length>1?'s':''}
+      </div>`;
+    [...byMonth[m]].reverse().forEach(f=>{
+      const badge=f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+      const label=f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+        <input type="checkbox" class="chk-chef" data-id="${f.id}" style="cursor:pointer;width:16px;height:16px;flex-shrink:0;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;">${f.aeronef||'—'} <span style="color:var(--muted);font-weight:400;">— ${f.theme||''}</span></div>
+          <div style="font-size:10px;color:var(--muted);">${f.date||''} ${f.heure||''} · Niv.${f.niveau||'—'}</div>
+        </div>
+        <div class="badge ${badge}" style="flex-shrink:0;">${label}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('chef-content').innerHTML=html;
+}
+
+async function deleteChefSelected(){
+  const checked=[...document.querySelectorAll('.chk-chef:checked')];
+  if(!checked.length){alert('Aucune fiche sélectionnée.');return;}
+  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Action irréversible.`)) return;
+  const ids=checked.map(c=>c.dataset.id);
+  let data=getData().filter(f=>!ids.includes(String(f.id)));
+  localStorage.setItem(KEY_DATA, JSON.stringify(data));
+  // Supabase
+  for(const id of ids){
+    if(!isNaN(id)&&String(id).length<15){
+      try{
+        await fetch(SUPA_URL+'/rest/v1/fiches?id=eq.'+id,{
+          method:'DELETE',
+          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+      }catch(e){console.warn('Supabase delete:',e);}
+    }
+  }
+  renderChef();
+  renderAll();
+  alert(`✓ ${ids.length} fiche(s) supprimée(s).`);
 }
 
 async function syncFromSupabase(){
