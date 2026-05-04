@@ -872,17 +872,146 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ── TUTORIEL PYRO ────────────────────────────────────────────────────────────
 const TUTO_GEN = [
-  {icon:"🛩", title:"Choisir le niveau RFFS", desc:"Sélectionnez le niveau 5, 7 ou 8 dans le panneau de gauche.", detail:"Niv.5 = 1 VIM, Niv.7 = 2 VIM, Niv.8 = 3 VIM. En niveau 5 pas de Chef de Manoeuvre.", tip:"", anim:"nod"},
-  {icon:"✈", title:"Sélectionner l'aéronef", desc:"Choisissez l'aéronef. PN, PAX et carburant se remplissent automatiquement.", detail:"Les données sont pré-renseignées selon l'aéronef. Modifiables manuellement.", tip:"Le bouton 🎲 génère une fiche aléatoire !", anim:"wave"},
-  {icon:"🔥", title:"Choisir le thème", desc:"Sélectionnez une catégorie puis un thème d'intervention.", detail:"6 catégories disponibles : Incendie, Structure, Soute, Sauvetage, Spécial, Militaire.", tip:"", anim:"point"},
-  {icon:"⚡", title:"Générer la fiche", desc:"Cliquez sur Générer la fiche. Trois onglets apparaissent.", detail:"Fiche SIMS, Éval. formative avec badges VIM, Éval. CM et Pompiers avec grilles complètes.", tip:"Le schéma affiche l'image de l'aéronef automatiquement.", anim:"jump"},
-  {icon:"📍", title:"Positionner les VIM", desc:"Sélectionnez un badge VIM puis cliquez sur le schéma.", detail:"Cliquez sur un badge VIM gauche ou droite, puis cliquez dans le schéma pour le placer.", tip:"", anim:"point"},
+  {
+    icon:"🛩", title:"Choisir le niveau RFFS", desc:"Sélectionnez le niveau 5, 7 ou 8 dans le panneau de gauche.",
+    msg:"Dans le panneau de gauche, choisis le niveau. Le nombre de VIM s'adapte automatiquement !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:200px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">NIVEAU RFFS</div>
+      <div style="display:flex;gap:4px;">
+        <div style="padding:4px 8px;background:#e0e0e0;border-radius:4px;font-size:8px;color:#666;">Niv. 5</div>
+        <div style="padding:4px 8px;background:#e0e0e0;border-radius:4px;font-size:8px;color:#666;">Niv. 7</div>
+        <div style="padding:4px 8px;background:#1F3864;border-radius:4px;font-size:8px;color:#fff;font-weight:700;">Niv. 8 ✓</div>
+      </div>
+      <div style="margin-top:6px;font-size:7px;color:#C55A11;">→ 3 VIM pour le niveau 8</div>
+    </div>`
+  },
+  {
+    icon:"✈", title:"Sélectionner l'aéronef", desc:"PN, PAX et carburant se remplissent automatiquement.",
+    msg:"Choisis l'aéronef et les données se remplissent toutes seules ! Le 🎲 génère une fiche aléatoire.",
+    anim:"wave",
+    preview:`<div style="padding:8px;width:220px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">AÉRONEF</div>
+      <div style="border:1px solid #ddd;border-radius:4px;padding:4px 6px;font-size:8px;background:#fff;margin-bottom:6px;">ATR 72 — Air France / HOP! ▼</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">PN</div><div style="font-size:9px;font-weight:700;color:#1F3864;">3</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">PAX</div><div style="font-size:9px;font-weight:700;color:#1F3864;">68</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">CARBURANT</div><div style="font-size:9px;font-weight:700;color:#C55A11;">6.2 t</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">POB</div><div style="font-size:9px;font-weight:700;color:#C00000;">71</div></div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"🔥", title:"Choisir le thème", desc:"Sélectionnez une catégorie puis un thème d'intervention.",
+    msg:"6 catégories disponibles : Incendie, Structure, Soute, Sauvetage, Spécial, Militaire.",
+    anim:"point",
+    preview:`<div style="padding:8px;width:210px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">CATÉGORIE</div>
+      <div style="border:1px solid #ddd;border-radius:4px;padding:4px 6px;font-size:8px;background:#fff;margin-bottom:5px;">🔥 Incendie aéronef ▼</div>
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">THÈME</div>
+      <div style="border:1px solid #C55A11;border-radius:4px;padding:4px 6px;font-size:8px;background:#fff3ee;font-weight:600;color:#C55A11;">Feu moteur ▼</div>
+    </div>`
+  },
+  {
+    icon:"⚡", title:"Générer la fiche", desc:"Trois onglets apparaissent : SIMS, Éval. formative, CM & Pompiers.",
+    msg:"Un clic et la fiche complète est générée avec le SIMS et toutes les évaluations !",
+    anim:"jump",
+    preview:`<div style="width:260px;">
+      <div style="display:flex;gap:2px;border-bottom:2px solid #1F3864;">
+        <div style="padding:4px 8px;background:#1F3864;border-radius:4px 4px 0 0;font-size:7px;color:#fff;font-weight:700;">📋 Fiche SIMS</div>
+        <div style="padding:4px 8px;background:#fff;border:1px solid #1F3864;border-bottom:none;border-radius:4px 4px 0 0;font-size:7px;color:#1F3864;">📊 Éval. formative</div>
+        <div style="padding:4px 8px;background:#fff;border:1px solid #1F3864;border-bottom:none;border-radius:4px 4px 0 0;font-size:7px;color:#1F3864;">🎖️ CM</div>
+      </div>
+      <div style="border:1px solid #1F3864;border-top:none;padding:8px;background:#fff;">
+        <div style="background:#1F3864;color:#fff;border-radius:3px;padding:4px 6px;font-size:7px;font-weight:700;margin-bottom:4px;">S — Situation</div>
+        <div style="font-size:7px;color:#333;margin-bottom:3px;">Feu moteur signalé — ATR 72 — Piste 23.</div>
+        <div style="background:#C55A11;color:#fff;border-radius:3px;padding:4px 6px;font-size:7px;font-weight:700;margin-bottom:4px;">M — Mission</div>
+        <div style="font-size:7px;color:#333;">VIM 1 → Secteur 1 : Extinction feu...</div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"📍", title:"Positionner les VIM", desc:"Sélectionnez un badge VIM puis cliquez sur le schéma.",
+    msg:"Clique sur un badge VIM, puis place-le en cliquant sur le schéma interactif !",
+    anim:"point",
+    preview:`<div style="width:240px;">
+      <div style="background:#e8eef4;border-radius:4px;height:90px;position:relative;border:1px solid #c8d4e0;overflow:hidden;">
+        <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(31,56,100,.4);"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(31,56,100,.4);"></div>
+        <div style="position:absolute;top:5px;left:8px;font-size:13px;font-weight:700;color:#1F3864;opacity:.25;">2</div>
+        <div style="position:absolute;top:5px;right:8px;font-size:13px;font-weight:700;color:#1F3864;opacity:.25;">3</div>
+        <div style="position:absolute;bottom:5px;left:8px;font-size:13px;font-weight:700;color:#1F3864;opacity:.25;">1</div>
+        <div style="position:absolute;bottom:5px;right:8px;font-size:13px;font-weight:700;color:#1F3864;opacity:.25;">4</div>
+        <div style="position:absolute;bottom:16px;left:12px;background:#C55A11;color:#fff;font-size:6px;font-weight:700;padding:2px 5px;border-radius:3px;">VIM 1</div>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px;justify-content:center;">
+        <div style="background:#C55A11;color:#fff;font-size:6px;font-weight:700;padding:3px 7px;border-radius:3px;border:2px solid #fff;box-shadow:0 0 0 2px #C55A11;">◄ VIM 1</div>
+        <div style="background:#8B4513;color:#fff;font-size:6px;font-weight:700;padding:3px 7px;border-radius:3px;">VIM 2 ►</div>
+      </div>
+    </div>`
+  },
 ];
 const TUTO_SAVE = [
-  {icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé, Non validé ou En cours en bas de la fiche.", detail:"Le résultat alimente les statistiques de l'historique. Ajoutez vos observations.", tip:"", anim:"nod"},
-  {icon:"💾", title:"Enregistrer la fiche", desc:"Cliquez sur Enregistrer. Sauvegarde locale et cloud.", detail:"La fiche est enregistrée localement ET synchronisée sur Supabase. Accessible depuis tous les appareils.", tip:"Un message de confirmation s'affiche 3 secondes.", anim:"jump"},
-  {icon:"📋", title:"Consulter l'historique", desc:"Accédez à l'historique depuis le menu principal.", detail:"Fiches groupées par mois. Bouton Sync pour récupérer les fiches cloud sur un nouvel appareil.", tip:"Le Chef de service peut supprimer des fiches.", anim:"point"},
-  {icon:"⬇", title:"Exporter en CSV", desc:"Le Chef de service exporte toutes les fiches en Excel.", detail:"Export CSV protégé par mot de passe Chef de service. Fichier Excel complet.", tip:"", anim:"nod"},
+  {
+    icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé, Non validé ou En cours en bas de la fiche.",
+    msg:"Le résultat est essentiel pour les statistiques. Ajoute tes observations !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:5px;">RÉSULTAT</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <div style="border:2px solid #375623;border-radius:4px;padding:3px 7px;font-size:7px;color:#375623;font-weight:700;background:#e8f5e9;">✓ VALIDÉ</div>
+        <div style="border:2px solid #ddd;border-radius:4px;padding:3px 7px;font-size:7px;color:#999;font-weight:700;">✗ NON VALIDÉ</div>
+        <div style="border:2px solid #ddd;border-radius:4px;padding:3px 7px;font-size:7px;color:#999;font-weight:700;">⟳ EN COURS</div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"💾", title:"Enregistrer la fiche", desc:"Sauvegarde locale + synchronisation cloud automatique.",
+    msg:"La fiche est sauvegardée localement ET sur Supabase. Accessible depuis tous les appareils !",
+    anim:"jump",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="background:#1F3864;color:#fff;border-radius:4px;padding:6px;text-align:center;font-size:8px;font-weight:700;margin-bottom:5px;">💾 Enregistrer la fiche</div>
+      <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+        <div style="font-size:7px;color:#555;">🖥️ Local</div>
+        <div style="font-size:9px;color:#C55A11;">→</div>
+        <div style="font-size:7px;color:#555;">☁️ Supabase</div>
+      </div>
+      <div style="text-align:center;margin-top:5px;font-size:7px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+    </div>`
+  },
+  {
+    icon:"📋", title:"Consulter l'historique", desc:"Fiches groupées par mois. Bouton Sync pour synchroniser.",
+    msg:"L'historique regroupe toutes les fiches par mois. Sync récupère les données cloud !",
+    anim:"point",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="font-size:9px;font-weight:700;color:#1F3864;margin-bottom:5px;">2026 — 3 fiches</div>
+      <div style="display:flex;gap:3px;margin-bottom:5px;">
+        <div style="background:#1F3864;color:#fff;border-radius:10px;font-size:7px;padding:2px 8px;">Mai (2)</div>
+        <div style="background:#fff;border:1px solid #ddd;color:#888;border-radius:10px;font-size:7px;padding:2px 8px;">Avril (1)</div>
+      </div>
+      <div style="border:1px solid #e8f5e9;background:#f8fff8;border-radius:4px;padding:4px 6px;font-size:7px;margin-bottom:3px;display:flex;justify-content:space-between;"><span><b>ATR 72</b> — Feu moteur</span><span style="color:#375623;font-weight:700;">Validé</span></div>
+      <div style="border:1px solid #fce4e4;background:#fff8f8;border-radius:4px;padding:4px 6px;font-size:7px;display:flex;justify-content:space-between;"><span><b>A320</b> — Train</span><span style="color:#C00000;font-weight:700;">Non validé</span></div>
+    </div>`
+  },
+  {
+    icon:"⬇", title:"Exporter en CSV", desc:"Le Chef de service exporte toutes les fiches en Excel.",
+    msg:"L'export CSV est protégé par mot de passe Chef de service. Fichier Excel prêt pour le tableau de bord !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="background:#375623;color:#fff;border-radius:4px;padding:6px;text-align:center;font-size:8px;font-weight:700;margin-bottom:5px;">⬇ Exporter CSV</div>
+      <div style="font-size:7px;color:#555;margin-bottom:3px;">📄 RFFS_BOD_Formations_2026.csv</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ddd;border-radius:2px;overflow:hidden;">
+        <div style="background:#1F3864;color:#fff;font-size:5px;padding:2px;text-align:center;">Date</div>
+        <div style="background:#1F3864;color:#fff;font-size:5px;padding:2px;text-align:center;">Aéronef</div>
+        <div style="background:#1F3864;color:#fff;font-size:5px;padding:2px;text-align:center;">Résultat</div>
+        <div style="background:#1F3864;color:#fff;font-size:5px;padding:2px;text-align:center;">Agents</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">05/05</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">ATR 72</div>
+        <div style="background:#e8f5e9;font-size:5px;padding:2px;text-align:center;color:#375623;">Validé</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">MARTIN</div>
+      </div>
+    </div>`
+  },
 ];
 
 let activeGenIdx=-1, activeSaveIdx=-1;
@@ -892,12 +1021,22 @@ function renderTutoSteps(steps, containerId, activeIdx, prefix){
   if(!el) return;
   el.innerHTML = steps.map((s,i)=>`
     <div class="tuto-step ${i===activeIdx?'active':''}" onclick="toggleTutoStep('${prefix}',${i})">
-      <div style="font-size:16px;margin-top:2px;">${s.icon}</div>
+      <div style="font-size:16px;margin-top:4px;">${s.icon}</div>
       <div style="flex:1;">
-        <div class="tuto-step-num">${i+1}</div>
-        <div class="tuto-step-title">${s.title}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+          <div class="tuto-step-num">${i+1}</div>
+          <div class="tuto-step-title">${s.title}</div>
+        </div>
         <div class="tuto-step-desc">${s.desc}</div>
-        <div class="tuto-step-detail">${s.detail.replace(/\n/g,'<br>')}${s.tip?'<div class="tuto-tip">💡 '+s.tip+'</div>':''}</div>
+        ${i===activeIdx && s.preview ? `
+        <div class="tuto-step-detail" style="display:block;">
+          <div style="background:#1F3864;color:rgba(255,255,255,.7);font-size:10px;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;align-items:center;gap:5px;">
+            <span>🔍</span><span>Aperçu</span>
+          </div>
+          <div style="border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;padding:10px;background:#fafafa;display:flex;justify-content:center;">
+            ${s.preview}
+          </div>
+        </div>` : ''}
       </div>
     </div>`).join('');
 }
@@ -907,11 +1046,11 @@ function toggleTutoStep(prefix, idx){
   if(prefix==='gen'){
     activeGenIdx = activeGenIdx===idx ? -1 : idx;
     renderTutoSteps(TUTO_GEN, 'tuto-steps-gen', activeGenIdx, 'gen');
-    if(activeGenIdx>=0) pyroSay(steps[activeGenIdx].anim, steps[activeGenIdx].detail.split('\n')[0] + (steps[activeGenIdx].tip ? '<br><em style="color:#375623;">💡 '+steps[activeGenIdx].tip+'</em>' : ''));
+    if(activeGenIdx>=0) pyroSay(steps[activeGenIdx].anim, steps[activeGenIdx].msg);
   } else {
     activeSaveIdx = activeSaveIdx===idx ? -1 : idx;
     renderTutoSteps(TUTO_SAVE, 'tuto-steps-save', activeSaveIdx, 'save');
-    if(activeSaveIdx>=0) pyroSay(steps[activeSaveIdx].anim, steps[activeSaveIdx].detail.split('\n')[0] + (steps[activeSaveIdx].tip ? '<br><em style="color:#375623;">💡 '+steps[activeSaveIdx].tip+'</em>' : ''));
+    if(activeSaveIdx>=0) pyroSay(steps[activeSaveIdx].anim, steps[activeSaveIdx].msg);
   }
 }
 
