@@ -96,7 +96,7 @@ input:focus{border-color:var(--navy);}
       <div class="app-bar-sub">Suivi réglementaire annuel</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" onclick="showAdmin()">⚙ Admin</span>
+      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" onclick="syncFromSupabase()" style="margin-right:10px;">🔄 Sync</span><span class="back-link" onclick="showAdmin()">⚙ Admin</span>
     </div>
   </div>
   <div style="padding:1.5rem;">
@@ -161,6 +161,57 @@ input:focus{border-color:var(--navy);}
 </div>
 
 <script>
+
+// ── SUPABASE SYNC ─────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://swrjwiujatbbpmznaffc.supabase.co';
+const SUPA_KEY = 'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E';
+
+async function supabaseInsert(fiche) {
+  try {
+    const res = await fetch(SUPA_URL + '/rest/v1/fiches', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        date:         fiche.date        || '',
+        heure:        fiche.heure       || '',
+        aeronef:      fiche.aeronef     || '',
+        theme:        fiche.theme       || '',
+        niveau:       fiche.niveau      || 0,
+        conditions:   fiche.conditions  || '',
+        agents:       fiche.agents      || '',
+        resultat:     fiche.resultat    || '',
+        observations: fiche.observations|| '',
+        source:       fiche.source      || 'Web'
+      })
+    });
+    if(res.ok) console.log('Supabase: fiche enregistrée');
+    else console.warn('Supabase erreur:', res.status, await res.text());
+  } catch(e) {
+    console.warn('Supabase offline:', e.message);
+  }
+}
+
+async function supabaseGetAll() {
+  try {
+    const res = await fetch(SUPA_URL + '/rest/v1/fiches?order=created_at.desc', {
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY
+      }
+    });
+    if(res.ok) return await res.json();
+    return [];
+  } catch(e) {
+    console.warn('Supabase lecture échouée:', e.message);
+    return [];
+  }
+}
+
 const KEY_DATA = 'rffs_formatives';
 const KEY_PW   = 'rffs_hist_pw';
 const KEY_ADM  = 'rffs_admin_pw';
@@ -273,21 +324,60 @@ function renderMonth(fiches){
     return;
   }
   document.getElementById('fiches-content').innerHTML = `
-    <div class="fiches-hdr">
-      <span>Date</span><span>Aéronef / Thème</span><span>Niveau</span><span>Agents</span><span>Résultat</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+      <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" id="chk-all" onchange="toggleAll(this.checked)"> Tout sélectionner
+      </label>
+      <button onclick="deleteSelected()" style="font-size:11px;padding:5px 12px;background:#fff;color:var(--red);border:1.5px solid var(--red);border-radius:6px;cursor:pointer;font-weight:600;">🗑 Supprimer la sélection</button>
+    </div>
+    <div class="fiches-hdr" style="grid-template-columns:28px 100px 1fr 70px 90px;">
+      <span></span><span>Date</span><span>Aéronef / Thème</span><span>Niveau</span><span>Résultat</span>
     </div>
     ${[...fiches].reverse().map(f=>{
       const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
       const label = f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
-      const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
-      return `<div class="fiche-row">
+      return `<div class="fiche-row" style="grid-template-columns:28px 100px 1fr 70px 90px;">
+        <span><input type="checkbox" class="chk-fiche" data-id="${f.id}" style="cursor:pointer;"></span>
         <span class="col-date">${f.date||''}<br><span style="font-size:10px;">${f.heure||''}</span></span>
         <span><strong style="font-size:12px;">${f.aeronef||'—'}</strong><br><span class="col-theme">${f.theme||''}</span></span>
         <span style="color:var(--muted);font-size:12px;">Niv. ${f.niveau||'—'}</span>
-        <span style="color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${agents}</span>
         <span><div class="badge ${badge}">${label}</div></span>
       </div>`;
     }).join('')}`;
+}
+
+function toggleAll(checked){
+  document.querySelectorAll('.chk-fiche').forEach(c=>c.checked=checked);
+}
+
+async function deleteSelected(){
+  const checked = [...document.querySelectorAll('.chk-fiche:checked')];
+  if(!checked.length){ alert('Aucune fiche sélectionnée.'); return; }
+  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Cette action est irréversible.`)) return;
+
+  const ids = checked.map(c=>c.dataset.id);
+
+  // Supprimer du localStorage
+  let data = getData().filter(f=>!ids.includes(String(f.id)));
+  localStorage.setItem(KEY_DATA, JSON.stringify(data));
+
+  // Supprimer de Supabase (si ID numérique = Supabase)
+  for(const id of ids){
+    if(!isNaN(id) && String(id).length < 15){ // ID Supabase = petit entier
+      try{
+        await fetch(SUPA_URL + '/rest/v1/fiches?id=eq.' + id, {
+          method: 'DELETE',
+          headers: {
+            'apikey': SUPA_KEY,
+            'Authorization': 'Bearer ' + SUPA_KEY
+          }
+        });
+      } catch(e){ console.warn('Supabase delete error:', e); }
+    }
+  }
+
+  activeMonth = null;
+  renderAll();
 }
 
 function exportCSV(){
@@ -306,6 +396,35 @@ function exportCSV(){
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+}
+
+async function syncFromSupabase(){
+  const btn = document.querySelector('[onclick="syncFromSupabase()"]');
+  if(btn) btn.textContent = '⏳ Sync...';
+  const fiches = await supabaseGetAll();
+  if(!fiches.length){ 
+    alert('Aucune fiche trouvée sur Supabase.');
+    if(btn) btn.textContent = '🔄 Sync';
+    return;
+  }
+  // Convertir le format Supabase → format local
+  const local = fiches.map(f=>({
+    id:           f.id,
+    date:         f.date,
+    heure:        f.heure,
+    aeronef:      f.aeronef,
+    theme:        f.theme,
+    niveau:       f.niveau,
+    conditions:   f.conditions,
+    agents:       f.agents,
+    resultat:     f.resultat,
+    observations: f.observations
+  }));
+  localStorage.setItem('rffs_formatives', JSON.stringify(local));
+  activeMonth = null;
+  renderAll();
+  if(btn) btn.textContent = '🔄 Sync';
+  alert(`✓ ${fiches.length} fiche(s) synchronisée(s) depuis Supabase.`);
 }
 
 function clearAll(){
