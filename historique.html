@@ -643,7 +643,7 @@ async function syncFromSupabase(){
     return;
   }
   // Convertir le format Supabase → format local
-  const local = fiches.map(f=>({
+  const remote = fiches.map(f=>({
     id:           f.id,
     date:         f.date,
     heure:        f.heure,
@@ -653,13 +653,25 @@ async function syncFromSupabase(){
     conditions:   f.conditions,
     agents:       f.agents,
     resultat:     f.resultat,
-    observations: f.observations
+    observations: f.observations,
+    source:       f.source||'Web'
   }));
-  localStorage.setItem('rffs_formatives', JSON.stringify(local));
+  // Fusionner avec les fiches locales — éviter les doublons par ID
+  const local = getData();
+  const remoteIds = new Set(remote.map(f=>String(f.id)));
+  const localOnly = local.filter(f=>!remoteIds.has(String(f.id)));
+  const merged = [...remote, ...localOnly];
+  // Trier par date décroissante
+  merged.sort((a,b)=>{
+    const da = (a.date||'').split('/').reverse().join('-');
+    const db = (b.date||'').split('/').reverse().join('-');
+    return db.localeCompare(da);
+  });
+  localStorage.setItem(KEY_DATA, JSON.stringify(merged));
   activeMonth = null;
   renderAll();
   if(btn) btn.textContent = '🔄 Sync';
-  alert(`✓ ${fiches.length} fiche(s) synchronisée(s) depuis Supabase.`);
+  alert(`✓ ${merged.length} fiche(s) au total — ${remote.length} cloud + ${localOnly.length} locales fusionnées.`);
 }
 
 function pdfFiche(id){
