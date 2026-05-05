@@ -25,7 +25,7 @@
   --navy-light: #0072BC;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Source Sans 3',sans-serif;background:var(--navy);color:var(--noir);min-height:100vh}
+body{font-family:'Source Sans 3',sans-serif;background:#f4f6f9;color:var(--noir);min-height:100vh}
 
 /* HEADER */
 header{background:var(--navy-dark);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,.08)}
@@ -307,7 +307,7 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
         </div>
         <div style="font-size:11px;color:#888;font-weight:600;">Pyro</div>
       </div>
-      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#333;line-height:1.6;position:relative;">
+      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
         Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
         <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
         <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
@@ -470,59 +470,59 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
   </div>
 
   <!-- STATS -->
-  <div style="display:flex;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);background:var(--navy);">
-    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.08);">
+  <div style="display:flex;border-top:1px solid #e0e4ea;border-bottom:1px solid #e0e4ea;background:#fff;">
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
       <div style="font-size:22px;font-weight:900;color:var(--orange);">36</div>
-      <div style="font-size:9px;color:#6B7385;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Aéronefs</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Aéronefs</div>
     </div>
-    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.08);">
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
       <div style="font-size:22px;font-weight:900;color:var(--orange);">21</div>
-      <div style="font-size:9px;color:#6B7385;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Thèmes</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Thèmes</div>
     </div>
-    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid rgba(255,255,255,.08);">
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
       <div style="font-size:22px;font-weight:900;color:var(--orange);">3</div>
-      <div style="font-size:9px;color:#6B7385;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Niveaux RFFS</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Niveaux RFFS</div>
     </div>
     <div style="flex:1;padding:14px 16px;text-align:center;">
       <div style="font-size:22px;font-weight:900;color:var(--orange);">🎲</div>
-      <div style="font-size:9px;color:#6B7385;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Mode aléatoire</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Mode aléatoire</div>
     </div>
   </div>
 
   <!-- CARDS MODULES -->
-  <div style="padding:24px;background:var(--navy);">
+  <div style="padding:24px;background:#f4f6f9;">
     <div style="font-size:10px;font-weight:700;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Modules de formation</div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
-      <a href="generateur_rffs.html" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.transform=''">
+      <div onclick="showSection('tutoriel')" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">🎓</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Tutoriel interactif</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Guide pas à pas avec Pyro. Aperçus animés.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">Pyro te guide</div>
+      </div>
+      <a href="generateur_rffs.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
         <div style="font-size:22px;margin-bottom:8px;">🔥</div>
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Générateur RFFS</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;">Fiches SIMS, évaluation formative et CM & Pompiers.</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Générateur RFFS</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Fiches SIMS, évaluation formative et CM & Pompiers.</div>
         <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">RFFS 5 · 7 · 8</div>
       </a>
-      <a href="evaluation_rffs.html" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.transform=''">
-        <div style="font-size:22px;margin-bottom:8px;">📊</div>
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Fiche d'évaluation</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;">Grilles CM et équipage VIM. Schéma interactif.</div>
-        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(0,114,188,.2);color:#5bbfff;">CM + Équipage</div>
-      </a>
-      <a href="historique.html" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.transform=''">
+      <a href="historique.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
         <div style="font-size:22px;margin-bottom:8px;">📋</div>
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Historique formations</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;">Suivi réglementaire. Export CSV et PDF. Sync cloud.</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Historique formations</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Suivi réglementaire. Export CSV et PDF. Sync cloud.</div>
         <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(0,122,77,.2);color:#00c97a;">Suivi réglementaire</div>
       </a>
-      <div onclick="showSection('tutoriel')" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.transform=''">
-        <div style="font-size:22px;margin-bottom:8px;">🎓</div>
-        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Tutoriel interactif</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5;">Guide pas à pas avec Pyro. Aperçus animés.</div>
-        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">Pyro te guide</div>
+      <div onclick="showSection('themes')" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">📚</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Thèmes de formation</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">SSUAP, Incendie, RFFS. Fiches pédagogiques complètes.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(0,114,188,.2);color:#5bbfff;">SSUAP · Incendie · RFFS</div>
       </div>
     </div>
   </div>
 
   <!-- FOOTER HOME -->
-  <div style="padding:14px 24px;border-top:1px solid rgba(255,255,255,.08);background:var(--navy);display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-size:10px;color:#6B7385;">RFFS BOD · Bordeaux-Mérignac · 2026</div>
+  <div style="padding:14px 24px;border-top:1px solid #e0e4ea;background:#fff;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:10px;color:#888;">RFFS BOD · Bordeaux-Mérignac · 2026</div>
     <button onclick="showSection('contact')" style="background:none;border:none;font-size:10px;color:var(--orange);cursor:pointer;">📞 Contact</button>
   </div>
 
