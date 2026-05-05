@@ -1035,7 +1035,7 @@ function saveEvalCMPompiers(aeronef, theme, niv, cond){
 
 
 function switchTab(tab){
-  const tabs=['sims','eval','evp'];
+  const tabs=['sims','eval'];
   tabs.forEach(t=>{
     const panel=document.getElementById('panel-'+t);
     const btn=document.getElementById('tab-'+t);
@@ -1508,10 +1508,7 @@ function gen(){
           style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;margin-right:4px;">
           📊 Éval. formative
         </button>
-        <button id="tab-evp" data-tab="evp"
-          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
-          🎖️ Éval. CM & Pompiers
-        </button>
+
       </div>
 
       <!-- ONGLET SIMS -->
@@ -1526,10 +1523,7 @@ function gen(){
         ${buildFormative(niv, nbv, aNom, th.l, cond)}
       </div>
 
-      <!-- ONGLET ÉVAL. CM & POMPIERS -->
-      <div id="panel-evp" style="display:none;">
-        ${buildEvalCMPompiers(niv, nbv, aNom, th.l, cond)}
-      </div>
+
 
     </div>
     <div class="fiche-footer">
@@ -1541,10 +1535,8 @@ function gen(){
   setTimeout(function(){
     const btnSims = document.getElementById('tab-sims');
     const btnEval = document.getElementById('tab-eval');
-    const btnEvp  = document.getElementById('tab-evp');
     if(btnSims) btnSims.addEventListener('click', function(){ switchTab('sims'); });
     if(btnEval) btnEval.addEventListener('click', function(){ switchTab('eval'); });
-    if(btnEvp)  btnEvp.addEventListener('click',  function(){ switchTab('evp');  });
     switchTab('sims');
   }, 50);
 }
