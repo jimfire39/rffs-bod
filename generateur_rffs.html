@@ -312,7 +312,7 @@ const TH={
     m5:["VIM 1 COND. : Commandement — SIMS radio — CR TWR.","VIM 1 OPER. : Extinction feu moteur — poudre + canon plein débit — protection couloir évacuation."],
     m7:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu moteur — poudre + canon plein débit.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage.","Chef de manœuvre : SIMS radio — coordination évacuation PAX — CR TWR."],
     m8:["VIM 1 → Secteur 1 (côté moteur sinistre) : Extinction feu moteur — poudre + canon plein débit.","VIM 2 → Secteur 2 (côté opposé) : Protection fuselage — appui sauvetage PAX.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination générale — SIMS radio — CR TWR."],
-    sec:["Risque ingestion moteur : ne jamais passer devant la prise d'air.","Carburant : interdire toute source d'ignition — mousse si nappe.","Surveiller propagation vers aile et fuselage.","CR continu conducteurs → responsable de manœuvre sur état sinistre."],
+    sec:["Risque ingestion moteur : ne jamais passer devant la prise d'air.","Carburant : interdire toute source d'ignition — mousse si nappe.","Surveiller propagation vers aile et fuselage — zone accessoires et tuyère.","Feux moteur : CO² par mouvements circulaires — poudre BC si insuffisant.","CFRP (B787/A350) : fibres carbone toxiques — ARI obligatoire — ne pas souffler les braises.","CR continu conducteurs → responsable de manœuvre sur état sinistre."],
     tc:[{ti:"🔥 Feu moteur",c:"red",li:["Poudre polyvalente : extinction nappe moteur","canon jet diffusé : refroidissement + protection","Surveiller reprise de feu après extinction"]},{ti:"⚠️ Risque ingestion",c:"red",li:["Ne jamais passer devant la prise d'air","Approche par l'arrière ou le côté","Hélice : danger même moteur coupé (si TP)"]},{ti:"👥 Évacuation PAX",c:"nv",li:["Protéger couloirs évacuation","Coordonner avec PNC","Regroupement à distance sécurité"]},{ti:"✈️ Points clés",c:"nv",li:["Vérifier efficacité extinction bord","Surveiller propagation hydraulique","CR régulier à la TWR"]}],
   },
   train_non_verrouille:{
@@ -370,6 +370,32 @@ const TH={
     sec:["Carburant : quantité importante — risque nappe et propagation rapide.","Évacuation PAX prioritaire — protéger toboggans / portes.","Poudre : extinction nappe — eau/mousse : refroidissement + protection.","Surveiller propagation vers fuselage et cabine."],
     tc:[{ti:"🔥 Feu aile + train",c:"red",li:["Poudre : extinction nappe au sol","canon jet diffusé : refroidissement aile","Priorité : couper alimentation carburant"]},{ti:"⚠️ Carburant",c:"red",li:["Risque nappe et propagation rapide","Interdire toute source d'ignition","Surveiller réservoirs intrados"]},{ti:"👥 Évacuation PAX",c:"nv",li:["Évacuation = priorité absolue","Protéger issues et toboggans","Coordonner avec PNC"]},{ti:"✈️ Points clés",c:"nv",li:["Vérifier dégagement essencier","Surveiller feu résiduel après extinction","CR régulier à la TWR"]}],
   },
+
+  camion_avitailleur:{
+    l:"Feu camion avitailleur",av:"Feu camion avitailleur (Jet A1 — kérosène)",
+    al:[{t:"Un feu est signalé sur le camion avitailleur à quai, aéronef en cours d'avitaillement.",b:1},{t:"Explosion et départ de feu lors d'une opération d'avitaillement — l'essencier a été blessé.",i:1},{t:"Fuite de kérosène enflammée sous le camion avitailleur en zone de parking.",b:1}],
+    q:"Kérosène (code ONU 1863) — Volume en feu — Essencier blessé ? — Aéronef concerné — Passagers à bord — Surface nappe",
+    sit:["Feu camion avitailleur en zone de parking — risque de propagation à l'aéronef.","Nappe de kérosène enflammée — essencier évacué — PAX à bord.","Explosion lors de l'avitaillement — camion et aéronef concernés."],
+    m5:[
+      "VIM 1 COND. : Commandement — SIMS radio — CR TWR — périmètre sécurité.",
+      "VIM 1 OPER. : Attaque nappe upwind — mousse AFFF plein débit — tapis moussant — protection aéronef."
+    ],
+    m7:[
+      "VIM 1 → Secteur 1 : Attaque nappe kérosène — canon mousse plein débit — tapis moussant.",
+      "VIM 2 → Secteur 2 : Protection fuselage et réservoirs aéronef — jet diffusé.",
+      "CM : SIMS radio — éloignement camion si possible — CR TWR — SDIS."
+    ],
+    m8:[
+      "VIM 1 → Secteur 1 : Attaque feu camion — mousse AFFF plein débit — tapis moussant.",
+      "VIM 2 → Secteur 2 : Protection fuselage aéronef — jet diffusé.",
+      "VIM 3 → Secteur 4 : Surveillance arrière — protection camion éloigné.",
+      "CM : SIMS radio — CR TWR — SDIS — coordonne évacuation PAX si propagation."
+    ],
+    sec:["Kérosène Jet A1 (ONU 1863) : liquide inflammable classe 3 — point éclair 38°C — vapeurs lourdes.","Interdire toute source d'ignition dans rayon 50m (moteurs, radio non ATEX, cigarettes).","Position upwind obligatoire — ne jamais se placer sous le vent de la nappe.","Attaque mousse indirecte : ne pas projeter en jet bâton (destruction tapis moussant).","Camion avitailleur : réservoir pouvant contenir plusieurs milliers de litres — risque BLEVE.","Éloigner le camion de l'aéronef si possible sans danger — couper alimentation.","Essencier blessé : premier secours prioritaire si zone sécurisée.","CR régulier TWR — périmètre pompiers — SDIS renforts."],
+    q2:["Quel est le volume de kérosène impliqué ?","La pompe d'avitaillement est-elle coupée ?","L'essencier est-il blessé ?","Des passagers sont-ils à bord ?","Le feu touche-t-il déjà l'aéronef ?"],
+    tc:[{ti:"🛢️ Kérosène Jet A1",c:"red",li:["Code ONU : 1863 — classe 3","Point éclair : 38°C","Vapeurs lourdes — rase le sol","Risque BLEVE camion"]},{ti:"💧 Technique attaque",c:"nv",li:["Mousse AFFF indirecte","Jet diffusé — jamais jet bâton","Tapis moussant préventif","Débiter 150 L/min minimum"]},{ti:"⚠️ Zones danger",c:"or",li:["50m autour : zéro ignition","Upwind obligatoire","Camion = bombe potentielle","Évacuer rayon 100m si BLEVE"]},{ti:"✈️ Protection aéronef",c:"nv",li:["Mousse préventive réservoirs","Couper avitaillement","Éloigner jetway","Évacuer PAX si menace"]}],
+    cat:"incendie"
+  },
   collision_aviaire:{
     l:"Collision aviaire",av:"Collision aviaire — feu moteur possible",
     al:[{t:"Vous prenez l'alerte pour un avion en retour terrain avec problèmes techniques.",b:1},{t:"Suite à une collision aviaire — feu moteur signalé — percussions extincteurs bord.",i:1},{t:"L'avion vient de s'immobiliser sur la piste. Intervenez.",b:1}],
@@ -412,7 +438,7 @@ const NV={5:1,7:2,8:3};
 const NC={5:"vg",7:"va",8:"vr"};
 
 const CATS={
-  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","feu_nappe"],
+  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","camion_avitailleur","feu_nappe"],
   structure:["train_non_verrouille","feu_train","pb_hydraulique","sortie_de_piste"],
   soute:["feu_soute_avant","feu_soute_arriere","detection_soute_avant","detection_soute_arriere","detection_soute_avionique"],
   sauvetage:["fumee_a_bord","atterrissage_urgence","accident_fato","collision_aviaire"],
