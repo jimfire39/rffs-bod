@@ -259,8 +259,10 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
   </div>
   <div class="main">
 
-    <!-- PYRO + BULLES -->
-    <div style="display:flex;gap:20px;align-items:flex-end;margin-bottom:2rem;flex-wrap:wrap;">
+    <!-- PYRO + BULLES + MINIATURE FICHE -->
+    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;">
+
+      <!-- Pyro -->
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
         <div id="pyro-anim" style="animation:pyro-idle 2.5s ease-in-out infinite;">
           <svg width="100" height="155" viewBox="0 0 110 160" xmlns="http://www.w3.org/2000/svg">
@@ -307,10 +309,65 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
         </div>
         <div style="font-size:11px;color:#888;font-weight:600;">Pyro</div>
       </div>
-      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
-        Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
-        <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
-        <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
+
+      <!-- Bulle + Miniature fiche -->
+      <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:10px;">
+        <div id="pyro-bubble" style="background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
+          Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
+          <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
+          <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
+        </div>
+
+        <!-- Miniature fiche formative -->
+        <div style="background:#fff;border:1px solid #e0e4ea;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+          <div style="background:var(--navy);padding:5px 10px;display:flex;gap:4px;align-items:center;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div>
+            <span style="font-size:8px;color:rgba(255,255,255,.6);margin-left:6px;">Fiche SIMS — Générateur RFFS BOD</span>
+          </div>
+          <!-- Onglets -->
+          <div style="display:flex;gap:0;border-bottom:2px solid var(--navy);background:#f4f6f9;">
+            <div style="padding:4px 10px;background:var(--navy);border-radius:4px 4px 0 0;font-size:8px;color:#fff;font-weight:700;">📋 Fiche SIMS</div>
+            <div style="padding:4px 10px;font-size:8px;color:#888;">📊 Éval.</div>
+          </div>
+          <!-- Header fiche -->
+          <div style="background:var(--navy);padding:5px 8px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:7px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.5px;">AÉROPORT DE BORDEAUX-MÉRIGNAC · RFFS BOD</div>
+            <div style="background:var(--orange);color:#fff;font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;">NIV. 7</div>
+          </div>
+          <!-- Tableau ID -->
+          <div style="padding:6px 8px;background:#f9fafb;border-bottom:1px solid #e0e4ea;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
+              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Aéronef</span><br><strong style="color:var(--navy);font-size:8px;">ATR 72</strong></div>
+              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Thème</span><br><strong style="color:var(--navy);font-size:8px;">Feu moteur</strong></div>
+              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">PN / PAX</span><br><strong style="color:var(--navy);font-size:8px;">3 / 68</strong></div>
+              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Carburant</span><br><strong style="color:var(--orange);font-size:8px;">5.4 t</strong></div>
+            </div>
+          </div>
+          <!-- SIMS -->
+          <div style="padding:6px 8px;">
+            <div style="background:var(--navy);color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">S — Situation</div>
+            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">Feu moteur signalé — ATR 72 en retour terrain.</div>
+            <div style="background:var(--orange);color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">I — Informations</div>
+            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">POB : 71 · Carburant : 5.4t · Piste 23.</div>
+            <div style="background:#375623;color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">M — Mission</div>
+            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">VIM 1 → Secteur 1 : Extinction feu moteur gauche.</div>
+            <div style="background:#c0392b;color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">S — Sécurité</div>
+            <div style="font-size:7px;color:#555;line-height:1.4;">Hors axe ingestion · ARI · CR TWR.</div>
+          </div>
+          <!-- Schéma mini -->
+          <div style="background:#e8eef4;margin:0 8px 8px;border-radius:4px;height:36px;position:relative;border:1px solid #c8d4e0;">
+            <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(31,56,100,.3);"></div>
+            <div style="position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(31,56,100,.3);"></div>
+            <div style="position:absolute;top:3px;left:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">2</div>
+            <div style="position:absolute;top:3px;right:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">3</div>
+            <div style="position:absolute;bottom:3px;left:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">1</div>
+            <div style="position:absolute;bottom:3px;right:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">4</div>
+            <div style="position:absolute;bottom:5px;left:12px;background:var(--orange);color:#fff;font-size:5px;font-weight:700;padding:1px 4px;border-radius:2px;">VIM 1</div>
+          </div>
+        </div>
+
       </div>
     </div>
 
