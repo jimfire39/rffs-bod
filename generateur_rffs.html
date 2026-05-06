@@ -1570,6 +1570,22 @@ function gen(){
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
 upd();
 
+// Préselection initiale au chargement
+(function(){
+  const selAv = document.getElementById('aeronef');
+  if(selAv && selAv.value){
+    const avData = AV_DATA[selAv.value];
+    if(avData){
+      const elPn   = document.getElementById('pn');
+      const elPax  = document.getElementById('pax');
+      const elCbrt = document.getElementById('cbrt');
+      if(elPn)   elPn.value   = rnd(avData.pn[0],   avData.pn[1]);
+      if(elPax)  elPax.value  = rnd(avData.pax[0],  avData.pax[1]);
+      if(elCbrt) elCbrt.value = rndF(avData.cbrt[0], avData.cbrt[1]) + ' t';
+    }
+  }
+})();
+
 // Préselection PN/PAX/carburant quand on change l'aéronef
 document.addEventListener('change', function(e){
   if(e.target && e.target.id==='aeronef'){
