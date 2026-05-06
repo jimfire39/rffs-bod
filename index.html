@@ -996,6 +996,7 @@ window.addEventListener('DOMContentLoaded', function() {
   (async function(){
     try {
       const res = await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau?order=updated_at.desc&limit=1', {
+        cache: 'no-store',
         headers: {'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E','Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E'}
       });
       const data = await res.json();
