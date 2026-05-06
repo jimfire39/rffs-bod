@@ -1563,7 +1563,7 @@ function gen(){
     {l:'S',w:'SITUATION',cs:'ss',cl:'ssl',c:th.sit.join('<br>')},
     {l:'I',w:'INFORMATION',cs:'si',cl:'sil',c:`POB : ${pob} (${pn} PN + ${pax} PAX)<br>Carburant restant : ${cbrt}<br>Avarie : ${th.av}<br>Fret : ${fret}<br>Figurants : ${fig}<br>Questions complémentaires à poser à la TWR.`},
     {l:'M',w:'MISSION',cs:'sm',cl:'sml',c:miss.join('<br>')},
-    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:filterByType(aeronef, th.sec).join('<br>')},
+    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:filterByType(aNom, th.sec).join('<br>')},
   ];
   const simH=simD.map(r=>`<tr><td class="sl ${r.cs}">${r.l}</td><td class="slb ${r.cl}">${r.w}</td><td class="sc">${r.c}</td></tr>`).join('');
 
@@ -1571,7 +1571,7 @@ function gen(){
   const pos=["Secteur 1 (avant gauche)","Secteur 2 (avant droit)","Secteur 4 (arrière)"];
   const dispH=Array.from({length:nbv},(_,i)=>`<tr><td class="vn">VIM ${i+1}</td><td class="sn">${sects[i]}</td><td>${pos[i]}</td><td>${miss[i]||miss[miss.length-1]}</td></tr>`).join('');
 
-  const techH=filterTcByType(aeronef, th.tc).map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
+  const techH=filterTcByType(aNom, th.tc).map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
 
   document.getElementById('fw').innerHTML=`
   <div class="fiche">
