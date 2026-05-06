@@ -753,11 +753,34 @@ function checkPwd() {
   }
 }
 
-function saveBanner() {
+async function saveBanner() {
   var txt = document.getElementById('banner-input').value.trim();
   if (!txt) return;
+  // Sauvegarder local
   localStorage.setItem('rffs-banner', txt);
   document.getElementById('banner-text').textContent = txt;
+  // Sauvegarder dans Supabase — upsert (update ou insert)
+  try {
+    // D'abord supprimer l'ancien
+    await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau?id=gt.0', {
+      method: 'DELETE',
+      headers: {'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E','Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E'}
+    });
+    // Insérer le nouveau
+    await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau', {
+      method: 'POST',
+      headers: {
+        'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E',
+        'Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E',
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body: JSON.stringify({texte: txt})
+    });
+    console.log('Bandeau synchronisé sur Supabase');
+  } catch(e) {
+    console.warn('Supabase bandeau erreur:', e);
+  }
   var s = document.getElementById('banner-success');
   s.style.display = 'block';
   setTimeout(function(){ s.style.display = 'none'; closeModal('modal-admin'); }, 1500);
@@ -912,9 +935,26 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   animate();
 
-  // BANDEAU ADMIN
-  var savedBanner = localStorage.getItem('rffs-banner');
-  if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
+  // BANDEAU ADMIN — charger depuis Supabase en priorité
+  (async function(){
+    try {
+      const res = await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau?order=updated_at.desc&limit=1', {
+        headers: {'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E','Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E'}
+      });
+      const data = await res.json();
+      if(data && data.length > 0 && data[0].texte){
+        const txt = data[0].texte;
+        localStorage.setItem('rffs-banner', txt);
+        document.getElementById('banner-text').textContent = txt;
+        return;
+      }
+    } catch(e) {
+      console.warn('Supabase bandeau lecture:', e);
+    }
+    // Fallback local
+    var savedBanner = localStorage.getItem('rffs-banner');
+    if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
+  })();
 });
 
 // ── TUTORIEL PYRO ────────────────────────────────────────────────────────────
