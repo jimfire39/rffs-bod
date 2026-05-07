@@ -570,88 +570,6 @@ const AGENTS = {
   'Équipe 4': ['MOPTY','HENIN','FERELLEC','ANTOINE','BONNET','CLAVERIE','BARRERO','FERRIER','CAMPAGNOL','GESLIN','BALLION'],
 };
 
-// ── FILTRAGE SÉCURITÉ / TC PAR TYPE AÉRONEF ─────────────────────────────────
-function getAeronefType(aeronef){
-  var a = (aeronef||'').toLowerCase();
-  if(a.indexOf('ec 125')>=0||a.indexOf('ec 135')>=0||a.indexOf('puma')>=0||
-     a.indexOf('caracal')>=0||a.indexOf('as350')>=0||a.indexOf('h145')>=0||
-     a.indexOf('bell')>=0||a.indexOf('sikorsky')>=0) return 'helicoptere';
-  if(a.indexOf('rafale')>=0||a.indexOf('f-16')>=0||a.indexOf('eurofighter')>=0||
-     a.indexOf('mirage')>=0||a.indexOf('typhoon')>=0) return 'militaire';
-  if(a.indexOf('a340')>=0||a.indexOf('a380')>=0||a.indexOf('b747')>=0||
-     a.indexOf('mrtt')>=0||a.indexOf('awacs')>=0) return 'quadrireacteur';
-  if(a.indexOf('atr')>=0||a.indexOf('dash')>=0||a.indexOf('king air')>=0||
-     a.indexOf('beechcraft')>=0||a.indexOf('c-130')>=0||a.indexOf('milan')>=0) return 'biturboprop';
-  if(a.indexOf('cessna')>=0||a.indexOf('piper')>=0||a.indexOf('robin')>=0||
-     a.indexOf('socata')>=0) return 'monomoteur_piston';
-  if(a.indexOf('tbm')>=0||a.indexOf('pc-12')>=0||a.indexOf('pilatus')>=0) return 'monoturboprop';
-  return 'bireacteur';
-}
-
-// Mots-clés à exclure selon le type d'aéronef
-const EXCL = {
-  monomoteur_piston: [
-    'ingestion moteur','prise air','CFRP','B787','A350','fibres carbone',
-    'PNC','personnel navigant','coordonner avec PNC',
-    'evacuation PAX','couloirs evacuation','regroupement a distance',
-    'ETOPS','turboreacteur','APU','soute','cargo',
-    'nacelle','inverseur','tuyere','poudre BC si insuffisant',
-    'armement','siege ejecteur','missile','munitions','rotor'
-  ],
-  monoturboprop: [
-    'ingestion moteur','prise air reacteur','CFRP','B787','A350','fibres carbone',
-    'PNC','coordonner avec PNC','evacuation PAX complexe',
-    'ETOPS','turboreacteur','APU','soute avant','soute arriere',
-    'armement','siege ejecteur','missile','munitions','rotor'
-  ],
-  biturboprop: [
-    'CFRP','B787','A350','fibres carbone toxiques',
-    'ETOPS','turboreacteur','APU','siege ejecteur','missile','munitions','rotor'
-  ],
-  bireacteur: [
-    'siege ejecteur','missile','munitions','armement',
-    'rotor','helice','ingestion helice'
-  ],
-  quadrireacteur: [
-    'siege ejecteur','missile','munitions','armement',
-    'rotor','helice','ingestion helice'
-  ],
-  helicoptere: [
-    'ingestion moteur','prise air','CFRP','B787','A350',
-    'ETOPS','APU','soute','cargo','tuyere','inverseur',
-    'armement','siege ejecteur','missile','munitions',
-    'evacuation toboggan','couloirs evacuation'
-  ],
-  militaire: [
-    'CFRP','B787','A350','fibres carbone',
-    'PNC','coordonner avec PNC','ETOPS','APU','soute',
-    'rotor','helice','ingestion helice','evacuation toboggan'
-  ],
-};
-
-function filterByType(aeronef, items){
-  var type = getAeronefType(aeronef);
-  var excl = EXCL[type] || [];
-  return items.filter(function(item){
-    var txt = (typeof item === 'string' ? item : item.ti||'').toLowerCase();
-    return !excl.some(function(kw){ return txt.indexOf(kw.toLowerCase()) >= 0; });
-  });
-}
-
-function filterTcByType(aeronef, tcItems){
-  var type = getAeronefType(aeronef);
-  var excl = EXCL[type] || [];
-  return tcItems.map(function(tc){
-    return {
-      ti: tc.ti, c: tc.c,
-      li: tc.li.filter(function(l){
-        return !excl.some(function(kw){ return l.toLowerCase().indexOf(kw.toLowerCase()) >= 0; });
-      })
-    };
-  }).filter(function(tc){ return tc.li.length > 0; });
-}
-
-
 function buildFormative(niv, nbv, aeronef, theme, cond){
   const vims = ['VIM 1','VIM 2','VIM 3'].slice(0, nbv);
   
@@ -714,16 +632,12 @@ function buildFormative(niv, nbv, aeronef, theme, cond){
       <rect x="240" y="140" width="240" height="140" fill="transparent" onclick="placeVim('S4',event)" cursor="crosshair"/>
     </svg>
     <!-- Badges VIM (cliquer pour sélectionner) -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:6px;">
-      <div style="display:flex;align-items:center;gap:5px;">
-        <span style="font-size:9px;color:#595959;font-weight:600;">VIM :</span>
-        <div id="grp-left-${nbv}" style="display:flex;gap:4px;"></div>
-      </div>
+    <div style="display:flex;justify-content:center;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:9px;color:#595959;font-weight:600;">VIM :</span>
+      <div id="grp-left-${nbv}" style="display:flex;gap:4px;"></div>
+      <div id="grp-right-${nbv}" style="display:none;"></div>
       <button onclick="rotateVim()" style="background:#fff;color:#1F3864;border:1px solid #1F3864;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:600;">↻ Pivoter</button>
       <button onclick="resetVims()" style="background:#fff;color:#595959;border:1px solid #bbb;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;">↺ Reset</button>
-      <div style="display:flex;align-items:center;gap:5px;">
-        <div id="grp-right-${nbv}" style="display:flex;gap:4px;"></div>
-      </div>
     </div>
     <div id="vim-positions" style="margin-top:6px;font-size:10px;color:#555;text-align:center;min-height:18px;"></div>
   </div>`;
@@ -855,15 +769,12 @@ const vimPositions = {};
 function selVim(n, dir){
   selectedVim = n;
   if(dir) selectedDir = dir;
-  // Synchroniser avec vimDirs
-  if(typeof vimDirs !== 'undefined'){
-    vimDirs[n] = selectedDir;
-  }
+  if(typeof vimDirs !== 'undefined') vimDirs[n] = selectedDir;
   document.querySelectorAll('[id^="badge-"]').forEach(b=>{
     const isMe = b.dataset.vim == n;
-    b.style.borderColor = isMe ? '#fff' : 'transparent';
-    b.style.filter = isMe ? 'brightness(1.25)' : 'brightness(0.7)';
-    b.style.boxShadow = isMe ? '0 0 0 2px var(--orange,#ed7d31)' : 'none';
+    b.style.borderColor = isMe ? '#E8500A' : 'transparent';
+    b.style.boxShadow = isMe ? '0 0 0 2px rgba(232,80,10,.4)' : 'none';
+    b.style.filter = isMe ? 'brightness(1.15)' : 'brightness(0.65)';
   });
 }
 
@@ -890,16 +801,13 @@ function redrawMarker(numVim, cx, cy){
   if(old) old.remove();
 
   const dir = (typeof vimDirs!=='undefined' && vimDirs[numVim]) ? vimDirs[numVim] : 'R';
-  const isHoriz = (dir === 'R' || dir === 'L');
-  // Dimensions affichées du marqueur dans le SVG du schéma
-  const mW = isHoriz ? 180 : 82;
-  const mH = isHoriz ? 82 : 180;
-  const vbW = isHoriz ? 700 : 320;
-  const vbH = isHoriz ? 320 : 700;
+  // Vue dessus uniquement — carré 55x55
+  const mW = 55, mH = 55;
+  const vbW = 700, vbH = 700;
   const scaleX = mW/vbW, scaleY = mH/vbH;
   const tx = cx - mW/2, ty = cy - mH/2;
 
-  // Récupérer le contenu interne du badge généré
+  // Récupérer le contenu interne du badge vue dessus
   const badgeSVG = truckBadgeSVG(numVim, dir);
   const tmp = document.createElement('div');
   tmp.innerHTML = badgeSVG;
@@ -960,16 +868,10 @@ function enableDrag(markerGroup, numVim){
     const newCy = startCy + (p.y - startY);
     markerGroup.dataset.cx = newCx;
     markerGroup.dataset.cy = newCy;
-    // Recalculer le translate du sous-groupe
-    const dir = (typeof vimDirs!=='undefined' && vimDirs[numVim]) ? vimDirs[numVim] : 'R';
-    const isHoriz = (dir === 'R' || dir === 'L');
-    const mW = isHoriz ? 180 : 82;
-    const mH = isHoriz ? 82 : 180;
+    const mW = 55, mH = 55;
     const inner = markerGroup.querySelector('g');
     if(inner){
-      const vbW = isHoriz ? 700 : 320;
-      const vbH = isHoriz ? 320 : 700;
-      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/vbW)+','+(mH/vbH)+')');
+      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/700)+','+(mH/700)+')');
     }
   }
   function onUp(){
@@ -1308,152 +1210,28 @@ function truckBadgeSVG(n, dir){
 }
 
 // État des orientations par VIM (R par défaut = cabine droite = 12h)
-var vimDirs = {1:'R', 2:'R', 3:'R'};
+var vimDirs = {1:'R', 2:'D', 3:'L'};
 
 function initBadges(nbv){
   var gl=document.getElementById('grp-left-'+nbv);
-  var gr=document.getElementById('grp-right-'+nbv);
-  if(!gl||!gr) return;
-  // Un seul badge par VIM dans le groupe central. On garde 2 conteneurs pour conserver le layout existant.
-  // Les badges affichent l'orientation actuelle du VIM, mise à jour à chaque rotation.
+  if(!gl) return;
+  gl.innerHTML='';
   for(var i=1;i<=nbv;i++){
     var sp=document.createElement('span');
     sp.id='badge-'+i; sp.dataset.vim=i;
     sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;vertical-align:middle;';
     sp.innerHTML=truckBadgeSVG(i, vimDirs[i]);
     sp.onclick=(function(n){return function(){selVim(n, vimDirs[n]);};})(i);
-    if(i<=Math.ceil(nbv/2)) gl.appendChild(sp); else gr.appendChild(sp);
+    gl.appendChild(sp);
   }
-  selVim(1, vimDirs[1]);
+  selVim(selectedVim, vimDirs[selectedVim]);
 }
 
-// Met à jour le badge visuel d'un VIM après changement d'orientation
 function refreshBadge(n){
   var sp=document.getElementById('badge-'+n);
-  if(!sp) return;
-  sp.innerHTML=truckBadgeSVG(n, vimDirs[n]);
+  if(sp) sp.innerHTML=truckBadgeSVG(n, vimDirs[n]);
 }
 
-// Pivote l'orientation du VIM sélectionné (R -> D -> L -> U -> R)
-function rotateVim(){
-  var seq = ['R','D','L','U'];
-  var idx = seq.indexOf(vimDirs[selectedVim] || 'R');
-  vimDirs[selectedVim] = seq[(idx+1) % 4];
-  selectedDir = vimDirs[selectedVim];
-  refreshBadge(selectedVim);
-  // Si le VIM est déjà placé sur le schéma, on met à jour son orientation aussi
-  var marker = document.getElementById('marker-vim'+selectedVim);
-  if(marker && marker.dataset.cx && marker.dataset.cy){
-    redrawMarker(selectedVim, parseFloat(marker.dataset.cx), parseFloat(marker.dataset.cy));
-  }
-  selVim(selectedVim, selectedDir);
-}
-
-function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
-
-// ── DONNÉES PN/PAX/CARBURANT PAR AÉRONEF ────────────────────────────────────
-const AV_DATA = {
-  "Cessna 172":         {pn:[1,1], pax:[0,3],   cbrt:[0.1,0.2]},
-  "TBM 700":            {pn:[1,1], pax:[0,5],   cbrt:[0.5,1.0]},
-  "Pilatus PC-12":      {pn:[1,1], pax:[0,8],   cbrt:[0.8,1.5]},
-  "Beechcraft King Air":{pn:[1,2], pax:[0,8],   cbrt:[1.0,2.0]},
-  "ATR 42":             {pn:[2,3], pax:[30,48],  cbrt:[3.0,6.0]},
-  "ATR 72":             {pn:[2,3], pax:[50,78],  cbrt:[4.0,8.0]},
-  "Dash 8 Milan 24":    {pn:[2,3], pax:[0,0],   cbrt:[4.0,8.0]},
-  "Dash 8 Q400":        {pn:[2,3], pax:[60,86],  cbrt:[5.0,9.0]},
-  "EC 125":             {pn:[1,1], pax:[0,5],   cbrt:[0.3,0.5]},
-  "EC 135":             {pn:[1,2], pax:[0,7],   cbrt:[0.5,0.8]},
-  "Puma AS 330":        {pn:[2,3], pax:[0,16],  cbrt:[1.5,2.5]},
-  "Caracal EC 725":     {pn:[2,4], pax:[0,29],  cbrt:[2.5,4.0]},
-  "ERJ 145":            {pn:[2,3], pax:[30,50],  cbrt:[5.0,9.0]},
-  "CRJ 700":            {pn:[2,3], pax:[44,78],  cbrt:[8.0,13.0]},
-  "Embraer E175":       {pn:[2,3], pax:[60,88],  cbrt:[8.0,13.0]},
-  "A318":               {pn:[2,6], pax:[80,132],  cbrt:[10.0,18.0]},
-  "A219 CEO":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},
-  "A220-300":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},
-  "A320 CEO":           {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},
-  "A320neo":            {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},
-  "A321 CEO":           {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},
-  "A321neo":            {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},
-  "A321LR":             {pn:[2,6], pax:[150,220], cbrt:[18.0,28.0]},
-  "A350":               {pn:[2,9], pax:[250,440], cbrt:[60.0,110.0]},
-  "Boeing 737-800":     {pn:[2,6], pax:[120,189], cbrt:[14.0,22.0]},
-  "Boeing 737 MAX 8":   {pn:[2,6], pax:[120,200], cbrt:[14.0,22.0]},
-  "Boeing 737F":        {pn:[2,3], pax:[0,0],    cbrt:[14.0,22.0]},
-  "Boeing 777F":        {pn:[2,4], pax:[0,0],    cbrt:[70.0,120.0]},
-  "A330 MRTT":          {pn:[3,8], pax:[0,45],   cbrt:[60.0,100.0]},
-  "Rafale":             {pn:[1,1], pax:[0,1],   cbrt:[4.0,7.0]},
-};
-
-function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-function rndF(min,max){ return (Math.random()*(max-min)+min).toFixed(1); }
-
-
-function genRandom(){
-  // 1. Aéronef aléatoire (sans séparateurs)
-  const avions = AV.filter(a=>!a.sep);
-  const av = avions[Math.floor(Math.random()*avions.length)];
-  const selAv = document.getElementById('aeronef');
-  if(selAv){
-    for(let i=0;i<selAv.options.length;i++){
-      if(selAv.options[i].text.startsWith(av.n)){
-        selAv.selectedIndex=i; break;
-      }
-    }
-  }
-
-  // 2. Catégorie aléatoire
-  const catKeys = Object.keys(CATS);
-  const catKey  = catKeys[Math.floor(Math.random()*catKeys.length)];
-  const selCat  = document.getElementById('categorie');
-  if(selCat) selCat.value = catKey;
-  updThemes(); // Rafraîchir les thèmes
-
-  // 3. Thème aléatoire dans la catégorie choisie
-  const selTh = document.getElementById('theme');
-  if(selTh && selTh.options.length>0){
-    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);
-  }
-
-  // 4. Niveau aléatoire (5, 7 ou 8)
-  const niveaux = ['5','7','8'];
-  const niv = niveaux[Math.floor(Math.random()*niveaux.length)];
-  document.querySelectorAll('input[name="niv"]').forEach(r=>{ r.checked=(r.value===niv); });
-  upd();
-  // Restaurer les sélections après upd() qui recharge les selects
-  if(selAv){
-    for(let i=0;i<selAv.options.length;i++){
-      if(selAv.options[i].text.startsWith(av.n)){ selAv.selectedIndex=i; break; }
-    }
-  }
-  if(selCat) selCat.value = catKey;
-  updThemes();
-  if(selTh && selTh.options.length>0){
-    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);
-  }
-
-  // 5. Conditions aléatoires
-  const conds = ['Jour','Nuit','Crépuscule'];
-  const selCond = document.getElementById('cond');
-  if(selCond) selCond.value = conds[Math.floor(Math.random()*conds.length)];
-
-  // 6. PN / PAX / Carburant selon l'aéronef
-  const avData = AV_DATA[av.n];
-  if(avData){
-    const pn  = rnd(avData.pn[0],  avData.pn[1]);
-    const pax = rnd(avData.pax[0], avData.pax[1]);
-    const cbrt = rndF(avData.cbrt[0], avData.cbrt[1]);
-    const elPn   = document.getElementById('pn');
-    const elPax  = document.getElementById('pax');
-    const elCbrt = document.getElementById('cbrt');
-    if(elPn)   elPn.value   = pn;
-    if(elPax)  elPax.value  = pax;
-    if(elCbrt) elCbrt.value = cbrt + ' t';
-  }
-
-  // 7. Générer
-  setTimeout(()=>gen(), 100);
-}
 
 function gen(){
   const niv=+document.querySelector('input[name="niv"]:checked').value;
@@ -1478,7 +1256,7 @@ function gen(){
     {l:'S',w:'SITUATION',cs:'ss',cl:'ssl',c:th.sit.join('<br>')},
     {l:'I',w:'INFORMATION',cs:'si',cl:'sil',c:`POB : ${pob} (${pn} PN + ${pax} PAX)<br>Carburant restant : ${cbrt}<br>Avarie : ${th.av}<br>Fret : ${fret}<br>Figurants : ${fig}<br>Questions complémentaires à poser à la TWR.`},
     {l:'M',w:'MISSION',cs:'sm',cl:'sml',c:miss.join('<br>')},
-    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:filterByType(aNom, th.sec).join('<br>')},
+    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:th.sec.join('<br>')},
   ];
   const simH=simD.map(r=>`<tr><td class="sl ${r.cs}">${r.l}</td><td class="slb ${r.cl}">${r.w}</td><td class="sc">${r.c}</td></tr>`).join('');
 
@@ -1486,7 +1264,7 @@ function gen(){
   const pos=["Secteur 1 (avant gauche)","Secteur 2 (avant droit)","Secteur 4 (arrière)"];
   const dispH=Array.from({length:nbv},(_,i)=>`<tr><td class="vn">VIM ${i+1}</td><td class="sn">${sects[i]}</td><td>${pos[i]}</td><td>${miss[i]||miss[miss.length-1]}</td></tr>`).join('');
 
-  const techH=filterTcByType(aNom, th.tc).map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
+  const techH=th.tc.map(t=>`<div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul></div>`).join('');
 
   document.getElementById('fw').innerHTML=`
   <div class="fiche">
@@ -1566,22 +1344,6 @@ function gen(){
 
 document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));
 upd();
-
-// Préselection initiale au chargement
-(function(){
-  const selAv = document.getElementById('aeronef');
-  if(selAv && selAv.value){
-    const avData = AV_DATA[selAv.value];
-    if(avData){
-      const elPn   = document.getElementById('pn');
-      const elPax  = document.getElementById('pax');
-      const elCbrt = document.getElementById('cbrt');
-      if(elPn)   elPn.value   = rnd(avData.pn[0],   avData.pn[1]);
-      if(elPax)  elPax.value  = rnd(avData.pax[0],  avData.pax[1]);
-      if(elCbrt) elCbrt.value = rndF(avData.cbrt[0], avData.cbrt[1]) + ' t';
-    }
-  }
-})();
 
 // Préselection PN/PAX/carburant quand on change l'aéronef
 document.addEventListener('change', function(e){
