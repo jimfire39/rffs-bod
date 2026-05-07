@@ -1329,6 +1329,14 @@ function refreshBadge(n){
 }
 
 
+function getMiss(th, niv){
+  if(niv===5) return th.m5 || th.m7 || [];
+  if(niv===7) return th.m7 || [];
+  if(niv===8) return th.m8 || [];
+  return th.m7 || [];
+}
+
+
 function genRandom(){
   const avions = AV.filter(a=>!a.sep);
   const av = avions[Math.floor(Math.random()*avions.length)];
