@@ -496,8 +496,8 @@ function buildSchema(nbv, aeronef){
   </div>`;
 }
 
-let evalSelVim=1, evalSelDir='L', evalVimPos={};
-var vimDirs={1:'R', 2:'D', 3:'L'};
+let evalSelVim=1, evalSelDir='T', evalVimPos={};
+var vimDirs={1:'T', 2:'RT', 3:'B'};
 
 function evalSelBadge(n,dir){
   evalSelVim=n; evalSelDir=dir;
@@ -567,8 +567,8 @@ function redrawMarkerEval(numVim,cx,cy){
 
 
 function rotateVimEval(){
-  var seq=['R','D','L','U'];
-  var idx=seq.indexOf(vimDirs[evalSelVim]||'R');
+  var seq=['T','RT','B','LT'];
+  var idx=seq.indexOf(vimDirs[evalSelVim]||'T');
   vimDirs[evalSelVim]=seq[(idx+1)%4];
   evalSelDir=vimDirs[evalSelVim];
   refreshEvalBadge(evalSelVim);
