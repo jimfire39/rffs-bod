@@ -495,6 +495,230 @@ function buildSchema(nbv, aeronef){
   </div>`;
 }
 
+function gen(){
+  const niv=+document.querySelector('input[name="niv"]:checked').value;
+  const nbv=NV[niv];
+  const ncol={5:"color:#375623",7:"color:#E36C09",8:"color:#C00000"}[niv];
+  const aeronef=getAeronef()||'—';
+  const theme=getTheme()||'—';
+  const loc=document.getElementById('loc').value;
+  const pn=+document.getElementById('pn').value;
+  const pax=+document.getElementById('pax').value;
+  const pob=pn+pax;
+  const cbrt=document.getElementById('cbrt').value;
+  const fig=document.getElementById('fig').value;
+  const cond=document.querySelector('input[name="cond"]:checked').value;
+  const titre=currentType==='cm'?'Chef de manœuvre':'Équipage VIM';
+  const sous=currentType==='cm'?`Niveau ${niv} — ${nbv} VIM`:`Conducteur + Opérateur — ${nbv} VIM`;
+
+  const entete=`
+  <div class="fhdr">
+    <div class="fhl"><h2>RFFS BOD — FICHE D'ÉVALUATION</h2><span>${cond} — ${sous}</span></div>
+    <div class="fhr"><span>${titre.toUpperCase()}</span></div>
+  </div>
+  <div class="fb">
+    <table class="idt">
+      <tr><td class="lbl">AÉRONEF</td><td class="bgb" style="font-weight:700;color:var(--navy)" colspan="3">${aeronef}</td><td class="lbl">NIVEAU RFFS</td><td class="bgb" style="font-weight:800;font-size:16px;text-align:center;${ncol}">${niv}</td></tr>
+      <tr><td class="lbl">THÈME</td><td style="font-weight:700;color:var(--orange)" colspan="3">${theme}</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>
+      <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="bgb" style="font-weight:800;color:var(--red);font-size:14px">${pob}</td></tr>
+      <tr><td class="lbl">CARBURANT</td><td style="font-weight:700;color:var(--orange)">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td><td class="lbl">DATE</td><td>………………………</td></tr>
+      <tr><td class="lbl">CONDITIONS</td><td>${cond}</td><td class="lbl">ÉVALUATEUR</td><td colspan="3">………………………………………………………</td></tr>
+    </table>
+    ${buildSchema(nbv, aeronef)}`;
+
+  let html=entete;
+
+  if(currentType==='cm'){
+    // Générer les sections équipage VIM
+    let vimHtml='';
+    for(let i=0;i<nbv;i++){
+      vimHtml+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    html+=`
+    <!-- ONGLETS CM + ÉQUIPAGE -->
+    <div style="display:flex;gap:0;margin-top:14px;border-bottom:2px solid var(--navy);">
+      <button id="ev-tab-cm" onclick="evSwitchTab('cm')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
+        🎖️ Chef de manœuvre
+      </button>
+      <button id="ev-tab-vim" onclick="evSwitchTab('vim')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
+        🚒 Équipage VIM
+      </button>
+    </div>
+    <div id="ev-panel-cm" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      <div class="role-block" style="margin:0;">
+        <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
+        <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:12px;">Nom : ${agentSelect('cm-nom')}</span>
+          <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+        </div>
+        ${grille(critCM)}
+        <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
+        <div class="res-row">
+          <div class="res-cell">Éléments maîtrisés : ………………………</div>
+          <div class="res-cell">Points à améliorer : ………………………</div>
+          <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+        </div>
+      </div>
+    </div>
+    <div id="ev-panel-vim" style="display:none;border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      ${vimHtml}
+    </div>`;
+  } else {
+    for(let i=0;i<nbv;i++){
+      html+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  html+=`
+    <div class="bilan-box">
+      <label>Bilan général de l'évaluateur</label>
+      <textarea id="eval-bilan" placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
+    </div>
+
+    <!-- RÉSULTAT & ENREGISTREMENT -->
+    <div style="background:#f8f8f8;border-radius:6px;padding:14px;margin:12px 0;border:1px solid #e0e0e0;">
+      <div style="font-size:11px;font-weight:700;color:#595959;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Résultat de l'évaluation</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #375623;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C00000;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span>
+        </label>
+  
+      </div>
+      <button onclick="saveEvaluation('${aeronef}','${theme}',${niv},'${cond}','${currentType}')"
+        style="width:100%;padding:10px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+        💾 Enregistrer la fiche
+      </button>
+      <div id="eval-save-confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+    </div>
+
+  </div>
+  <div class="fiche-footer">
+    <span>FJ  |  Réf. RFFS/EVAL  |  Doc. interne — ne pas diffuser</span>
+    <span>RFFS BOD — Niv. ${niv} — ${aeronef} — ${theme}</span>
+  </div>`;
+
+  document.getElementById('ew').innerHTML=html;
+
+  // Attacher listeners onglets CM/VIM si fiche CM
+  if(currentType==='cm'){
+    setTimeout(function(){
+      const tCM  = document.getElementById('ev-tab-cm');
+      const tVIM = document.getElementById('ev-tab-vim');
+      if(tCM)  tCM.addEventListener('click',  function(){ evSwitchTab('cm'); });
+      if(tVIM) tVIM.addEventListener('click', function(){ evSwitchTab('vim'); });
+    }, 50);
+  }
+
+  setTimeout(()=>initEvalBadges(nbv), 50);
+  gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
+}
+
+function evSwitchTab(tab){
+  const isCM = tab==='cm';
+  const pCM  = document.getElementById('ev-panel-cm');
+  const pVIM = document.getElementById('ev-panel-vim');
+  const tCM  = document.getElementById('ev-tab-cm');
+  const tVIM = document.getElementById('ev-tab-vim');
+  if(pCM)  pCM.style.display  = isCM ? 'block' : 'none';
+  if(pVIM) pVIM.style.display = isCM ? 'none'  : 'block';
+  if(tCM)  { tCM.style.background  = isCM ? 'var(--navy)' : '#fff'; tCM.style.color  = isCM ? '#fff' : 'var(--navy)'; }
+  if(tVIM) { tVIM.style.background = isCM ? '#fff' : 'var(--navy)'; tVIM.style.color = isCM ? 'var(--navy)' : '#fff'; }
+}
+
+function saveEvaluation(aeronef, theme, niv, cond, type){
+  const agents = [];
+  document.querySelectorAll('#ew select[id^="cm-nom"], #ew select[id^="cond-nom"], #ew select[id^="oper-nom"]').forEach(sel=>{
+    if(sel.value) agents.push(sel.value);
+  });
+  const resEl = document.querySelector('input[name="eval_resultat"]:checked');
+  const resultat = resEl ? resEl.value : 'non_renseigné';
+  const bilan = document.getElementById('eval-bilan') ? document.getElementById('eval-bilan').value : '';
+  const typeLabel = type==='cm' ? 'Éval. CM' : 'Éval. Équipage';
+  const fiche = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('fr-FR'),
+    heure: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+    aeronef, theme: typeLabel + ' — ' + theme,
+    niveau: niv, conditions: cond,
+    agents: agents.join(' | '),
+    resultat, observations: bilan
+  };
+  const existing = JSON.parse(localStorage.getItem('rffs_formatives') || '[]');
+  existing.push(fiche);
+  localStorage.setItem('rffs_formatives', JSON.stringify(existing));
+  supabaseInsert({...fiche, source:'Évaluation'});
+  const conf = document.getElementById('eval-save-confirm');
+  if(conf){ conf.style.display='block'; setTimeout(()=>conf.style.display='none', 3000); }
+}
+
+upd();
+
 let evalSelVim=1, evalSelDir='L', evalVimPos={};
 var vimDirs={1:'R', 2:'D', 3:'L'};
 
