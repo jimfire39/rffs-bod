@@ -89,6 +89,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 @media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.eval-wrap{border:none;border-radius:0;}body{background:#fff;}}
 @media(max-width:768px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.res-row{grid-template-columns:1fr;}}
 </style>
+<template id="vim-dessus-tpl"><rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.2"/><rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="1.2" rx="4"/><rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1" rx="2"/><rect x="490" y="90" width="120" height="9" fill="#ffffff"/><rect x="490" y="221" width="120" height="9" fill="#ffffff"/><rect x="478" y="100" width="14" height="40" fill="#0033a0"/><rect x="478" y="140" width="14" height="40" fill="#ffffff"/><rect x="478" y="180" width="14" height="40" fill="#c8102e"/><rect x="60" y="96" width="430" height="7" fill="#ffffff"/><rect x="60" y="217" width="430" height="7" fill="#ffffff"/><rect x="80" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="80" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="106" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="196" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="350" y="145" width="120" height="35" fill="#5a5a5a" stroke="#2a2a2a" stroke-width="1" rx="3"/><circle cx="380" cy="162" r="13" fill="#3a3a3a" stroke="#1a1a1a" stroke-width="1"/><rect x="380" y="158" width="80" height="9" fill="#7a7a7a" stroke="#3a3a3a" stroke-width="0.8" rx="2"/><rect x="455" y="155" width="14" height="15" fill="#2a2a2a" stroke="#000" stroke-width="0.8" rx="1"/><rect x="610" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="612" y="120" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="612" y="190" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="50" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="78" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="78" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="74" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="220" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><circle cx="270" cy="160" r="50" fill="#ffffff" stroke="#7a0a1c" stroke-width="4"/><text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="80" font-weight="900" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.5">__N__</text>;  inner = inner.split('__N__').join(n);  var content, vbW, vbH, w, h;  if(dir === 'R'){    content = inner;    vbW = 700; vbH = 320; w = 120; h = 55;  } else if(dir === 'L'){    content = '<g transform="translate(700,0) scale(-1,1)">' + inner + '</g>';    vbW = 700; vbH = 320; w = 120; h = 55;  } else if(dir === 'D'){    content = '<g transform="translate(320,0) rotate(90)">' + inner + '</g>';    vbW = 320; vbH = 700; w = 55; h = 120;  } else if(dir === 'U'){    content = '<g transform="translate(0,700) rotate(-90)">' + inner + '</g>';    vbW = 320; vbH = 700; w = 55; h = 120;  } else {    content = inner;    vbW = 700; vbH = 320; w = 120; h = 55;  }  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + vbW + ' ' + vbH + '" xmlns="http://www.w3.org/2000/svg" style="display:block;">'    + content + '</svg>';}// État des orientations par VIM (R par défaut = cabine droite = 12h)var vimDirs = {1:'R', 2:'R', 3:'R'};function initBadges(nbv){  var gl=document.getElementById('grp-left-'+nbv);  var gr=document.getElementById('grp-right-'+nbv);  if(!gl||!gr) return;  // Un seul badge par VIM dans le groupe central. On garde 2 conteneurs pour conserver le layout existant.  // Les badges affichent l'orientation actuelle du VIM, mise à jour à chaque rotation.  for(var i=1;i<=nbv;i++){    var sp=document.createElement('span');    sp.id='badge-'+i; sp.dataset.vim=i;    sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;vertical-align:middle;';    sp.innerHTML=truckBadgeSVG(i, vimDirs[i]);    sp.onclick=(function(n){return function(){selVim(n, vimDirs[n]);};})(i);    if(i<=Math.ceil(nbv/2)) gl.appendChild(sp); else gr.appendChild(sp);  }  selVim(1, vimDirs[1]);}// Met à jour le badge visuel d'un VIM après changement d'orientationfunction refreshBadge(n){  var sp=document.getElementById('badge-'+n);  if(!sp) return;  sp.innerHTML=truckBadgeSVG(n, vimDirs[n]);}// Pivote l'orientation du VIM sélectionné (R -> D -> L -> U -> R)function rotateVim(){  var seq = ['R','D','L','U'];  var idx = seq.indexOf(vimDirs[selectedVim] || 'R');  vimDirs[selectedVim] = seq[(idx+1) % 4];  selectedDir = vimDirs[selectedVim];  refreshBadge(selectedVim);  // Si le VIM est déjà placé sur le schéma, on met à jour son orientation aussi  var marker = document.getElementById('marker-vim'+selectedVim);  if(marker && marker.dataset.cx && marker.dataset.cy){    redrawMarker(selectedVim, parseFloat(marker.dataset.cx), parseFloat(marker.dataset.cy));  }  selVim(selectedVim, selectedDir);}function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}// ── DONNÉES PN/PAX/CARBURANT PAR AÉRONEF ────────────────────────────────────const AV_DATA = {  "Cessna 172":         {pn:[1,1], pax:[0,3],   cbrt:[0.1,0.2]},  "TBM 700":            {pn:[1,1], pax:[0,5],   cbrt:[0.5,1.0]},  "Pilatus PC-12":      {pn:[1,1], pax:[0,8],   cbrt:[0.8,1.5]},  "Beechcraft King Air":{pn:[1,2], pax:[0,8],   cbrt:[1.0,2.0]},  "ATR 42":             {pn:[2,3], pax:[30,48],  cbrt:[3.0,6.0]},  "ATR 72":             {pn:[2,3], pax:[50,78],  cbrt:[4.0,8.0]},  "Dash 8 Milan 24":    {pn:[2,3], pax:[0,0],   cbrt:[4.0,8.0]},  "Dash 8 Q400":        {pn:[2,3], pax:[60,86],  cbrt:[5.0,9.0]},  "EC 125":             {pn:[1,1], pax:[0,5],   cbrt:[0.3,0.5]},  "EC 135":             {pn:[1,2], pax:[0,7],   cbrt:[0.5,0.8]},  "Puma AS 330":        {pn:[2,3], pax:[0,16],  cbrt:[1.5,2.5]},  "Caracal EC 725":     {pn:[2,4], pax:[0,29],  cbrt:[2.5,4.0]},  "ERJ 145":            {pn:[2,3], pax:[30,50],  cbrt:[5.0,9.0]},  "CRJ 700":            {pn:[2,3], pax:[44,78],  cbrt:[8.0,13.0]},  "Embraer E175":       {pn:[2,3], pax:[60,88],  cbrt:[8.0,13.0]},  "A318":               {pn:[2,6], pax:[80,132],  cbrt:[10.0,18.0]},  "A219 CEO":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},  "A220-300":           {pn:[2,6], pax:[100,160], cbrt:[12.0,20.0]},  "A320 CEO":           {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},  "A320neo":            {pn:[2,6], pax:[120,180], cbrt:[14.0,22.0]},  "A321 CEO":           {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},  "A321neo":            {pn:[2,6], pax:[150,220], cbrt:[16.0,26.0]},  "A321LR":             {pn:[2,6], pax:[150,220], cbrt:[18.0,28.0]},  "A350":               {pn:[2,9], pax:[250,440], cbrt:[60.0,110.0]},  "Boeing 737-800":     {pn:[2,6], pax:[120,189], cbrt:[14.0,22.0]},  "Boeing 737 MAX 8":   {pn:[2,6], pax:[120,200], cbrt:[14.0,22.0]},  "Boeing 737F":        {pn:[2,3], pax:[0,0],    cbrt:[14.0,22.0]},  "Boeing 777F":        {pn:[2,4], pax:[0,0],    cbrt:[70.0,120.0]},  "A330 MRTT":          {pn:[3,8], pax:[0,45],   cbrt:[60.0,100.0]},  "Rafale":             {pn:[1,1], pax:[0,1],   cbrt:[4.0,7.0]},};function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }function rndF(min,max){ return (Math.random()*(max-min)+min).toFixed(1); }function genRandom(){  // 1. Aéronef aléatoire (sans séparateurs)  const avions = AV.filter(a=>!a.sep);  const av = avions[Math.floor(Math.random()*avions.length)];  const selAv = document.getElementById('aeronef');  if(selAv){    for(let i=0;i<selAv.options.length;i++){      if(selAv.options[i].text.startsWith(av.n)){        selAv.selectedIndex=i; break;      }    }  }  // 2. Catégorie aléatoire  const catKeys = Object.keys(CATS);  const catKey  = catKeys[Math.floor(Math.random()*catKeys.length)];  const selCat  = document.getElementById('categorie');  if(selCat) selCat.value = catKey;  updThemes(); // Rafraîchir les thèmes  // 3. Thème aléatoire dans la catégorie choisie  const selTh = document.getElementById('theme');  if(selTh && selTh.options.length>0){    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);  }  // 4. Niveau aléatoire (5, 7 ou 8)  const niveaux = ['5','7','8'];  const niv = niveaux[Math.floor(Math.random()*niveaux.length)];  document.querySelectorAll('input[name="niv"]').forEach(r=>{ r.checked=(r.value===niv); });  upd();  // Restaurer les sélections après upd() qui recharge les selects  if(selAv){    for(let i=0;i<selAv.options.length;i++){      if(selAv.options[i].text.startsWith(av.n)){ selAv.selectedIndex=i; break; }    }  }  if(selCat) selCat.value = catKey;  updThemes();  if(selTh && selTh.options.length>0){    selTh.selectedIndex = Math.floor(Math.random()*selTh.options.length);  }  // 5. Conditions aléatoires  const conds = ['Jour','Nuit','Crépuscule'];  const selCond = document.getElementById('cond');  if(selCond) selCond.value = conds[Math.floor(Math.random()*conds.length)];  // 6. PN / PAX / Carburant selon l'aéronef  const avData = AV_DATA[av.n];  if(avData){    const pn  = rnd(avData.pn[0],  avData.pn[1]);    const pax = rnd(avData.pax[0], avData.pax[1]);    const cbrt = rndF(avData.cbrt[0], avData.cbrt[1]);    const elPn   = document.getElementById('pn');    const elPax  = document.getElementById('pax');    const elCbrt = document.getElementById('cbrt');    if(elPn)   elPn.value   = pn;    if(elPax)  elPax.value  = pax;    if(elCbrt) elCbrt.value = cbrt + ' t';  }  // 7. Générer  setTimeout(()=>gen(), 100);}function gen(){  const niv=+document.querySelector('input[name="niv"]:checked').value;  const aNom=document.getElementById('aeronef').value;  const av=AV.find(a=>a.n===aNom)||{t:'',c:''};  const tk=document.getElementById('theme').value;  const th=TH[tk];  const loc=document.getElementById('loc').value;  const pn=+document.getElementById('pn').value;  const pax=+document.getElementById('pax').value;  const pob=pn+pax;  const cbrt=document.getElementById('cbrt').value;  const fig=document.getElementById('fig').value;  const cond=document.querySelector('input[name="cond"]:checked').value;  const fret=document.getElementById('fret').value;  const nbv=NV[niv];  const miss=getMiss(th,niv);  const nc=NC[niv];  const alH=th.al.map(l=><p class="${l.b?'bd':''} ${l.i?'it':''}">${l.t}</p>).join('');  const simD=[    {l:'S',w:'SITUATION',cs:'ss',cl:'ssl',c:th.sit.join('<br>')},    {l:'I',w:'INFORMATION',cs:'si',cl:'sil',c:POB : ${pob} (${pn} PN + ${pax} PAX)<br>Carburant restant : ${cbrt}<br>Avarie : ${th.av}<br>Fret : ${fret}<br>Figurants : ${fig}<br>Questions complémentaires à poser à la TWR.},    {l:'M',w:'MISSION',cs:'sm',cl:'sml',c:miss.join('<br>')},    {l:'S',w:'SÉCURITÉ',cs:'ssec',cl:'ssecl',c:th.sec.join('<br>')},  ];  const simH=simD.map(r=><tr><td class="sl ${r.cs}">${r.l}</td><td class="slb ${r.cl}">${r.w}</td><td class="sc">${r.c}</td></tr>).join('');  const sects=["S1","S2","S4"];  const pos=["Secteur 1 (avant gauche)","Secteur 2 (avant droit)","Secteur 4 (arrière)"];  const dispH=Array.from({length:nbv},(_,i)=><tr><td class="vn">VIM ${i+1}</td><td class="sn">${sects[i]}</td><td>${pos[i]}</td><td>${miss[i]||miss[miss.length-1]}</td></tr>).join('');  const techH=th.tc.map(t=><div class="tc"><h4 style="color:var(--${t.c==='red'?'red':'navy'})">${t.ti}</h4><ul>${t.li.map(l=><li>${l}</li>).join('')}</ul></div>).join('');  document.getElementById('fw').innerHTML=  <div class="fiche">    <div class="fiche-hdr">      <div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;" class="no-print">        <span style="font-size:11px;color:#C55A11;font-weight:600;">⚠ Vérifiez les paramètres avant utilisation</span>        <div style="display:flex;gap:8px;">          <button onclick="scrollToPanel()" style="background:#C55A11;color:#fff;border:none;border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">✏️ Modifier</button>          <button onclick="resetGen()" style="background:#fff;color:#C00000;border:1.5px solid #C00000;border-radius:5px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;">↺ Nouvelle fiche</button>        </div>      </div>      <div class="fhdr-l"><h2>RFFS BOD — FICHE D'EXERCICE</h2><span>${cond} — Niveau RFFS ${niv} — ${nbv} × VIM 108 P2.5</span></div>      <div class="fhdr-r"><span>${th.l.toUpperCase()}</span></div>    </div>    <div class="fiche-body">      <table class="id-t">        <tr><td class="lbl">AÉRONEF</td><td class="vm bg-b" colspan="3">${aNom} <small style="font-weight:400;font-size:11px;color:#888">(${av.t})</small></td><td class="lbl">NIVEAU RFFS</td><td class="vniv ${nc} bg-b">${niv}</td></tr>        <tr><td class="lbl">MOYENS</td><td colspan="3" style="font-weight:700;color:var(--navy)">${nbv} × VIM 108 P2.5</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>        <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="vpob bg-b">${pob}</td></tr>        <tr><td class="lbl">CARBURANT</td><td colspan="3" class="vo" style="font-weight:700">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td></tr>        <tr><td class="lbl">AVARIE</td><td colspan="3" class="vav">${th.av}</td><td class="lbl">FRET</td><td>${fret}</td></tr>        <tr><td class="lbl">CONDITIONS</td><td colspan="3" style="font-weight:600">${cond}</td><td class="lbl">DÉPART</td><td style="font-weight:700">RFFS BOD</td></tr>      </table>      <div class="shdr gy">Déclenchement d'alerte</div>      <div class="abox">${alH}</div>      <div class="qbox"><strong>❓ Questions à poser à la TWR :</strong> ${th.q}</div>      <div class="shdr nv">Commandement — Méthode SIMS (ordre initial)</div>      <table class="st">${simH}</table>      <div class="shdr gy">Dispositif d'intervention — Répartition VIM</div>      <table class="dt"><thead><tr><th>Véhicule</th><th>Secteur</th><th>Position</th><th>Mission</th></tr></thead><tbody>${dispH}</tbody></table>      <p style="font-size:10px;color:#999;font-style:italic;margin-bottom:12px">Sectorisation cadran horaire — S1 avant gauche / S2 avant droit / S4 arrière</p>      <div class="shdr or">Points techniques clés — ${aNom} — ${th.l}</div>      <div class="tg2" style="margin-top:8px">${techH}</div>      <!-- ONGLETS -->      <div style="display:flex;gap:0;margin-top:18px;border-bottom:2px solid var(--navy);flex-wrap:wrap;">        <button id="tab-sims" data-tab="sims"          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">          📋 Fiche SIMS        </button>        <button id="tab-eval" data-tab="eval"          style="padding:8px 14px;font-size:11px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;margin-right:4px;">          📊 Éval. formative        </button>      </div>      <!-- ONGLET SIMS -->      <div id="panel-sims" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">        <p style="font-size:12px;color:#666;text-align:center;padding:20px 0;">          ✅ La fiche SIMS ci-dessus contient toutes les informations pour conduire l'exercice.        </p>      </div>      <!-- ONGLET ÉVAL. FORMATIVE -->      <div id="panel-eval" style="display:none;">        ${buildFormative(niv, nbv, aNom, th.l, cond)}      </div>    </div>    <div class="fiche-footer">      <span>FJ  |  Réf. RFFS/FICHE  |  Doc. interne — ne pas diffuser</span>      <span>RFFS BOD — Niveau ${niv} — ${aNom} — ${th.l}</span>    </div>  </div>;  // Attacher les listeners sur les boutons onglets après injection HTML  setTimeout(function(){    const btnSims = document.getElementById('tab-sims');    const btnEval = document.getElementById('tab-eval');    if(btnSims) btnSims.addEventListener('click', function(){ switchTab('sims'); });    if(btnEval) btnEval.addEventListener('click', function(){ switchTab('eval'); });    switchTab('sims');  }, 50);}document.querySelectorAll('input[name="niv"]').forEach(r=>r.addEventListener('change',upd));upd();// Préselection PN/PAX/carburant quand on change l'aéronefdocument.addEventListener('change', function(e){  if(e.target && e.target.id==='aeronef'){    const avName = e.target.value;    const avData = AV_DATA[avName];    if(avData){      const pn   = rnd(avData.pn[0],   avData.pn[1]);      const pax  = rnd(avData.pax[0],  avData.pax[1]);      const cbrt = rndF(avData.cbrt[0], avData.cbrt[1]);      const elPn   = document.getElementById('pn');      const elPax  = document.getElementById('pax');      const elCbrt = document.getElementById('cbrt');      if(elPn)   elPn.value   = pn;      if(elPax)  elPax.value  = pax;      if(elCbrt) elCbrt.value = cbrt + ' t';    }  }});</script></body></html></template>
 </head>
 <body>
 
@@ -495,230 +496,6 @@ function buildSchema(nbv, aeronef){
   </div>`;
 }
 
-function gen(){
-  const niv=+document.querySelector('input[name="niv"]:checked').value;
-  const nbv=NV[niv];
-  const ncol={5:"color:#375623",7:"color:#E36C09",8:"color:#C00000"}[niv];
-  const aeronef=getAeronef()||'—';
-  const theme=getTheme()||'—';
-  const loc=document.getElementById('loc').value;
-  const pn=+document.getElementById('pn').value;
-  const pax=+document.getElementById('pax').value;
-  const pob=pn+pax;
-  const cbrt=document.getElementById('cbrt').value;
-  const fig=document.getElementById('fig').value;
-  const cond=document.querySelector('input[name="cond"]:checked').value;
-  const titre=currentType==='cm'?'Chef de manœuvre':'Équipage VIM';
-  const sous=currentType==='cm'?`Niveau ${niv} — ${nbv} VIM`:`Conducteur + Opérateur — ${nbv} VIM`;
-
-  const entete=`
-  <div class="fhdr">
-    <div class="fhl"><h2>RFFS BOD — FICHE D'ÉVALUATION</h2><span>${cond} — ${sous}</span></div>
-    <div class="fhr"><span>${titre.toUpperCase()}</span></div>
-  </div>
-  <div class="fb">
-    <table class="idt">
-      <tr><td class="lbl">AÉRONEF</td><td class="bgb" style="font-weight:700;color:var(--navy)" colspan="3">${aeronef}</td><td class="lbl">NIVEAU RFFS</td><td class="bgb" style="font-weight:800;font-size:16px;text-align:center;${ncol}">${niv}</td></tr>
-      <tr><td class="lbl">THÈME</td><td style="font-weight:700;color:var(--orange)" colspan="3">${theme}</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>
-      <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="bgb" style="font-weight:800;color:var(--red);font-size:14px">${pob}</td></tr>
-      <tr><td class="lbl">CARBURANT</td><td style="font-weight:700;color:var(--orange)">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td><td class="lbl">DATE</td><td>………………………</td></tr>
-      <tr><td class="lbl">CONDITIONS</td><td>${cond}</td><td class="lbl">ÉVALUATEUR</td><td colspan="3">………………………………………………………</td></tr>
-    </table>
-    ${buildSchema(nbv, aeronef)}`;
-
-  let html=entete;
-
-  if(currentType==='cm'){
-    // Générer les sections équipage VIM
-    let vimHtml='';
-    for(let i=0;i<nbv;i++){
-      vimHtml+=`<div style="margin-bottom:18px">
-        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
-          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
-        </div>
-        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
-          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
-          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-cm-'+i)}</span>
-            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
-          </div>
-          ${grille(critConducteur)}
-          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
-          <div class="res-row">
-            <div class="res-cell">Éléments maîtrisés : ………………………</div>
-            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-          </div>
-          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
-          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-cm-'+i)}</span>
-            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
-          </div>
-          ${grille(critOperateur)}
-          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
-          <div class="res-row">
-            <div class="res-cell">Éléments maîtrisés : ………………………</div>
-            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-          </div>
-        </div>
-      </div>`;
-    }
-
-    html+=`
-    <!-- ONGLETS CM + ÉQUIPAGE -->
-    <div style="display:flex;gap:0;margin-top:14px;border-bottom:2px solid var(--navy);">
-      <button id="ev-tab-cm" onclick="evSwitchTab('cm')"
-        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
-        🎖️ Chef de manœuvre
-      </button>
-      <button id="ev-tab-vim" onclick="evSwitchTab('vim')"
-        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
-        🚒 Équipage VIM
-      </button>
-    </div>
-    <div id="ev-panel-cm" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
-      <div class="role-block" style="margin:0;">
-        <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
-        <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:12px;">Nom : ${agentSelect('cm-nom')}</span>
-          <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
-        </div>
-        ${grille(critCM)}
-        <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
-        <div class="res-row">
-          <div class="res-cell">Éléments maîtrisés : ………………………</div>
-          <div class="res-cell">Points à améliorer : ………………………</div>
-          <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-        </div>
-      </div>
-    </div>
-    <div id="ev-panel-vim" style="display:none;border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
-      ${vimHtml}
-    </div>`;
-  } else {
-    for(let i=0;i<nbv;i++){
-      html+=`<div style="margin-bottom:18px">
-        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
-          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
-        </div>
-        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
-          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
-          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-'+i)}</span>
-            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
-          </div>
-          ${grille(critConducteur)}
-          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
-          <div class="res-row">
-            <div class="res-cell">Éléments maîtrisés : ………………………</div>
-            <div class="res-cell">Points à améliorer : ………………………</div>
-            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-          </div>
-          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
-          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-'+i)}</span>
-            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
-          </div>
-          ${grille(critOperateur)}
-          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
-          <div class="res-row">
-            <div class="res-cell">Éléments maîtrisés : ………………………</div>
-            <div class="res-cell">Points à améliorer : ………………………</div>
-            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
-          </div>
-        </div>
-      </div>`;
-    }
-  }
-
-  html+=`
-    <div class="bilan-box">
-      <label>Bilan général de l'évaluateur</label>
-      <textarea id="eval-bilan" placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
-    </div>
-
-    <!-- RÉSULTAT & ENREGISTREMENT -->
-    <div style="background:#f8f8f8;border-radius:6px;padding:14px;margin:12px 0;border:1px solid #e0e0e0;">
-      <div style="font-size:11px;font-weight:700;color:#595959;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Résultat de l'évaluation</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #375623;border-radius:6px;background:#fff;">
-          <input type="radio" name="eval_resultat" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C00000;border-radius:6px;background:#fff;">
-          <input type="radio" name="eval_resultat" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span>
-        </label>
-  
-      </div>
-      <button onclick="saveEvaluation('${aeronef}','${theme}',${niv},'${cond}','${currentType}')"
-        style="width:100%;padding:10px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
-        💾 Enregistrer la fiche
-      </button>
-      <div id="eval-save-confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
-    </div>
-
-  </div>
-  <div class="fiche-footer">
-    <span>FJ  |  Réf. RFFS/EVAL  |  Doc. interne — ne pas diffuser</span>
-    <span>RFFS BOD — Niv. ${niv} — ${aeronef} — ${theme}</span>
-  </div>`;
-
-  document.getElementById('ew').innerHTML=html;
-
-  // Attacher listeners onglets CM/VIM si fiche CM
-  if(currentType==='cm'){
-    setTimeout(function(){
-      const tCM  = document.getElementById('ev-tab-cm');
-      const tVIM = document.getElementById('ev-tab-vim');
-      if(tCM)  tCM.addEventListener('click',  function(){ evSwitchTab('cm'); });
-      if(tVIM) tVIM.addEventListener('click', function(){ evSwitchTab('vim'); });
-    }, 50);
-  }
-
-  setTimeout(()=>initEvalBadges(nbv), 50);
-  gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
-}
-
-function evSwitchTab(tab){
-  const isCM = tab==='cm';
-  const pCM  = document.getElementById('ev-panel-cm');
-  const pVIM = document.getElementById('ev-panel-vim');
-  const tCM  = document.getElementById('ev-tab-cm');
-  const tVIM = document.getElementById('ev-tab-vim');
-  if(pCM)  pCM.style.display  = isCM ? 'block' : 'none';
-  if(pVIM) pVIM.style.display = isCM ? 'none'  : 'block';
-  if(tCM)  { tCM.style.background  = isCM ? 'var(--navy)' : '#fff'; tCM.style.color  = isCM ? '#fff' : 'var(--navy)'; }
-  if(tVIM) { tVIM.style.background = isCM ? '#fff' : 'var(--navy)'; tVIM.style.color = isCM ? 'var(--navy)' : '#fff'; }
-}
-
-function saveEvaluation(aeronef, theme, niv, cond, type){
-  const agents = [];
-  document.querySelectorAll('#ew select[id^="cm-nom"], #ew select[id^="cond-nom"], #ew select[id^="oper-nom"]').forEach(sel=>{
-    if(sel.value) agents.push(sel.value);
-  });
-  const resEl = document.querySelector('input[name="eval_resultat"]:checked');
-  const resultat = resEl ? resEl.value : 'non_renseigné';
-  const bilan = document.getElementById('eval-bilan') ? document.getElementById('eval-bilan').value : '';
-  const typeLabel = type==='cm' ? 'Éval. CM' : 'Éval. Équipage';
-  const fiche = {
-    id: Date.now(),
-    date: new Date().toLocaleDateString('fr-FR'),
-    heure: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
-    aeronef, theme: typeLabel + ' — ' + theme,
-    niveau: niv, conditions: cond,
-    agents: agents.join(' | '),
-    resultat, observations: bilan
-  };
-  const existing = JSON.parse(localStorage.getItem('rffs_formatives') || '[]');
-  existing.push(fiche);
-  localStorage.setItem('rffs_formatives', JSON.stringify(existing));
-  supabaseInsert({...fiche, source:'Évaluation'});
-  const conf = document.getElementById('eval-save-confirm');
-  if(conf){ conf.style.display='block'; setTimeout(()=>conf.style.display='none', 3000); }
-}
-
-upd();
-
 let evalSelVim=1, evalSelDir='L', evalVimPos={};
 var vimDirs={1:'R', 2:'D', 3:'L'};
 
@@ -741,7 +518,8 @@ function placeVimEval(sect,evt){
   const y=(evt.clientY-r.top)*(260/r.height);
   redrawMarkerEval(evalSelVim,x,y);
   evalVimPos[evalSelVim]=sect;
-  updateVimSectorsEval();
+  const p=document.getElementById('eval-vim-pos');
+  if(p)p.innerHTML=Object.entries(evalVimPos).map(([v,s])=>`<span style="margin:2px;background:#1F3864;color:#fff;padding:2px 8px;border-radius:10px;font-size:9px;display:inline-block">VIM ${v} → ${s}</span>`).join('');
 }
 
 function redrawMarkerEval(numVim,cx,cy){
@@ -750,8 +528,7 @@ function redrawMarkerEval(numVim,cx,cy){
   const old=document.getElementById('evmarker-'+numVim);
   if(old)old.remove();
   const dir=(typeof vimDirs!=='undefined'&&vimDirs[numVim])?vimDirs[numVim]:'R';
-  const mW=55,mH=55,vbW=700,vbH=700;
-  const scaleX=mW/vbW,scaleY=mH/vbH;
+  const mW=55,mH=55,scaleX=mW/700,scaleY=mH/700;
   const tx=cx-mW/2,ty=cy-mH/2;
   const badgeSVG=evalTruckSVG(numVim,dir);
   const tmp=document.createElement('div');
@@ -759,97 +536,33 @@ function redrawMarkerEval(numVim,cx,cy){
   const innerSVG=tmp.querySelector('svg').innerHTML;
   const g=document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id','evmarker-'+numVim);
-  g.setAttribute('class','vim-marker');
   g.style.cursor='move';
   g.dataset.vim=numVim;
   g.dataset.cx=cx;
   g.dataset.cy=cy;
   g.innerHTML='<g transform="translate('+tx+','+ty+') scale('+scaleX+','+scaleY+')">'+innerSVG+'</g>';
   svg.appendChild(g);
-  enableDragEval(g,numVim);
-}
-
-// Drag & drop d'un marqueur VIM dans le SVG du schéma
-function enableDragEval(markerGroup, numVim){
-  let dragging = false;
-  let startCx = 0, startCy = 0;
-  let startX = 0, startY = 0;
-
-  function getSvgCoords(evt){
-    const svg = document.getElementById('svg-eval');
-    const rect = svg.getBoundingClientRect();
-    const svgW = svg.viewBox.baseVal.width || 480;
-    const svgH = svg.viewBox.baseVal.height || 280;
-    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-    return {
-      x: (clientX - rect.left) * (svgW / rect.width),
-      y: (clientY - rect.top) * (svgH / rect.height)
-    };
-  }
-
-  function onDown(e){
-    e.preventDefault();
+  // Drag simple
+  var dragging=false,sx,sy,scx,scy;
+  g.addEventListener('mousedown',function(e){
     e.stopPropagation();
-    dragging = true;
-    const p = getSvgCoords(e);
-    startX = p.x; startY = p.y;
-    startCx = parseFloat(markerGroup.dataset.cx);
-    startCy = parseFloat(markerGroup.dataset.cy);
-    markerGroup.style.opacity = '0.7';
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend', onUp);
-  }
-  function onMove(e){
-    if(!dragging) return;
-    e.preventDefault();
-    const p = getSvgCoords(e);
-    const newCx = startCx + (p.x - startX);
-    const newCy = startCy + (p.y - startY);
-    markerGroup.dataset.cx = newCx;
-    markerGroup.dataset.cy = newCy;
-    const mW = 55, mH = 55;
-    const inner = markerGroup.querySelector('g');
-    if(inner){
-      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/700)+','+(mH/700)+')');
-    }
-  }
-  function onUp(){
-    dragging = false;
-    markerGroup.style.opacity = '1';
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-    document.removeEventListener('touchmove', onMove);
-    document.removeEventListener('touchend', onUp);
-    // Mettre à jour le secteur affiché selon la nouvelle position
-    updateVimSectors();
-  }
-  markerGroup.addEventListener('mousedown', onDown);
-  markerGroup.addEventListener('touchstart', onDown, {passive:false});
-}
-
-// Recalcule le secteur de chaque VIM placé en fonction de sa position SVG
-
-function updateVimSectorsEval(){
-  const svg = document.getElementById('svg-eval');
-  if(!svg) return;
-  const svgW = svg.viewBox.baseVal.width || 480;
-  const svgH = svg.viewBox.baseVal.height || 280;
-  Object.keys(evalVimPos).forEach(k=>{
-    const m = document.getElementById('marker-vim'+k);
-    if(!m) return;
-    const cx = parseFloat(m.dataset.cx), cy = parseFloat(m.dataset.cy);
-    let sec;
-    if(cx < svgW/2 && cy < svgH/2) sec = 'S2';
-    else if(cx < svgW/2) sec = 'S1';
-    else if(cy < svgH/2) sec = 'S3';
-    else sec = 'S4';
-    evalVimPos[k] = sec;
+    dragging=true;
+    const rc=svg.getBoundingClientRect();
+    sx=(e.clientX-rc.left)*(480/rc.width);
+    sy=(e.clientY-rc.top)*(260/rc.height);
+    scx=parseFloat(g.dataset.cx);
+    scy=parseFloat(g.dataset.cy);
   });
-  const pos = document.getElementById('eval-vim-pos');
-  if(pos) pos.innerHTML = Object.entries(vimPositions).map(([v,s])=>`<span style="margin:0 6px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">VIM ${v} → ${s}</span>`).join('');
+  svg.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    const rc=svg.getBoundingClientRect();
+    const nx=scx+((e.clientX-rc.left)*(480/rc.width)-sx);
+    const ny=scy+((e.clientY-rc.top)*(260/rc.height)-sy);
+    g.dataset.cx=nx; g.dataset.cy=ny;
+    const inner=g.querySelector('g');
+    if(inner) inner.setAttribute('transform','translate('+(nx-mW/2)+','+(ny-mH/2)+') scale('+(mW/700)+','+(mH/700)+')');
+  });
+  svg.addEventListener('mouseup',function(){dragging=false;});
 }
 
 
@@ -1118,9 +831,16 @@ var EVAL_VIM_R = `<!-- VIM (Véhicule d'Intervention Mousse) - vue côté droit 
   <text x="215" y="148" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" stroke="#1a1a1a" stroke-width="0.5">VIM</text>`;
 
 function evalTruckSVG(n, dir){
-  var inner = dir==='L' ? EVAL_VIM_L : EVAL_VIM_R;
-  inner = inner.split('>VIM</text>').join('>VIM '+n+'</text>');
-  return '<svg width="120" height="55" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="display:block;">'+inner+'</svg>';
+  if(dir==='L'||dir==='R'){
+    var inner = dir==='L' ? EVAL_VIM_L : EVAL_VIM_R;
+    inner = inner.split('>VIM</text>').join('>VIM '+n+'</text>');
+    return '<svg width="120" height="55" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="display:block;">'+inner+'</svg>';
+  }
+  var tpl=document.getElementById('vim-dessus-tpl');
+  var inner=tpl?tpl.innerHTML:'';
+  var rot=dir==='T'?-90:dir==='RT'?0:dir==='B'?90:180;
+  inner=inner.split('>VIM<').join('>VIM '+n+'<');
+  return '<svg width="65" height="65" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" style="display:block;"><g transform="rotate('+rot+',350,350)">'+inner+'</g></svg>';
 }
 
 function initEvalBadges(nbv){
@@ -1143,6 +863,545 @@ function refreshEvalBadge(n){
   if(sp) sp.innerHTML=evalTruckSVG(n,vimDirs[n]);
 }
 
+
+function evalSelBadge(n,dir){
+  evalSelVim=n; evalSelDir=dir;
+  if(typeof vimDirs!=='undefined') vimDirs[n]=dir;
+  document.querySelectorAll('[id^="evbadge-"]').forEach(b=>{
+    const isMe=b.dataset.vim==n;
+    b.style.borderColor=isMe?'#E8500A':'transparent';
+    b.style.boxShadow=isMe?'0 0 0 2px rgba(232,80,10,.4)':'none';
+    b.style.filter=isMe?'brightness(1.15)':'brightness(0.65)';
+  });
+}
+
+function placeVimEval(sect,evt){
+  const svg=document.getElementById('svg-eval');
+  if(!svg)return;
+  const r=svg.getBoundingClientRect();
+  const x=(evt.clientX-r.left)*(480/r.width);
+  const y=(evt.clientY-r.top)*(260/r.height);
+  const old=document.getElementById('evmarker-'+evalSelVim);if(old)old.remove();
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.id='evmarker-'+evalSelVim; g.style.pointerEvents='none';
+  // Utiliser les vrais SVG VIM — même logique que le générateur
+  const mW=80, mH=37, vbW=700, vbH=320;
+  const scaleX=mW/vbW, scaleY=mH/vbH;
+  const tx=x-mW/2, ty=y-mH/2;
+  const inner = evalSelDir==='L' ? EVAL_VIM_L : EVAL_VIM_R;
+  // Remplacer le texte VIM par le bon numéro
+  const innerNum = inner.split('>VIM</text>').join('>VIM '+evalSelVim+'</text>');
+  g.innerHTML = `<g transform="translate(${tx},${ty}) scale(${scaleX},${scaleY})">${innerNum}</g>`;
+  svg.appendChild(g);
+  evalVimPos[evalSelVim]=sect;
+  const p=document.getElementById('eval-vim-pos');
+  if(p)p.innerHTML=Object.entries(evalVimPos).map(([v,s])=>`<span style="margin:2px;background:#1F3864;color:#fff;padding:2px 8px;border-radius:10px;font-size:9px;display:inline-block">VIM ${v} → ${s}</span>`).join('');
+}
+
+function resetVimEval(){
+  [1,2,3].forEach(n=>{const o=document.getElementById('evmarker-'+n);if(o)o.remove();});
+  evalVimPos={};
+  const p=document.getElementById('eval-vim-pos');if(p)p.innerHTML='';
+  evalSelBadge(1,'L');
+}
+
+var EVAL_VIM_L = `<!-- VIM (Véhicule d'Intervention Mousse) - vue côté gauche simplifiée -->
+  
+  <!-- Châssis principal (rouge) -->
+  <path d="M 90 180 L 90 130 Q 90 110 110 110 L 160 110 Q 175 90 200 90 L 250 90 L 260 80 L 660 80 L 670 90 L 670 230 L 90 230 Z"
+        fill="#d32027" stroke="#1a1a1a" stroke-width="2.5"/>
+  
+  <!-- Bande blanche horizontale -->
+  <rect x="90" y="155" width="580" height="20" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  
+  <!-- Cabine - vitrage -->
+  <path d="M 115 130 Q 115 115 130 115 L 160 115 Q 175 100 195 100 L 240 100 L 245 130 Z"
+        fill="#3a4550" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- Reflet sur vitre -->
+  <path d="M 130 120 L 145 120 L 155 130 L 130 130 Z" fill="#5a6975" opacity="0.6"/>
+  
+  <!-- Porte cabine (ligne) -->
+  <line x1="200" y1="100" x2="200" y2="155" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="215" cy="135" r="2" fill="#1a1a1a"/>
+  
+  <!-- Pare-chocs avant -->
+  <path d="M 90 180 L 75 180 L 70 210 L 90 210 Z" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+  
+  <!-- Canon à mousse (sur le toit) -->
+  <g>
+    <!-- Base du canon -->
+    <rect x="155" y="65" width="35" height="20" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Tourelle -->
+    <circle cx="172" cy="65" r="10" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Tube du canon -->
+    <rect x="55" y="60" width="115" height="10" fill="#b8b8b8" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Embouchure -->
+    <path d="M 55 55 L 35 50 L 35 80 L 55 75 Z" fill="#4a4a4a" stroke="#1a1a1a" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Gyrophares bleus -->
+  <rect x="245" y="82" width="20" height="10" rx="2" fill="#2563eb" stroke="#1a1a1a" stroke-width="1.5"/>
+  <rect x="630" y="92" width="20" height="10" rx="2" fill="#2563eb" stroke="#1a1a1a" stroke-width="1.5"/>
+  
+  <!-- Équipement sur toit (climatisation/ventilation) -->
+  <rect x="320" y="60" width="100" height="22" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="1.5"/>
+  <rect x="500" y="55" width="60" height="25" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="530" cy="60" r="6" fill="#9a9a9a" stroke="#1a1a1a" stroke-width="1"/>
+  
+  <!-- Volet roulant 1 (compartiment matériel) -->
+  <rect x="270" y="115" width="90" height="105" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+  <g stroke="#a8a8a8" stroke-width="0.8">
+    <line x1="270" y1="125" x2="360" y2="125"/>
+    <line x1="270" y1="135" x2="360" y2="135"/>
+    <line x1="270" y1="145" x2="360" y2="145"/>
+    <line x1="270" y1="155" x2="360" y2="155"/>
+    <line x1="270" y1="165" x2="360" y2="165"/>
+    <line x1="270" y1="175" x2="360" y2="175"/>
+    <line x1="270" y1="185" x2="360" y2="185"/>
+    <line x1="270" y1="195" x2="360" y2="195"/>
+    <line x1="270" y1="205" x2="360" y2="205"/>
+  </g>
+  
+  <!-- Texte VIM -->
+  <text x="425" y="148" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" stroke="#1a1a1a" stroke-width="0.5">VIM</text>
+  
+  <!-- Volet roulant 2 (petit, sous VIM) -->
+  <rect x="380" y="180" width="100" height="40" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+  <g stroke="#a8a8a8" stroke-width="0.8">
+    <line x1="380" y1="190" x2="480" y2="190"/>
+    <line x1="380" y1="200" x2="480" y2="200"/>
+    <line x1="380" y1="210" x2="480" y2="210"/>
+  </g>
+  
+  <!-- Compartiment fenêtres (côté droit) -->
+  <rect x="490" y="115" width="110" height="60" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+  <g fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1">
+    <rect x="495" y="120" width="25" height="20"/>
+    <rect x="525" y="120" width="25" height="20"/>
+    <rect x="555" y="120" width="20" height="20"/>
+    <rect x="580" y="120" width="15" height="20"/>
+    <rect x="495" y="145" width="25" height="20"/>
+    <rect x="525" y="145" width="25" height="20"/>
+    <rect x="555" y="145" width="20" height="20"/>
+    <rect x="580" y="145" width="15" height="20"/>
+  </g>
+  
+  <!-- Volet roulant 3 (extrême droite) -->
+  <rect x="615" y="115" width="45" height="105" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+  <g stroke="#a8a8a8" stroke-width="0.8">
+    <line x1="615" y1="130" x2="660" y2="130"/>
+    <line x1="615" y1="145" x2="660" y2="145"/>
+    <line x1="615" y1="160" x2="660" y2="160"/>
+    <line x1="615" y1="175" x2="660" y2="175"/>
+    <line x1="615" y1="190" x2="660" y2="190"/>
+    <line x1="615" y1="205" x2="660" y2="205"/>
+  </g>
+  
+  <!-- Pare-chocs arrière -->
+  <rect x="660" y="190" width="20" height="40" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="2"/>
+  
+  <!-- Roues (3 essieux : 1 avant + 2 arrière) -->
+  <g>
+    <!-- Roue avant -->
+    <circle cx="170" cy="240" r="40" fill="#1a1a1a"/>
+    <circle cx="170" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+    <circle cx="170" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="170" cy="240" r="4" fill="#2a2a2a"/>
+    
+    <!-- Roue arrière 1 -->
+    <circle cx="450" cy="240" r="40" fill="#1a1a1a"/>
+    <circle cx="450" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+    <circle cx="450" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="450" cy="240" r="4" fill="#2a2a2a"/>
+    
+    <!-- Roue arrière 2 -->
+    <circle cx="560" cy="240" r="40" fill="#1a1a1a"/>
+    <circle cx="560" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+    <circle cx="560" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="560" cy="240" r="4" fill="#2a2a2a"/>
+  </g>
+  
+  <!-- Marchepieds -->
+  <rect x="220" y="218" width="40" height="6" fill="#5a5a5a" stroke="#1a1a1a" stroke-width="1"/>
+  
+  <!-- Clignotant orange avant -->
+  <rect x="95" y="170" width="10" height="8" fill="#ff8c1a" stroke="#1a1a1a" stroke-width="1"/>
+  
+  <!-- Petit gyrophare orange sur toit -->
+  <rect x="195" y="78" width="8" height="6" fill="#ff8c1a" stroke="#1a1a1a" stroke-width="1"/>`;
+var EVAL_VIM_R = `<!-- VIM (Véhicule d'Intervention Mousse) - vue côté droit (miroir) -->
+  
+  <g transform="translate(700,0) scale(-1,1)">
+    <!-- Châssis principal (rouge) -->
+    <path d="M 90 180 L 90 130 Q 90 110 110 110 L 160 110 Q 175 90 200 90 L 250 90 L 260 80 L 660 80 L 670 90 L 670 230 L 90 230 Z"
+          fill="#d32027" stroke="#1a1a1a" stroke-width="2.5"/>
+    
+    <!-- Bande blanche horizontale -->
+    <rect x="90" y="155" width="580" height="20" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+    
+    <!-- Cabine - vitrage -->
+    <path d="M 115 130 Q 115 115 130 115 L 160 115 Q 175 100 195 100 L 240 100 L 245 130 Z"
+          fill="#3a4550" stroke="#1a1a1a" stroke-width="2"/>
+    <!-- Reflet sur vitre -->
+    <path d="M 130 120 L 145 120 L 155 130 L 130 130 Z" fill="#5a6975" opacity="0.6"/>
+    
+    <!-- Porte cabine (ligne) -->
+    <line x1="200" y1="100" x2="200" y2="155" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="215" cy="135" r="2" fill="#1a1a1a"/>
+    
+    <!-- Pare-chocs avant -->
+    <path d="M 90 180 L 75 180 L 70 210 L 90 210 Z" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+    
+    <!-- Canon à mousse (sur le toit) -->
+    <g>
+      <rect x="155" y="65" width="35" height="20" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="172" cy="65" r="10" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+      <rect x="55" y="60" width="115" height="10" fill="#b8b8b8" stroke="#1a1a1a" stroke-width="1.5"/>
+      <path d="M 55 55 L 35 50 L 35 80 L 55 75 Z" fill="#4a4a4a" stroke="#1a1a1a" stroke-width="1.5"/>
+    </g>
+    
+    <!-- Gyrophares bleus -->
+    <rect x="245" y="82" width="20" height="10" rx="2" fill="#2563eb" stroke="#1a1a1a" stroke-width="1.5"/>
+    <rect x="630" y="92" width="20" height="10" rx="2" fill="#2563eb" stroke="#1a1a1a" stroke-width="1.5"/>
+    
+    <!-- Équipement sur toit -->
+    <rect x="320" y="60" width="100" height="22" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="1.5"/>
+    <rect x="500" y="55" width="60" height="25" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="530" cy="60" r="6" fill="#9a9a9a" stroke="#1a1a1a" stroke-width="1"/>
+    
+    <!-- Volet roulant 1 -->
+    <rect x="270" y="115" width="90" height="105" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+    <g stroke="#a8a8a8" stroke-width="0.8">
+      <line x1="270" y1="125" x2="360" y2="125"/>
+      <line x1="270" y1="135" x2="360" y2="135"/>
+      <line x1="270" y1="145" x2="360" y2="145"/>
+      <line x1="270" y1="155" x2="360" y2="155"/>
+      <line x1="270" y1="165" x2="360" y2="165"/>
+      <line x1="270" y1="175" x2="360" y2="175"/>
+      <line x1="270" y1="185" x2="360" y2="185"/>
+      <line x1="270" y1="195" x2="360" y2="195"/>
+      <line x1="270" y1="205" x2="360" y2="205"/>
+    </g>
+    
+    <!-- Volet roulant 2 -->
+    <rect x="380" y="180" width="100" height="40" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+    <g stroke="#a8a8a8" stroke-width="0.8">
+      <line x1="380" y1="190" x2="480" y2="190"/>
+      <line x1="380" y1="200" x2="480" y2="200"/>
+      <line x1="380" y1="210" x2="480" y2="210"/>
+    </g>
+    
+    <!-- Compartiment fenêtres -->
+    <rect x="490" y="115" width="110" height="60" fill="#a82228" stroke="#1a1a1a" stroke-width="1.5"/>
+    <g fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1">
+      <rect x="495" y="120" width="25" height="20"/>
+      <rect x="525" y="120" width="25" height="20"/>
+      <rect x="555" y="120" width="20" height="20"/>
+      <rect x="580" y="120" width="15" height="20"/>
+      <rect x="495" y="145" width="25" height="20"/>
+      <rect x="525" y="145" width="25" height="20"/>
+      <rect x="555" y="145" width="20" height="20"/>
+      <rect x="580" y="145" width="15" height="20"/>
+    </g>
+    
+    <!-- Volet roulant 3 -->
+    <rect x="615" y="115" width="45" height="105" fill="#dcdcdc" stroke="#1a1a1a" stroke-width="2"/>
+    <g stroke="#a8a8a8" stroke-width="0.8">
+      <line x1="615" y1="130" x2="660" y2="130"/>
+      <line x1="615" y1="145" x2="660" y2="145"/>
+      <line x1="615" y1="160" x2="660" y2="160"/>
+      <line x1="615" y1="175" x2="660" y2="175"/>
+      <line x1="615" y1="190" x2="660" y2="190"/>
+      <line x1="615" y1="205" x2="660" y2="205"/>
+    </g>
+    
+    <!-- Pare-chocs arrière -->
+    <rect x="660" y="190" width="20" height="40" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="2"/>
+    
+    <!-- Roues -->
+    <g>
+      <circle cx="170" cy="240" r="40" fill="#1a1a1a"/>
+      <circle cx="170" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+      <circle cx="170" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="170" cy="240" r="4" fill="#2a2a2a"/>
+      
+      <circle cx="450" cy="240" r="40" fill="#1a1a1a"/>
+      <circle cx="450" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+      <circle cx="450" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="450" cy="240" r="4" fill="#2a2a2a"/>
+      
+      <circle cx="560" cy="240" r="40" fill="#1a1a1a"/>
+      <circle cx="560" cy="240" r="32" fill="#2a2a2a" stroke="#1a1a1a" stroke-width="1"/>
+      <circle cx="560" cy="240" r="15" fill="#7a7a7a" stroke="#1a1a1a" stroke-width="1.5"/>
+      <circle cx="560" cy="240" r="4" fill="#2a2a2a"/>
+    </g>
+    
+    <!-- Marchepieds -->
+    <rect x="220" y="218" width="40" height="6" fill="#5a5a5a" stroke="#1a1a1a" stroke-width="1"/>
+    
+    <!-- Clignotant orange avant -->
+    <rect x="95" y="170" width="10" height="8" fill="#ff8c1a" stroke="#1a1a1a" stroke-width="1"/>
+    
+    <!-- Petit gyrophare orange sur toit -->
+    <rect x="195" y="78" width="8" height="6" fill="#ff8c1a" stroke="#1a1a1a" stroke-width="1"/>
+  </g>
+  
+  <!-- Texte VIM (hors transform pour rester lisible) -->
+  <!-- Position miroir : x original 425 -> 700 - 425 - largeur_texte ≈ 215 -->
+  <text x="215" y="148" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" stroke="#1a1a1a" stroke-width="0.5">VIM</text>`;
+
+function evalTruckSVG(n, dir){
+  if(dir==='L'||dir==='R'){
+    var inner = dir==='L' ? EVAL_VIM_L : EVAL_VIM_R;
+    inner = inner.split('>VIM</text>').join('>VIM '+n+'</text>');
+    return '<svg width="120" height="55" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="display:block;">'+inner+'</svg>';
+  }
+  var tpl=document.getElementById('vim-dessus-tpl');
+  var inner=tpl?tpl.innerHTML:'';
+  var rot=dir==='T'?-90:dir==='RT'?0:dir==='B'?90:180;
+  inner=inner.split('>VIM<').join('>VIM '+n+'<');
+  return '<svg width="65" height="65" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" style="display:block;"><g transform="rotate('+rot+',350,350)">'+inner+'</g></svg>';
+}
+
+function initEvalBadges(nbv){
+  const gl=document.getElementById('eval-grp-left');
+  const gr=document.getElementById('eval-grp-right');
+  if(!gl||!gr)return;
+  gl.innerHTML=''; gr.innerHTML='';
+  for(let i=1;i<=nbv;i++){
+    ['L','R'].forEach(dir=>{
+      const sp=document.createElement('span');
+      sp.id='evbadge-'+dir+'-'+i; sp.dataset.vim=i; sp.dataset.dir=dir;
+      sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;';
+      sp.innerHTML=evalTruckSVG(i,dir);
+      sp.addEventListener('click',(function(n,d){return function(){evalSelBadge(n,d);};})(i,dir));
+      if(dir==='L') gl.appendChild(sp); else gr.appendChild(sp);
+    });
+  }
+  evalSelBadge(1,'L');
+}
+
+function gen(){
+  const niv=+document.querySelector('input[name="niv"]:checked').value;
+  const nbv=NV[niv];
+  const ncol={5:"color:#375623",7:"color:#E36C09",8:"color:#C00000"}[niv];
+  const aeronef=getAeronef()||'—';
+  const theme=getTheme()||'—';
+  const loc=document.getElementById('loc').value;
+  const pn=+document.getElementById('pn').value;
+  const pax=+document.getElementById('pax').value;
+  const pob=pn+pax;
+  const cbrt=document.getElementById('cbrt').value;
+  const fig=document.getElementById('fig').value;
+  const cond=document.querySelector('input[name="cond"]:checked').value;
+  const titre=currentType==='cm'?'Chef de manœuvre':'Équipage VIM';
+  const sous=currentType==='cm'?`Niveau ${niv} — ${nbv} VIM`:`Conducteur + Opérateur — ${nbv} VIM`;
+
+  const entete=`
+  <div class="fhdr">
+    <div class="fhl"><h2>RFFS BOD — FICHE D'ÉVALUATION</h2><span>${cond} — ${sous}</span></div>
+    <div class="fhr"><span>${titre.toUpperCase()}</span></div>
+  </div>
+  <div class="fb">
+    <table class="idt">
+      <tr><td class="lbl">AÉRONEF</td><td class="bgb" style="font-weight:700;color:var(--navy)" colspan="3">${aeronef}</td><td class="lbl">NIVEAU RFFS</td><td class="bgb" style="font-weight:800;font-size:16px;text-align:center;${ncol}">${niv}</td></tr>
+      <tr><td class="lbl">THÈME</td><td style="font-weight:700;color:var(--orange)" colspan="3">${theme}</td><td class="lbl">LOCALISATION</td><td style="font-weight:700;color:var(--navy)">${loc}</td></tr>
+      <tr><td class="lbl">PN</td><td style="font-weight:700">${pn}</td><td class="lbl">PAX</td><td style="font-weight:700">${pax}</td><td class="lbl">POB TOTAL</td><td class="bgb" style="font-weight:800;color:var(--red);font-size:14px">${pob}</td></tr>
+      <tr><td class="lbl">CARBURANT</td><td style="font-weight:700;color:var(--orange)">${cbrt}</td><td class="lbl">FIGURANTS</td><td>${fig}</td><td class="lbl">DATE</td><td>………………………</td></tr>
+      <tr><td class="lbl">CONDITIONS</td><td>${cond}</td><td class="lbl">ÉVALUATEUR</td><td colspan="3">………………………………………………………</td></tr>
+    </table>
+    ${buildSchema(nbv, aeronef)}`;
+
+  let html=entete;
+
+  if(currentType==='cm'){
+    // Générer les sections équipage VIM
+    let vimHtml='';
+    for(let i=0;i<nbv;i++){
+      vimHtml+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-cm-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    html+=`
+    <!-- ONGLETS CM + ÉQUIPAGE -->
+    <div style="display:flex;gap:0;margin-top:14px;border-bottom:2px solid var(--navy);">
+      <button id="ev-tab-cm" onclick="evSwitchTab('cm')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:var(--navy);color:#fff;cursor:pointer;margin-right:4px;">
+        🎖️ Chef de manœuvre
+      </button>
+      <button id="ev-tab-vim" onclick="evSwitchTab('vim')"
+        style="padding:7px 16px;font-size:12px;font-weight:700;border:2px solid var(--navy);border-bottom:none;border-radius:6px 6px 0 0;background:#fff;color:var(--navy);cursor:pointer;">
+        🚒 Équipage VIM
+      </button>
+    </div>
+    <div id="ev-panel-cm" style="border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      <div class="role-block" style="margin:0;">
+        <div class="role-hdr" style="background:var(--navy)"><h3>🎖️ Chef de manœuvre</h3></div>
+        <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:12px;">Nom : ${agentSelect('cm-nom')}</span>
+          <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+        </div>
+        ${grille(critCM)}
+        <div class="note-box"><label>Observations — Chef de manœuvre</label><textarea placeholder="Points positifs, axes d'amélioration, décisions notables..."></textarea></div>
+        <div class="res-row">
+          <div class="res-cell">Éléments maîtrisés : ………………………</div>
+          <div class="res-cell">Points à améliorer : ………………………</div>
+          <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+        </div>
+      </div>
+    </div>
+    <div id="ev-panel-vim" style="display:none;border:2px solid var(--navy);border-top:none;padding:14px;border-radius:0 0 6px 6px;">
+      ${vimHtml}
+    </div>`;
+  } else {
+    for(let i=0;i<nbv;i++){
+      html+=`<div style="margin-bottom:18px">
+        <div style="background:var(--navy);color:#fff;padding:9px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700">VIM ${i+1}</span>
+          <span style="font-size:10px;opacity:.7">${sects[i]}</span>
+        </div>
+        <div class="role-block" style="border-radius:0 0 8px 8px;border-top:none;margin-bottom:0">
+          <div class="role-hdr" style="background:var(--orange)"><h3>🚗 Conducteur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('cond-nom-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critConducteur)}
+          <div class="note-box"><label>Observations Conducteur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+          <div class="role-hdr" style="background:var(--green)"><h3>🧯 Opérateur</h3></div>
+          <div class="role-id" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;">Nom : ${agentSelect('oper-nom-'+i)}</span>
+            <span style="font-size:12px;">Grade : <input type="text" placeholder="Grade..." style="border:1.5px solid #ddd;border-radius:4px;font-size:12px;padding:3px 6px;width:100px;"></span>
+          </div>
+          ${grille(critOperateur)}
+          <div class="note-box"><label>Observations Opérateur VIM ${i+1}</label><textarea placeholder="Points positifs, axes d'amélioration..."></textarea></div>
+          <div class="res-row">
+            <div class="res-cell">Éléments maîtrisés : ………………………</div>
+            <div class="res-cell">Points à améliorer : ………………………</div>
+            <div class="res-cell bold">Résultat : &nbsp; ✓ VALIDÉ &nbsp;&nbsp; ✗ NON VALIDÉ</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  html+=`
+    <div class="bilan-box">
+      <label>Bilan général de l'évaluateur</label>
+      <textarea id="eval-bilan" placeholder="Synthèse globale — points forts collectifs — axes de progression — recommandations pour la prochaine garde..."></textarea>
+    </div>
+
+    <!-- RÉSULTAT & ENREGISTREMENT -->
+    <div style="background:#f8f8f8;border-radius:6px;padding:14px;margin:12px 0;border:1px solid #e0e0e0;">
+      <div style="font-size:11px;font-weight:700;color:#595959;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Résultat de l'évaluation</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #375623;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="validé"> <span style="color:#375623;font-weight:700;">✓ VALIDÉ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 14px;border:2px solid #C00000;border-radius:6px;background:#fff;">
+          <input type="radio" name="eval_resultat" value="non_validé"> <span style="color:#C00000;font-weight:700;">✗ NON VALIDÉ</span>
+        </label>
+  
+      </div>
+      <button onclick="saveEvaluation('${aeronef}','${theme}',${niv},'${cond}','${currentType}')"
+        style="width:100%;padding:10px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+        💾 Enregistrer la fiche
+      </button>
+      <div id="eval-save-confirm" style="display:none;text-align:center;margin-top:8px;font-size:11px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+    </div>
+
+  </div>
+  <div class="fiche-footer">
+    <span>FJ  |  Réf. RFFS/EVAL  |  Doc. interne — ne pas diffuser</span>
+    <span>RFFS BOD — Niv. ${niv} — ${aeronef} — ${theme}</span>
+  </div>`;
+
+  document.getElementById('ew').innerHTML=html;
+
+  // Attacher listeners onglets CM/VIM si fiche CM
+  if(currentType==='cm'){
+    setTimeout(function(){
+      const tCM  = document.getElementById('ev-tab-cm');
+      const tVIM = document.getElementById('ev-tab-vim');
+      if(tCM)  tCM.addEventListener('click',  function(){ evSwitchTab('cm'); });
+      if(tVIM) tVIM.addEventListener('click', function(){ evSwitchTab('vim'); });
+    }, 50);
+  }
+
+  setTimeout(()=>initEvalBadges(nbv), 50);
+  gtag('event','generer_eval',{type:currentType,niveau:niv,theme:theme});
+}
+
+function evSwitchTab(tab){
+  const isCM = tab==='cm';
+  const pCM  = document.getElementById('ev-panel-cm');
+  const pVIM = document.getElementById('ev-panel-vim');
+  const tCM  = document.getElementById('ev-tab-cm');
+  const tVIM = document.getElementById('ev-tab-vim');
+  if(pCM)  pCM.style.display  = isCM ? 'block' : 'none';
+  if(pVIM) pVIM.style.display = isCM ? 'none'  : 'block';
+  if(tCM)  { tCM.style.background  = isCM ? 'var(--navy)' : '#fff'; tCM.style.color  = isCM ? '#fff' : 'var(--navy)'; }
+  if(tVIM) { tVIM.style.background = isCM ? '#fff' : 'var(--navy)'; tVIM.style.color = isCM ? 'var(--navy)' : '#fff'; }
+}
+
+function saveEvaluation(aeronef, theme, niv, cond, type){
+  const agents = [];
+  document.querySelectorAll('#ew select[id^="cm-nom"], #ew select[id^="cond-nom"], #ew select[id^="oper-nom"]').forEach(sel=>{
+    if(sel.value) agents.push(sel.value);
+  });
+  const resEl = document.querySelector('input[name="eval_resultat"]:checked');
+  const resultat = resEl ? resEl.value : 'non_renseigné';
+  const bilan = document.getElementById('eval-bilan') ? document.getElementById('eval-bilan').value : '';
+  const typeLabel = type==='cm' ? 'Éval. CM' : 'Éval. Équipage';
+  const fiche = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('fr-FR'),
+    heure: new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
+    aeronef, theme: typeLabel + ' — ' + theme,
+    niveau: niv, conditions: cond,
+    agents: agents.join(' | '),
+    resultat, observations: bilan
+  };
+  const existing = JSON.parse(localStorage.getItem('rffs_formatives') || '[]');
+  existing.push(fiche);
+  localStorage.setItem('rffs_formatives', JSON.stringify(existing));
+  supabaseInsert({...fiche, source:'Évaluation'});
+  const conf = document.getElementById('eval-save-confirm');
+  if(conf){ conf.style.display='block'; setTimeout(()=>conf.style.display='none', 3000); }
+}
+
+upd();
 </script>
-</body>
-</html>
