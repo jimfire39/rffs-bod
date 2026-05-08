@@ -853,6 +853,23 @@ let selectedVim = 1;
 let selectedDir = 'R';
 const vimPositions = {};
 
+function rotateVim(){
+  var seq = ['R','D','L','U'];
+  var idx = seq.indexOf(vimDirs[selectedVim] || 'R');
+  vimDirs[selectedVim] = seq[(idx+1) % 4];
+  selectedDir = vimDirs[selectedVim];
+  refreshBadge(selectedVim);
+  var marker = document.getElementById('marker-vim'+selectedVim);
+  if(marker && marker.dataset.cx && marker.dataset.cy){
+    redrawMarker(selectedVim, parseFloat(marker.dataset.cx), parseFloat(marker.dataset.cy));
+  }
+}
+
+function refreshBadge(n){
+  var sp = document.getElementById('badge-'+n);
+  if(sp) sp.innerHTML = truckBadgeSVG(n, vimDirs[n]);
+}
+
 function selVim(n, dir){
   selectedVim = n;
   if(dir) selectedDir = dir;
@@ -891,16 +908,10 @@ function redrawMarker(numVim, cx, cy){
   if(old) old.remove();
 
   const dir = (typeof vimDirs!=='undefined' && vimDirs[numVim]) ? vimDirs[numVim] : 'R';
-  const isHoriz = (dir === 'R' || dir === 'L');
-  // Dimensions affichées du marqueur dans le SVG du schéma
-  const mW = isHoriz ? 180 : 82;
-  const mH = isHoriz ? 82 : 180;
-  const vbW = isHoriz ? 700 : 320;
-  const vbH = isHoriz ? 320 : 700;
-  const scaleX = mW/vbW, scaleY = mH/vbH;
+  const mW = 55, mH = 55;
+  const scaleX = mW/700, scaleY = mH/700;
   const tx = cx - mW/2, ty = cy - mH/2;
 
-  // Récupérer le contenu interne du badge généré
   const badgeSVG = truckBadgeSVG(numVim, dir);
   const tmp = document.createElement('div');
   tmp.innerHTML = badgeSVG;
@@ -915,8 +926,6 @@ function redrawMarker(numVim, cx, cy){
   g.dataset.cy = cy;
   g.innerHTML = '<g transform="translate('+tx+','+ty+') scale('+scaleX+','+scaleY+')">'+innerSVG+'</g>';
   svg.appendChild(g);
-
-  // Activer le drag sur ce marqueur
   enableDrag(g, numVim);
 }
 
@@ -961,16 +970,10 @@ function enableDrag(markerGroup, numVim){
     const newCy = startCy + (p.y - startY);
     markerGroup.dataset.cx = newCx;
     markerGroup.dataset.cy = newCy;
-    // Recalculer le translate du sous-groupe
-    const dir = (typeof vimDirs!=='undefined' && vimDirs[numVim]) ? vimDirs[numVim] : 'R';
-    const isHoriz = (dir === 'R' || dir === 'L');
-    const mW = isHoriz ? 180 : 82;
-    const mH = isHoriz ? 82 : 180;
+    const mW = 55, mH = 55;
     const inner = markerGroup.querySelector('g');
     if(inner){
-      const vbW = isHoriz ? 700 : 320;
-      const vbH = isHoriz ? 320 : 700;
-      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/vbW)+','+(mH/vbH)+')');
+      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/700)+','+(mH/700)+')');
     }
   }
   function onUp(){
