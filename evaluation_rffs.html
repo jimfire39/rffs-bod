@@ -500,18 +500,17 @@ let evalSelVim=1, evalSelDir='R', evalVimPos={};
 
 var VIM_SVG_INNER_EVAL = '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.2"/><rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="1.2" rx="4"/><rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1" rx="2"/><rect x="490" y="90" width="120" height="9" fill="#ffffff"/><rect x="490" y="221" width="120" height="9" fill="#ffffff"/><rect x="478" y="100" width="14" height="40" fill="#0033a0"/><rect x="478" y="140" width="14" height="40" fill="#ffffff"/><rect x="478" y="180" width="14" height="40" fill="#c8102e"/><rect x="60" y="96" width="430" height="7" fill="#ffffff"/><rect x="60" y="217" width="430" height="7" fill="#ffffff"/><rect x="80" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="80" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="106" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="196" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="350" y="145" width="120" height="35" fill="#5a5a5a" stroke="#2a2a2a" stroke-width="1" rx="3"/><circle cx="380" cy="162" r="13" fill="#3a3a3a" stroke="#1a1a1a" stroke-width="1"/><rect x="380" y="158" width="80" height="9" fill="#7a7a7a" stroke="#3a3a3a" stroke-width="0.8" rx="2"/><rect x="455" y="155" width="14" height="15" fill="#2a2a2a" stroke="#000" stroke-width="0.8" rx="1"/><rect x="610" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="612" y="120" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="612" y="190" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="50" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="78" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="78" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="74" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="220" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><circle cx="270" cy="160" r="50" fill="#ffffff" stroke="#7a0a1c" stroke-width="4"/><text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="80" font-weight="900" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.5">__N__</text>;  inner = inner.split(\'__N__\').join(n)';
 
-var vimDirs = {1:'R', 2:'R', 3:'R'};
+// Angles de rotation : 0=droite, 90=bas, 180=gauche, 270=haut
+var vimDirs = {1:0, 2:0, 3:0};
 
-function evalTruckSVG(n, dir){
+function evalTruckSVG(n, angle){
+  // Taille fixe 40×40 — rotation CSS interne, aucun changement de dimensions
+  angle = angle || 0;
   var color = ['#c8102e','#002F5F','#375623'][n-1] || '#c8102e';
   var inner = VIM_SVG_INNER_EVAL.replace('__N__', n).replace('__COLOR__', color);
-  var content, vbW, vbH, w, h;
-  if(dir==='R'){  content=inner; vbW=700; vbH=320; w=90; h=41; }
-  else if(dir==='L'){ content='<g transform="translate(700,0) scale(-1,1)">'+inner+'</g>'; vbW=700; vbH=320; w=90; h=41; }
-  else if(dir==='D'){ content='<g transform="translate(320,0) rotate(90)">'+inner+'</g>'; vbW=320; vbH=700; w=41; h=90; }
-  else if(dir==='U'){ content='<g transform="translate(0,700) rotate(-90)">'+inner+'</g>'; vbW=320; vbH=700; w=41; h=90; }
-  else { content=inner; vbW=700; vbH=320; w=90; h=41; }
-  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+vbW+' '+vbH+'" xmlns="http://www.w3.org/2000/svg" style="display:block;">'+content+'</svg>';
+  return '<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
+    + ' style="width:36px;height:36px;display:block;transition:transform .28s ease;transform:rotate(' + angle + 'deg);">'
+    + inner + '</svg>';
 }
 
 function initEvalBadges(nbv){
@@ -521,7 +520,10 @@ function initEvalBadges(nbv){
   for(var i=1;i<=nbv;i++){
     var sp=document.createElement('span');
     sp.id='evbadge-'+i; sp.dataset.vim=i;
-    sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;';
+    sp.style.cssText='display:inline-flex;align-items:center;justify-content:center;'
+      +'width:40px;height:40px;cursor:pointer;border-radius:6px;'
+      +'border:2px solid transparent;transition:border-color .15s,opacity .15s;'
+      +'overflow:hidden;flex-shrink:0;vertical-align:middle;';
     sp.innerHTML=evalTruckSVG(i, vimDirs[i]);
     sp.onclick=(function(n){return function(){evalSelBadge(n, vimDirs[n]);};})(i);
     gl.appendChild(sp);
@@ -534,23 +536,22 @@ function refreshEvalBadge(n){
   if(sp) sp.innerHTML=evalTruckSVG(n, vimDirs[n]);
 }
 
-function evalSelBadge(n, dir){
-  evalSelVim=n; evalSelDir=dir;
-  if(typeof vimDirs!=='undefined') vimDirs[n]=dir;
+function evalSelBadge(n, angle){
+  evalSelVim=n;
+  if(typeof angle !== 'undefined') vimDirs[n]=angle;
+  evalSelDir=angle||0;
+  var colors=['#c8102e','#002F5F','#375623'];
   document.querySelectorAll('[id^="evbadge-"]').forEach(function(b){
-    var isMe=b.dataset.vim==n;
-    var colors=['#c8102e','#002F5F','#375623'];
+    var isMe=+b.dataset.vim===n;
     b.style.borderColor=isMe?colors[n-1]:'transparent';
-    b.style.boxShadow=isMe?'0 0 0 2px rgba(232,80,10,.3)':'none';
-    b.style.filter=isMe?'brightness(1.1)':'brightness(0.65)';
+    b.style.opacity=isMe?'1':'0.5';
+    b.style.boxShadow=isMe?'0 0 0 2px rgba(197,90,17,.4)':'none';
   });
 }
 
 function rotateVimEval(){
-  var seq=['R','D','L','U'];
-  var idx=seq.indexOf(vimDirs[evalSelVim]||'R');
-  vimDirs[evalSelVim]=seq[(idx+1)%4];
-  evalSelDir=vimDirs[evalSelVim];
+  vimDirs[evalSelVim] = ((vimDirs[evalSelVim] || 0) + 90) % 360;
+  evalSelDir = vimDirs[evalSelVim];
   refreshEvalBadge(evalSelVim);
   var m=document.getElementById('evmarker-'+evalSelVim);
   if(m&&m.dataset.cx&&m.dataset.cy){
@@ -563,24 +564,25 @@ function redrawMarkerEval(numVim, cx, cy){
   if(!svg)return;
   var old=document.getElementById('evmarker-'+numVim);
   if(old)old.remove();
-  var dir=(vimDirs&&vimDirs[numVim])?vimDirs[numVim]:'R';
+  var angle=(vimDirs&&vimDirs[numVim]!=null)?vimDirs[numVim]:0;
   var color=['#c8102e','#002F5F','#375623'][numVim-1]||'#c8102e';
   var inner=VIM_SVG_INNER_EVAL.replace('__N__',numVim).replace('__COLOR__',color);
-  var content, vbW, vbH, mW, mH;
-  if(dir==='R'){  content=inner; vbW=700; vbH=320; mW=55; mH=25; }
-  else if(dir==='L'){ content='<g transform="translate(700,0) scale(-1,1)">'+inner+'</g>'; vbW=700; vbH=320; mW=55; mH=25; }
-  else if(dir==='D'){ content='<g transform="translate(320,0) rotate(90)">'+inner+'</g>'; vbW=320; vbH=700; mW=25; mH=55; }
-  else if(dir==='U'){ content='<g transform="translate(0,700) rotate(-90)">'+inner+'</g>'; vbW=320; vbH=700; mW=25; mH=55; }
-  else { content=inner; vbW=700; vbH=320; mW=55; mH=25; }
-  var sx=mW/vbW, sy=mH/vbH;
-  var tx=cx-mW/2, ty=cy-mH/2;
+  // Taille 64×64 sur schéma pour meilleure lisibilité
+  var sz=64;
+  var tx=cx-sz/2, ty=cy-sz/2;
+  // Rotation baked dans le SVG via transform
+  var rotContent = angle!==0
+    ? '<g transform="rotate('+angle+',350,160)">'+inner+'</g>'
+    : inner;
+  var svgStr='<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">'+rotContent+'</svg>';
+  var b64='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgStr)));
   var g=document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id','evmarker-'+numVim);
   g.style.cursor='move';
   g.dataset.vim=numVim;
   g.dataset.cx=cx;
   g.dataset.cy=cy;
-  g.innerHTML='<g transform="translate('+tx+','+ty+') scale('+sx+','+sy+')">'+content+'</g>';
+  g.innerHTML='<image href="'+b64+'" x="'+tx+'" y="'+ty+'" width="'+sz+'" height="'+sz+'" style="pointer-events:all"/>';
   svg.appendChild(g);
   // Drag
   var dragging=false, sx0, sy0, scx, scy;
@@ -597,8 +599,8 @@ function redrawMarkerEval(numVim, cx, cy){
     var nx=scx+((e.clientX-rc.left)*(480/rc.width)-sx0);
     var ny=scy+((e.clientY-rc.top)*(260/rc.height)-sy0);
     g.dataset.cx=nx; g.dataset.cy=ny;
-    var inner2=g.querySelector('g');
-    if(inner2) inner2.setAttribute('transform','translate('+(nx-mW/2)+','+(ny-mH/2)+') scale('+sx+','+sy+')');
+    var img=g.querySelector('image');
+    if(img){ img.setAttribute('x',nx-sz/2); img.setAttribute('y',ny-sz/2); }
   });
   svg.addEventListener('mouseup',function(){dragging=false;});
 }
@@ -872,20 +874,20 @@ function evalTruckSVG(n, dir){
 
 function initEvalBadges(nbv){
   const gl=document.getElementById('eval-grp-left');
-  const gr=document.getElementById('eval-grp-right');
-  if(!gl||!gr)return;
-  gl.innerHTML=''; gr.innerHTML='';
+  if(!gl)return;
+  gl.innerHTML='';
   for(let i=1;i<=nbv;i++){
-    ['L','R'].forEach(dir=>{
-      const sp=document.createElement('span');
-      sp.id='evbadge-'+dir+'-'+i; sp.dataset.vim=i; sp.dataset.dir=dir;
-      sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;';
-      sp.innerHTML=evalTruckSVG(i,dir);
-      sp.addEventListener('click',(function(n,d){return function(){evalSelBadge(n,d);};})(i,dir));
-      if(dir==='L') gl.appendChild(sp); else gr.appendChild(sp);
-    });
+    const sp=document.createElement('span');
+    sp.id='evbadge-'+i; sp.dataset.vim=i;
+    sp.style.cssText='display:inline-flex;align-items:center;justify-content:center;'
+      +'width:40px;height:40px;cursor:pointer;border-radius:6px;'
+      +'border:2px solid transparent;transition:border-color .15s,opacity .15s;'
+      +'overflow:hidden;flex-shrink:0;vertical-align:middle;';
+    sp.innerHTML=evalTruckSVG(i, vimDirs[i]||0);
+    sp.addEventListener('click',(function(n){return function(){evalSelBadge(n, vimDirs[n]||0);};})(i));
+    gl.appendChild(sp);
   }
-  evalSelBadge(1,'L');
+  evalSelBadge(1, 0);
 }
 
 function gen(){
