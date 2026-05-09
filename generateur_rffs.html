@@ -868,10 +868,8 @@ let selectedDir = 'R';
 const vimPositions = {};
 
 function rotateVim(){
-  var seq = ['R','D','L','U'];
-  var idx = seq.indexOf(vimDirs[selectedVim] || 'R');
-  vimDirs[selectedVim] = seq[(idx+1) % 4];
-  selectedDir = vimDirs[selectedVim];
+  // Rotation += 90° — le badge reste 40×40, seul le SVG interne pivote via CSS
+  vimDirs[selectedVim] = ((vimDirs[selectedVim] || 0) + 90) % 360;
   refreshBadge(selectedVim);
   var marker = document.getElementById('marker-vim'+selectedVim);
   if(marker && marker.dataset.cx && marker.dataset.cy){
@@ -884,34 +882,28 @@ function refreshBadge(n){
   if(sp) sp.innerHTML = truckBadgeSVG(n, vimDirs[n]);
 }
 
-function selVim(n, dir){
+function selVim(n, angle){
   selectedVim = n;
-  if(dir) selectedDir = dir;
-  // Synchroniser avec vimDirs
-  if(typeof vimDirs !== 'undefined'){
-    vimDirs[n] = selectedDir;
-  }
-  document.querySelectorAll('[id^="badge-"]').forEach(b=>{
-    const isMe = b.dataset.vim == n;
-    b.style.borderColor = isMe ? '#fff' : 'transparent';
-    b.style.filter = isMe ? 'brightness(1.25)' : 'brightness(0.7)';
-    b.style.boxShadow = isMe ? '0 0 0 2px var(--orange,#ed7d31)' : 'none';
+  if(typeof angle !== 'undefined') vimDirs[n] = angle;
+  document.querySelectorAll('[id^="badge-"]').forEach(function(b){
+    var isMe = +b.dataset.vim === n;
+    b.style.borderColor = isMe ? 'var(--orange,#C55A11)' : 'transparent';
+    b.style.opacity     = isMe ? '1' : '0.5';
+    b.style.boxShadow   = isMe ? '0 0 0 2px var(--orange,#C55A11)' : 'none';
   });
 }
 
-function selectVim(n){ selVim(n, (typeof vimDirs!=='undefined' && vimDirs[n]) ? vimDirs[n] : 'R'); }
+function selectVim(n){ selVim(n, vimDirs[n] || 0); }
 
 function resetVims(){
-  [1,2,3].forEach(n=>{ const o=document.getElementById('marker-vim'+n); if(o)o.remove(); });
-  Object.keys(vimPositions).forEach(k=>delete vimPositions[k]);
-  // Reset des orientations
-  if(typeof vimDirs !== 'undefined'){
-    vimDirs[1]='R'; vimDirs[2]='R'; vimDirs[3]='R';
-    [1,2,3].forEach(n=>{ if(typeof refreshBadge==='function') refreshBadge(n); });
-  }
-  const pos=document.getElementById('vim-positions');
+  [1,2,3].forEach(function(n){ var o=document.getElementById('marker-vim'+n); if(o)o.remove(); });
+  Object.keys(vimPositions).forEach(function(k){ delete vimPositions[k]; });
+  // Reset angles
+  vimDirs[1]=0; vimDirs[2]=0; vimDirs[3]=0;
+  [1,2,3].forEach(function(n){ refreshBadge(n); });
+  var pos=document.getElementById('vim-positions');
   if(pos) pos.innerHTML='';
-  selVim(1,'R');
+  selVim(1, 0);
 }
 
 // Dessine ou redessine un marqueur VIM sur le schéma, à la position (cx, cy) en coords SVG
@@ -921,15 +913,17 @@ function redrawMarker(numVim, cx, cy){
   const old = document.getElementById('marker-vim'+numVim);
   if(old) old.remove();
 
-  const dir = (typeof vimDirs!=='undefined' && vimDirs[numVim]) ? vimDirs[numVim] : 'R';
-  const mW = 55, mH = 55;
-  const scaleX = mW/700, scaleY = mH/700;
-  const tx = cx - mW/2, ty = cy - mH/2;
+  const angle = (typeof vimDirs!=='undefined' && vimDirs[numVim]!=null) ? vimDirs[numVim] : 0;
+  // Taille VIM sur schéma : 64×64px pour une meilleure lisibilité
+  const sz = 64;
+  const tx = cx - sz/2, ty = cy - sz/2;
 
-  const badgeSVG = truckBadgeSVG(numVim, dir);
-  const tmp = document.createElement('div');
-  tmp.innerHTML = badgeSVG;
-  const innerSVG = tmp.querySelector('svg').innerHTML;
+  // Générer le SVG du camion avec rotation baked (transform rotate sur viewBox 700×320)
+  const rotContent = angle !== 0
+    ? '<g transform="rotate('+angle+',350,160)">' + truckInnerHTML(numVim) + '</g>'
+    : truckInnerHTML(numVim);
+  const svgStr = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">' + rotContent + '</svg>';
+  const b64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
 
   const g = document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id','marker-vim'+numVim);
@@ -938,24 +932,44 @@ function redrawMarker(numVim, cx, cy){
   g.dataset.vim = numVim;
   g.dataset.cx = cx;
   g.dataset.cy = cy;
-  g.innerHTML = '<g transform="translate('+tx+','+ty+') scale('+scaleX+','+scaleY+')">'+innerSVG+'</g>';
+  g.innerHTML = '<image href="'+b64+'" x="'+tx+'" y="'+ty+'" width="'+sz+'" height="'+sz+'" style="pointer-events:all"/>';
   svg.appendChild(g);
   enableDrag(g, numVim);
 }
 
+function truckInnerHTML(n){
+  return '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="2"/>'
+    + '<rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2" rx="5"/>'
+    + '<rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1.5" rx="3"/>'
+    + '<rect x="60" y="96" width="430" height="8" fill="#fff"/>'
+    + '<rect x="60" y="216" width="430" height="8" fill="#fff"/>'
+    + '<rect x="80" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="80" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="220" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="220" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="520" y="70" width="40" height="28" fill="#111" rx="3"/>'
+    + '<rect x="520" y="222" width="40" height="28" fill="#111" rx="3"/>'
+    + '<rect x="78" y="70" width="36" height="28" fill="#111" rx="3"/>'
+    + '<rect x="118" y="70" width="36" height="28" fill="#111" rx="3"/>'
+    + '<rect x="78" y="222" width="36" height="28" fill="#111" rx="3"/>'
+    + '<rect x="118" y="222" width="36" height="28" fill="#111" rx="3"/>'
+    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">'+n+'</text>';
+}
+
 // Drag & drop d'un marqueur VIM dans le SVG du schéma
 function enableDrag(markerGroup, numVim){
-  let dragging = false;
-  let startCx = 0, startCy = 0;
-  let startX = 0, startY = 0;
+  var dragging = false;
+  var startCx = 0, startCy = 0;
+  var startX = 0, startY = 0;
+  var sz = 64; // taille VIM sur schéma
 
   function getSvgCoords(evt){
-    const svg = document.getElementById('svg-schema');
-    const rect = svg.getBoundingClientRect();
-    const svgW = svg.viewBox.baseVal.width || 480;
-    const svgH = svg.viewBox.baseVal.height || 280;
-    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    var svg = document.getElementById('svg-schema');
+    var rect = svg.getBoundingClientRect();
+    var svgW = svg.viewBox.baseVal.width || 480;
+    var svgH = svg.viewBox.baseVal.height || 280;
+    var clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    var clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
     return {
       x: (clientX - rect.left) * (svgW / rect.width),
       y: (clientY - rect.top) * (svgH / rect.height)
@@ -966,7 +980,7 @@ function enableDrag(markerGroup, numVim){
     e.preventDefault();
     e.stopPropagation();
     dragging = true;
-    const p = getSvgCoords(e);
+    var p = getSvgCoords(e);
     startX = p.x; startY = p.y;
     startCx = parseFloat(markerGroup.dataset.cx);
     startCy = parseFloat(markerGroup.dataset.cy);
@@ -979,15 +993,16 @@ function enableDrag(markerGroup, numVim){
   function onMove(e){
     if(!dragging) return;
     e.preventDefault();
-    const p = getSvgCoords(e);
-    const newCx = startCx + (p.x - startX);
-    const newCy = startCy + (p.y - startY);
+    var p = getSvgCoords(e);
+    var newCx = startCx + (p.x - startX);
+    var newCy = startCy + (p.y - startY);
     markerGroup.dataset.cx = newCx;
     markerGroup.dataset.cy = newCy;
-    const mW = 55, mH = 55;
-    const inner = markerGroup.querySelector('g');
-    if(inner){
-      inner.setAttribute('transform','translate('+(newCx - mW/2)+','+(newCy - mH/2)+') scale('+(mW/700)+','+(mH/700)+')');
+    // Déplacer l'image directement
+    var img = markerGroup.querySelector('image');
+    if(img){
+      img.setAttribute('x', newCx - sz/2);
+      img.setAttribute('y', newCy - sz/2);
     }
   }
   function onUp(){
@@ -1298,35 +1313,35 @@ function switchTab(tab){
   }
 }
 
-function truckBadgeSVG(n, dir){
-  // VIM vu de dessus - 4 orientations: R(12h), D(03h), L(06h), U(09h)
-  var inner = `<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.2"/><rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="1.2" rx="4"/><rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1" rx="2"/><rect x="490" y="90" width="120" height="9" fill="#ffffff"/><rect x="490" y="221" width="120" height="9" fill="#ffffff"/><rect x="478" y="100" width="14" height="40" fill="#0033a0"/><rect x="478" y="140" width="14" height="40" fill="#ffffff"/><rect x="478" y="180" width="14" height="40" fill="#c8102e"/><rect x="60" y="96" width="430" height="7" fill="#ffffff"/><rect x="60" y="217" width="430" height="7" fill="#ffffff"/><rect x="80" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="80" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="106" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="196" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="350" y="145" width="120" height="35" fill="#5a5a5a" stroke="#2a2a2a" stroke-width="1" rx="3"/><circle cx="380" cy="162" r="13" fill="#3a3a3a" stroke="#1a1a1a" stroke-width="1"/><rect x="380" y="158" width="80" height="9" fill="#7a7a7a" stroke="#3a3a3a" stroke-width="0.8" rx="2"/><rect x="455" y="155" width="14" height="15" fill="#2a2a2a" stroke="#000" stroke-width="0.8" rx="1"/><rect x="610" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="612" y="120" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="612" y="190" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="50" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="78" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="78" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="74" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="220" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><circle cx="270" cy="160" r="50" fill="#ffffff" stroke="#7a0a1c" stroke-width="4"/><text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="80" font-weight="900" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.5">__N__</text>`;
-  inner = inner.split('__N__').join(n);
+function truckBadgeSVG(n, angle){
+  // Badge VIM taille fixe 40x40 — la rotation se fait via CSS transform
+  // angle : 0=droite, 90=bas, 180=gauche, 270=haut
+  angle = angle || 0;
+  var inner = '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="2"/>'
+    + '<rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2" rx="5"/>'
+    + '<rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1.5" rx="3"/>'
+    + '<rect x="60" y="96" width="430" height="8" fill="#fff"/>'
+    + '<rect x="60" y="216" width="430" height="8" fill="#fff"/>'
+    + '<rect x="80" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="80" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="220" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="220" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+    + '<rect x="520" y="70" width="40" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<rect x="520" y="222" width="40" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<rect x="78" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<rect x="118" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<rect x="78" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<rect x="118" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">' + n + '</text>';
 
-  var content, vbW, vbH, w, h;
-  if(dir === 'R'){
-    content = inner;
-    vbW = 700; vbH = 320; w = 120; h = 55;
-  } else if(dir === 'L'){
-    content = '<g transform="translate(700,0) scale(-1,1)">' + inner + '</g>';
-    vbW = 700; vbH = 320; w = 120; h = 55;
-  } else if(dir === 'D'){
-    content = '<g transform="translate(320,0) rotate(90)">' + inner + '</g>';
-    vbW = 320; vbH = 700; w = 55; h = 120;
-  } else if(dir === 'U'){
-    content = '<g transform="translate(0,700) rotate(-90)">' + inner + '</g>';
-    vbW = 320; vbH = 700; w = 55; h = 120;
-  } else {
-    content = inner;
-    vbW = 700; vbH = 320; w = 120; h = 55;
-  }
-
-  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + vbW + ' ' + vbH + '" xmlns="http://www.w3.org/2000/svg" style="display:block;">'
-    + content + '</svg>';
+  // Le SVG interne tourne via style transform — le conteneur reste 40×40
+  return '<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
+    + ' style="width:36px;height:36px;display:block;transition:transform .28s ease;transform:rotate(' + angle + 'deg);">'
+    + inner + '</svg>';
 }
 
-// État des orientations par VIM (R par défaut = cabine droite = 12h)
-var vimDirs = {1:'R', 2:'R', 3:'R'};
+// Angles de rotation par VIM : 0=droite, 90=bas, 180=gauche, 270=haut
+var vimDirs = {1:0, 2:0, 3:0};
 
 function initBadges(nbv){
   var gl=document.getElementById('grp-left-'+nbv);
@@ -1335,7 +1350,11 @@ function initBadges(nbv){
   for(var i=1;i<=nbv;i++){
     var sp=document.createElement('span');
     sp.id='badge-'+i; sp.dataset.vim=i;
-    sp.style.cssText='display:inline-block;cursor:pointer;border:2px solid transparent;border-radius:8px;padding:2px;transition:all .15s;vertical-align:middle;';
+    // Conteneur toujours 40×40 — taille fixe garantie
+    sp.style.cssText='display:inline-flex;align-items:center;justify-content:center;'
+      +'width:40px;height:40px;cursor:pointer;border-radius:6px;'
+      +'border:2px solid transparent;transition:border-color .15s,opacity .15s;'
+      +'overflow:hidden;flex-shrink:0;vertical-align:middle;';
     sp.innerHTML=truckBadgeSVG(i, vimDirs[i]);
     sp.onclick=(function(n){return function(){selVim(n, vimDirs[n]);};})(i);
     gl.appendChild(sp);
@@ -1568,12 +1587,23 @@ function flammeIconSVG(sz){
 
 function fumeeIconSVG(sz){
   sz = sz||44;
-  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
-  +'<circle cx="20" cy="20" r="17" fill="rgba(100,100,100,0.42)" stroke="#666" stroke-width="1.5" stroke-dasharray="4,3"/>'
-  +'<circle cx="13" cy="15" r="8" fill="rgba(130,130,130,0.38)"/>'
-  +'<circle cx="25" cy="13" r="10" fill="rgba(100,100,100,0.32)"/>'
-  +'<circle cx="20" cy="26" r="9" fill="rgba(120,120,120,0.28)"/>'
-  +'<text x="20" y="25" text-anchor="middle" font-size="15" fill="#444" font-family="Arial">💨</text>'
+  // Nuage de fumée stylisé, même format que la flamme — pas de cercle
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">'
+  +'<defs><linearGradient id="fmg'+sz+'" x1="0%" y1="0%" x2="30%" y2="100%">'
+  +'<stop offset="0%" stop-color="#E8E8E8"/>'
+  +'<stop offset="60%" stop-color="#BDBDBD"/>'
+  +'<stop offset="100%" stop-color="#9E9E9E"/>'
+  +'</linearGradient></defs>'
+  // Corps nuage principal
+  +'<circle cx="8" cy="18" r="6" fill="url(#fmg'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+  +'<circle cx="14" cy="16" r="7.5" fill="url(#fmg'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+  +'<circle cx="21" cy="18" r="5.5" fill="url(#fmg'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+  +'<rect x="3" y="19" width="20" height="5" fill="url(#fmg'+sz+')"/>'
+  // Volutes montantes
+  +'<path d="M11,15 C11,12 13,10 12,7 C13,9 15,10 14,13" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+  +'<path d="M17,14 C17,11 19,9 18,6 C19,8 21,9 20,12" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+  // Ligne de sol
+  +'<rect x="3" y="24" width="22" height="2" fill="#9E9E9E" rx="1"/>'
   +'</svg>';
 }
 
@@ -1696,12 +1726,7 @@ function updateAllSchemaLabels(){
   Object.entries(vimPositions).forEach(function(kv){
     labels.push('<span style="margin:0 4px;background:var(--navy);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">VIM '+kv[0]+' \u2192 '+kv[1]+'</span>');
   });
-  var fm=document.getElementById('marker-feu');
-  if(fm&&fm.dataset.secteur)
-    labels.push('<span style="margin:0 4px;background:#C00000;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">\uD83D\uDD25 Foyer \u2192 '+fm.dataset.secteur+'</span>');
-  var sm=document.getElementById('marker-fumee');
-  if(sm&&sm.dataset.secteur)
-    labels.push('<span style="margin:0 4px;background:#595959;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">\uD83D\uDCA8 Fum\xe9e \u2192 '+sm.dataset.secteur+'</span>');
+
   pos.innerHTML=labels.join('');
 }
 
