@@ -487,6 +487,16 @@ function buildSchema(nbv, aeronef){
         <span style="font-size:9px;color:#666;font-weight:600;">VIM :</span>
         <div id="eval-grp-left" style="display:flex;gap:4px;"></div>
         <div id="eval-grp-right" style="display:none;"></div>
+        <span style="width:1px;height:24px;background:#ddd;display:inline-block;margin:0 3px;vertical-align:middle;"></span>
+        <button id="eval-btn-feu" onclick="evalSelFeu()" title="Positionner le foyer d&apos;incendie"
+          style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;
+                 background:#fff;color:#C00000;border:2px solid #C00000;border-radius:6px;
+                 font-size:18px;cursor:pointer;transition:all .15s;flex-shrink:0;"></button>
+        <button id="eval-btn-fumee" onclick="evalSelFumee()" title="Positionner une zone de fum&eacute;e"
+          style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;
+                 background:#fff;color:#595959;border:2px solid #bbb;border-radius:6px;
+                 font-size:18px;cursor:pointer;transition:all .15s;flex-shrink:0;"></button>
+        <span style="width:1px;height:24px;background:#ddd;display:inline-block;margin:0 3px;vertical-align:middle;"></span>
         <button onclick="rotateVimEval()" style="background:#fff;color:#1F3864;border:1px solid #1F3864;border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-weight:600;">↻ Pivoter</button>
         <button onclick="resetVimEval()" style="background:#fff;color:#595959;border:1px solid #bbb;border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;">↺ Reset</button>
       </div>
@@ -495,16 +505,31 @@ function buildSchema(nbv, aeronef){
   </div>`;
 }
 
-let evalSelVim=1, evalSelDir='R', evalVimPos={};
+let evalSelVim=1, evalSelDir=0, evalVimPos={}, evalSelTool='vim';
 
 
-var VIM_SVG_INNER_EVAL = '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.2"/><rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="1.2" rx="4"/><rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1" rx="2"/><rect x="490" y="90" width="120" height="9" fill="#ffffff"/><rect x="490" y="221" width="120" height="9" fill="#ffffff"/><rect x="478" y="100" width="14" height="40" fill="#0033a0"/><rect x="478" y="140" width="14" height="40" fill="#ffffff"/><rect x="478" y="180" width="14" height="40" fill="#c8102e"/><rect x="60" y="96" width="430" height="7" fill="#ffffff"/><rect x="60" y="217" width="430" height="7" fill="#ffffff"/><rect x="80" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="80" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="106" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="220" y="196" width="60" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="106" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="330" y="196" width="80" height="18" fill="#bbbbbb" stroke="#888" stroke-width="0.5"/><rect x="350" y="145" width="120" height="35" fill="#5a5a5a" stroke="#2a2a2a" stroke-width="1" rx="3"/><circle cx="380" cy="162" r="13" fill="#3a3a3a" stroke="#1a1a1a" stroke-width="1"/><rect x="380" y="158" width="80" height="9" fill="#7a7a7a" stroke="#3a3a3a" stroke-width="0.8" rx="2"/><rect x="455" y="155" width="14" height="15" fill="#2a2a2a" stroke="#000" stroke-width="0.8" rx="1"/><rect x="610" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="612" y="120" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="612" y="190" width="6" height="11" fill="#fff8dc" stroke="#888" stroke-width="0.5"/><rect x="50" y="110" width="10" height="100" fill="#cccccc" stroke="#888" stroke-width="0.5" rx="2"/><rect x="78" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="74" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="78" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="116" y="220" width="34" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="74" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><rect x="520" y="220" width="38" height="26" fill="#1a1a1a" stroke="#000" stroke-width="0.5" rx="3"/><circle cx="270" cy="160" r="50" fill="#ffffff" stroke="#7a0a1c" stroke-width="4"/><text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="80" font-weight="900" fill="#c8102e" stroke="#7a0a1c" stroke-width="1.5">__N__</text>;  inner = inner.split(\'__N__\').join(n)';
+var VIM_SVG_INNER_EVAL = '<rect x="60" y="100" width="430" height="120" fill="__COLOR__" stroke="#7a0a1c" stroke-width="2"/>'
+  + '<rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2" rx="5"/>'
+  + '<rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1.5" rx="3"/>'
+  + '<rect x="60" y="96" width="430" height="8" fill="#fff"/>'
+  + '<rect x="60" y="216" width="430" height="8" fill="#fff"/>'
+  + '<rect x="80" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+  + '<rect x="80" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+  + '<rect x="220" y="106" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+  + '<rect x="220" y="194" width="64" height="20" fill="#ccc" stroke="#888" stroke-width="1"/>'
+  + '<rect x="520" y="70" width="40" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<rect x="520" y="222" width="40" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<rect x="78" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<rect x="118" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<rect x="78" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<rect x="118" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
+  + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">__N__</text>';
 
 // Angles de rotation : 0=droite, 90=bas, 180=gauche, 270=haut
 var vimDirs = {1:0, 2:0, 3:0};
 
 function evalTruckSVG(n, angle){
-  // Taille fixe 40×40 — rotation CSS interne, aucun changement de dimensions
+  // Taille fixe 40×40 — rotation CSS interne, badge stable quelle que soit l'orientation
   angle = angle || 0;
   var color = ['#c8102e','#002F5F','#375623'][n-1] || '#c8102e';
   var inner = VIM_SVG_INNER_EVAL.replace('__N__', n).replace('__COLOR__', color);
@@ -528,7 +553,7 @@ function initEvalBadges(nbv){
     sp.onclick=(function(n){return function(){evalSelBadge(n, vimDirs[n]);};})(i);
     gl.appendChild(sp);
   }
-  evalSelBadge(1, vimDirs[1]);
+  evalSelBadge(1, 0);
 }
 
 function refreshEvalBadge(n){
@@ -567,24 +592,17 @@ function redrawMarkerEval(numVim, cx, cy){
   var angle=(vimDirs&&vimDirs[numVim]!=null)?vimDirs[numVim]:0;
   var color=['#c8102e','#002F5F','#375623'][numVim-1]||'#c8102e';
   var inner=VIM_SVG_INNER_EVAL.replace('__N__',numVim).replace('__COLOR__',color);
-  // Taille 64×64 sur schéma pour meilleure lisibilité
   var sz=64;
   var tx=cx-sz/2, ty=cy-sz/2;
-  // Rotation baked dans le SVG via transform
-  var rotContent = angle!==0
-    ? '<g transform="rotate('+angle+',350,160)">'+inner+'</g>'
-    : inner;
+  var rotContent=angle!==0?'<g transform="rotate('+angle+',350,160)">'+inner+'</g>':inner;
   var svgStr='<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">'+rotContent+'</svg>';
   var b64='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgStr)));
   var g=document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id','evmarker-'+numVim);
   g.style.cursor='move';
-  g.dataset.vim=numVim;
-  g.dataset.cx=cx;
-  g.dataset.cy=cy;
+  g.dataset.vim=numVim; g.dataset.cx=cx; g.dataset.cy=cy;
   g.innerHTML='<image href="'+b64+'" x="'+tx+'" y="'+ty+'" width="'+sz+'" height="'+sz+'" style="pointer-events:all"/>';
   svg.appendChild(g);
-  // Drag
   var dragging=false, sx0, sy0, scx, scy;
   g.addEventListener('mousedown',function(e){
     e.stopPropagation(); dragging=true;
@@ -600,7 +618,7 @@ function redrawMarkerEval(numVim, cx, cy){
     var ny=scy+((e.clientY-rc.top)*(260/rc.height)-sy0);
     g.dataset.cx=nx; g.dataset.cy=ny;
     var img=g.querySelector('image');
-    if(img){ img.setAttribute('x',nx-sz/2); img.setAttribute('y',ny-sz/2); }
+    if(img){img.setAttribute('x',nx-sz/2);img.setAttribute('y',ny-sz/2);}
   });
   svg.addEventListener('mouseup',function(){dragging=false;});
 }
@@ -1113,4 +1131,178 @@ function saveEvaluation(aeronef, theme, niv, cond, type){
 }
 
 upd();
+
+// ── ICÔNES FLAMME & FUMÉE pour les boutons (inline SVG dans le btn) ──────────
+(function(){
+  var bf=document.createElement('div');
+  bf.innerHTML='<svg width="22" height="28" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><radialGradient id="efg" cx="50%" cy="72%" r="62%">'
+    +'<stop offset="0%" stop-color="#FFF9C4"/><stop offset="30%" stop-color="#FFD600"/>'
+    +'<stop offset="65%" stop-color="#FF6D00"/><stop offset="100%" stop-color="#B71C1C"/>'
+    +'</radialGradient></defs>'
+    +'<path d="M14,1 C14,1 11,7 9,9.5 C7.5,11.5 5,10.5 5,7.5 C3.5,10.5 3.5,14.5 5.5,17.5'
+    +' C3,16.5 1,13.5 1,10.5 C0,14.5 2,19.5 5.5,22.5 C3.5,24.5 2.5,27.5 3.5,30'
+    +' C2,28 1,25.5 1,23.5 C1,27.5 3,31.5 7,33.5 C9,34.5 11,35.5 11,37'
+    +' C13,35 15,32 15,29 C17,32 17,35 15,37 C19,35 21,32 21,29'
+    +' C21,26 19,23 21,21 C23,25 23,29 21,33 C25,29 25,23 21,19'
+    +' C23,19 25,17 25,13 C23,15 21,15 19,13 C21,9 21,5 19,3'
+    +' C18,6 17,9 15,11 C15,7 16,3 14,1 Z" fill="url(#efg)" stroke="#8B0000" stroke-width="0.8"/>'
+    +'</svg>';
+  var bEl=document.getElementById('eval-btn-feu');
+  if(bEl) bEl.appendChild(bf.firstChild);
+
+  var bs=document.createElement('div');
+  bs.innerHTML='<svg width="26" height="22" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><linearGradient id="esg" x1="0%" y1="0%" x2="30%" y2="100%">'
+    +'<stop offset="0%" stop-color="#E0E0E0"/><stop offset="100%" stop-color="#9E9E9E"/>'
+    +'</linearGradient></defs>'
+    +'<circle cx="8" cy="18" r="6" fill="url(#esg)" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="14" cy="16" r="7.5" fill="url(#esg)" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="21" cy="18" r="5.5" fill="url(#esg)" stroke="#757575" stroke-width="0.7"/>'
+    +'<rect x="3" y="19" width="20" height="5" fill="url(#esg)"/>'
+    +'<path d="M11,15 C11,12 13,10 12,7 C13,9 15,10 14,13" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'<path d="M17,14 C17,11 19,9 18,6 C19,8 21,9 20,12" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'</svg>';
+  var sEl=document.getElementById('eval-btn-fumee');
+  if(sEl) sEl.appendChild(bs.firstChild);
+})();
+
+// ── SÉLECTION OUTIL feu/fumée ─────────────────────────────────────────────────
+function evalSelFeu(){
+  evalSelTool='feu';
+  document.querySelectorAll('[id^="evbadge-"]').forEach(function(b){
+    b.style.borderColor='transparent'; b.style.opacity='0.5'; b.style.boxShadow='none';
+  });
+  var bf=document.getElementById('eval-btn-feu'), bs=document.getElementById('eval-btn-fumee');
+  if(bf){bf.style.background='#C00000';bf.style.borderColor='#C00000';bf.style.boxShadow='0 0 0 3px rgba(192,0,0,0.3)';}
+  if(bs){bs.style.background='#fff';bs.style.borderColor='#bbb';bs.style.boxShadow='none';}
+}
+
+function evalSelFumee(){
+  evalSelTool='fumee';
+  document.querySelectorAll('[id^="evbadge-"]').forEach(function(b){
+    b.style.borderColor='transparent'; b.style.opacity='0.5'; b.style.boxShadow='none';
+  });
+  var bf=document.getElementById('eval-btn-feu'), bs=document.getElementById('eval-btn-fumee');
+  if(bf){bf.style.background='#fff';bf.style.borderColor='#C00000';bf.style.boxShadow='none';}
+  if(bs){bs.style.background='#595959';bs.style.borderColor='#595959';bs.style.boxShadow='0 0 0 3px rgba(89,89,89,0.3)';}
+}
+
+function evalResetToolBtns(){
+  evalSelTool='vim';
+  var bf=document.getElementById('eval-btn-feu'), bs=document.getElementById('eval-btn-fumee');
+  if(bf){bf.style.background='#fff';bf.style.borderColor='#C00000';bf.style.boxShadow='none';}
+  if(bs){bs.style.background='#fff';bs.style.borderColor='#bbb';bs.style.boxShadow='none';}
+}
+
+// ── Override evalSelBadge pour reset les boutons feu/fumée ────────────────────
+var __origEvalSelBadge__ = evalSelBadge;
+evalSelBadge = function(n, angle){
+  evalResetToolBtns();
+  __origEvalSelBadge__(n, angle);
+};
+
+// ── ICÔNES feu/fumée pour le schéma ──────────────────────────────────────────
+function evalFlamSVG(sz){
+  sz=sz||46;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">'
+  +'<defs><radialGradient id="efgr" cx="50%" cy="72%" r="62%">'
+  +'<stop offset="0%" stop-color="#FFF9C4"/><stop offset="30%" stop-color="#FFD600"/>'
+  +'<stop offset="65%" stop-color="#FF6D00"/><stop offset="100%" stop-color="#B71C1C"/>'
+  +'</radialGradient></defs>'
+  +'<path d="M14,1 C14,1 11,7 9,9.5 C7.5,11.5 5,10.5 5,7.5 C3.5,10.5 3.5,14.5 5.5,17.5'
+  +' C3,16.5 1,13.5 1,10.5 C0,14.5 2,19.5 5.5,22.5 C3.5,24.5 2.5,27.5 3.5,30'
+  +' C2,28 1,25.5 1,23.5 C1,27.5 3,31.5 7,33.5 C9,34.5 11,35.5 11,37'
+  +' C13,35 15,32 15,29 C17,32 17,35 15,37 C19,35 21,32 21,29'
+  +' C21,26 19,23 21,21 C23,25 23,29 21,33 C25,29 25,23 21,19'
+  +' C23,19 25,17 25,13 C23,15 21,15 19,13 C21,9 21,5 19,3'
+  +' C18,6 17,9 15,11 C15,7 16,3 14,1 Z"'
+  +' fill="url(#efgr)" stroke="#8B0000" stroke-width="0.8"/>'
+  +'</svg>';
+}
+
+function evalFumeeSVG(sz){
+  sz=sz||46;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">'
+  +'<defs><linearGradient id="efmg" x1="0%" y1="0%" x2="30%" y2="100%">'
+  +'<stop offset="0%" stop-color="#E8E8E8"/><stop offset="100%" stop-color="#9E9E9E"/>'
+  +'</linearGradient></defs>'
+  +'<circle cx="8" cy="18" r="6" fill="url(#efmg)" stroke="#757575" stroke-width="0.7"/>'
+  +'<circle cx="14" cy="16" r="7.5" fill="url(#efmg)" stroke="#757575" stroke-width="0.7"/>'
+  +'<circle cx="21" cy="18" r="5.5" fill="url(#efmg)" stroke="#757575" stroke-width="0.7"/>'
+  +'<rect x="3" y="19" width="20" height="5" fill="url(#efmg)"/>'
+  +'<path d="M11,15 C11,12 13,10 12,7 C13,9 15,10 14,13" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+  +'<path d="M17,14 C17,11 19,9 18,6 C19,8 21,9 20,12" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+  +'<rect x="3" y="24" width="22" height="2" fill="#9E9E9E" rx="1"/>'
+  +'</svg>';
+}
+
+function evalSvgB64(s){
+  try{return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(s)));}
+  catch(e){return 'data:image/svg+xml;base64,'+btoa(s);}
+}
+
+// ── Placement feu/fumée sur schéma ────────────────────────────────────────────
+function evalRedrawFoyer(type, cx, cy){
+  var svg=document.getElementById('svg-eval'); if(!svg) return;
+  var mid='evmarker-'+type;
+  var old=document.getElementById(mid); if(old) old.remove();
+  var sz=46, tx=cx-sz/2, ty=type==='feu'?cy-sz:cy-sz/2;
+  var icon=type==='feu'?evalFlamSVG(sz):evalFumeeSVG(sz);
+  var shadow=type==='feu'?'<ellipse cx="'+cx+'" cy="'+cy+'" rx="15" ry="5" fill="rgba(0,0,0,0.25)"/>':'';
+  var g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id',mid); g.style.cursor='move';
+  g.dataset.cx=cx; g.dataset.cy=cy;
+  g.innerHTML=shadow+'<image href="'+evalSvgB64(icon)+'" x="'+tx+'" y="'+ty+'" width="'+sz+'" height="'+sz+'" style="pointer-events:all"/>';
+  svg.appendChild(g);
+  // Drag
+  var dr=false, sx0, sy0, scx, scy;
+  g.addEventListener('mousedown',function(e){
+    e.stopPropagation(); dr=true;
+    var rc=svg.getBoundingClientRect();
+    sx0=(e.clientX-rc.left)*(480/rc.width); sy0=(e.clientY-rc.top)*(260/rc.height);
+    scx=parseFloat(g.dataset.cx); scy=parseFloat(g.dataset.cy);
+  });
+  svg.addEventListener('mousemove',function(e){
+    if(!dr)return;
+    var rc=svg.getBoundingClientRect();
+    var nx=scx+((e.clientX-rc.left)*(480/rc.width)-sx0);
+    var ny=scy+((e.clientY-rc.top)*(260/rc.height)-sy0);
+    g.dataset.cx=nx; g.dataset.cy=ny;
+    var img=g.querySelector('image'), ell=g.querySelector('ellipse');
+    if(img){img.setAttribute('x',nx-sz/2);img.setAttribute('y',type==='feu'?ny-sz:ny-sz/2);}
+    if(ell){ell.setAttribute('cx',nx);ell.setAttribute('cy',ny);}
+  });
+  svg.addEventListener('mouseup',function(){dr=false;});
+}
+
+// ── Override placeVimEval pour dispatcher outil ───────────────────────────────
+var __origPlaceVimEval__ = (typeof placeVimEval==='function') ? placeVimEval : function(){};
+placeVimEval = function(sect, evt){
+  if(evalSelTool==='feu'){
+    var svg=document.getElementById('svg-eval'); if(!svg)return;
+    var r=svg.getBoundingClientRect();
+    evalRedrawFoyer('feu',(evt.clientX-r.left)*(480/r.width),(evt.clientY-r.top)*(260/r.height));
+    return;
+  }
+  if(evalSelTool==='fumee'){
+    var svg=document.getElementById('svg-eval'); if(!svg)return;
+    var r=svg.getBoundingClientRect();
+    evalRedrawFoyer('fumee',(evt.clientX-r.left)*(480/r.width),(evt.clientY-r.top)*(260/r.height));
+    return;
+  }
+  __origPlaceVimEval__(sect, evt);
+};
+
+// ── Override resetVimEval pour nettoyer feu/fumée ─────────────────────────────
+var __origResetVimEval__ = (typeof resetVimEval==='function') ? resetVimEval : function(){};
+resetVimEval = function(){
+  __origResetVimEval__();
+  ['evmarker-feu','evmarker-fumee'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.remove();
+  });
+  evalSelTool='vim';
+  evalResetToolBtns();
+};
+
 </script>
