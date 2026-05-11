@@ -523,7 +523,8 @@ var VIM_SVG_INNER_EVAL = '<rect x="60" y="100" width="430" height="120" fill="__
   + '<rect x="118" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
   + '<rect x="78" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
   + '<rect x="118" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
-  + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">__N__</text>';
+  + '<circle cx="270" cy="160" r="72" fill="#fff" stroke="#9a0a1c" stroke-width="3"/>'
+  + '<text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="__COLOR__" transform="rotate(-__ANGLE__,270,160)">__N__</text>';
 
 // Angles de rotation : 0=droite, 90=bas, 180=gauche, 270=haut
 var vimDirs = {1:0, 2:0, 3:0};
@@ -532,7 +533,7 @@ function evalTruckSVG(n, angle){
   // Taille fixe 40×40 — rotation CSS interne, badge stable quelle que soit l'orientation
   angle = angle || 0;
   var color = ['#c8102e','#002F5F','#375623'][n-1] || '#c8102e';
-  var inner = VIM_SVG_INNER_EVAL.replace('__N__', n).replace('__COLOR__', color);
+  var inner = VIM_SVG_INNER_EVAL.replace('__N__', n).replace('__COLOR__', color).replace('__ANGLE__', angle);
   return '<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
     + ' style="width:36px;height:36px;display:block;transition:transform .28s ease;transform:rotate(' + angle + 'deg);">'
     + inner + '</svg>';
@@ -591,11 +592,11 @@ function redrawMarkerEval(numVim, cx, cy){
   if(old)old.remove();
   var angle=(vimDirs&&vimDirs[numVim]!=null)?vimDirs[numVim]:0;
   var color=['#c8102e','#002F5F','#375623'][numVim-1]||'#c8102e';
-  var inner=VIM_SVG_INNER_EVAL.replace('__N__',numVim).replace('__COLOR__',color);
+  var inner=VIM_SVG_INNER_EVAL.replace('__N__',numVim).replace('__COLOR__',color).replace('__ANGLE__',angle);
   var sz=64;
   var tx=cx-sz/2, ty=cy-sz/2;
-  var rotContent=angle!==0?'<g transform="rotate('+angle+',350,160)">'+inner+'</g>':inner;
-  var svgStr='<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">'+rotContent+'</svg>';
+  var svgStr='<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
+    +' style="transform:rotate('+angle+'deg);">'+inner+'</svg>';
   var b64='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgStr)));
   var g=document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id','evmarker-'+numVim);
