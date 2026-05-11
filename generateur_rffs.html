@@ -920,8 +920,8 @@ function redrawMarker(numVim, cx, cy){
 
   // Générer le SVG du camion avec rotation baked (transform rotate sur viewBox 700×320)
   const rotContent = angle !== 0
-    ? '<g transform="rotate('+angle+',350,160)">' + truckInnerHTML(numVim) + '</g>'
-    : truckInnerHTML(numVim);
+    ? '<g transform="rotate('+angle+',350,160)">' + truckInnerHTML(numVim, angle) + '</g>'
+    : truckInnerHTML(numVim, angle);
   const svgStr = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">' + rotContent + '</svg>';
   const b64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
 
@@ -937,7 +937,8 @@ function redrawMarker(numVim, cx, cy){
   enableDrag(g, numVim);
 }
 
-function truckInnerHTML(n){
+function truckInnerHTML(n, angle){
+  angle = angle || 0;
   return '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="2"/>'
     + '<rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2" rx="5"/>'
     + '<rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1.5" rx="3"/>'
@@ -953,7 +954,8 @@ function truckInnerHTML(n){
     + '<rect x="118" y="70" width="36" height="28" fill="#111" rx="3"/>'
     + '<rect x="78" y="222" width="36" height="28" fill="#111" rx="3"/>'
     + '<rect x="118" y="222" width="36" height="28" fill="#111" rx="3"/>'
-    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">'+n+'</text>';
+    + '<circle cx="270" cy="160" r="72" fill="#fff" stroke="#9a0a1c" stroke-width="3"/>'
+    + '<text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#c8102e" transform="rotate(-'+angle+',270,160)">'+n+'</text>';
 }
 
 // Drag & drop d'un marqueur VIM dans le SVG du schéma
@@ -1332,7 +1334,8 @@ function truckBadgeSVG(n, angle){
     + '<rect x="118" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
     + '<rect x="78" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
     + '<rect x="118" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
-    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">' + n + '</text>';
+    + '<circle cx="270" cy="160" r="72" fill="#fff" stroke="#9a0a1c" stroke-width="3"/>'
+    + '<text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#c8102e" transform="rotate(-' + angle + ',270,160)">' + n + '</text>';
 
   // Le SVG interne tourne via style transform — le conteneur reste 40×40
   return '<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
