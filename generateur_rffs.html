@@ -1872,23 +1872,22 @@ function getAvionCenter(svgId){
   return {x:(vb.width||480)/2, y:(vb.height||280)/2};
 }
 
-// ── ANGLE LANCE VERS AVION (en degrés, 0=droite) ─────────────────────────────
-function calcLanceAngle(lx, ly, svgId){
+// ── ORIENTATION LANCE VERS AVION ──────────────────────────────────────────────
+// Retourne {angle, flip} pour que la lance pointe vers l'avion
+// et que l'opérateur reste debout (jamais tête en bas)
+function calcLanceOrientation(lx, ly, svgId){
   var ac = getAvionCenter(svgId);
   var dx = ac.x - lx, dy = ac.y - ly;
-  return Math.atan2(dy, dx) * 180 / Math.PI; // angle vers le centre avion
-}
-
-// ── REDESSINER L'IMAGE LANCE ORIENTÉE ────────────────────────────────────────
-function redrawLanceImage(g, lanceX, lanceY, sz, szH, svgId){
-  var angle = calcLanceAngle(lanceX, lanceY, svgId);
-  var img = g.querySelector('image');
-  if(img){
-    img.setAttribute('x', lanceX - sz/2);
-    img.setAttribute('y', lanceY - szH/2);
-    // Rotation du groupe autour du centre de la lance
-    g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+lanceX+','+lanceY+')');
+  var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  var flip = false;
+  if(Math.abs(angle) > 90){
+    // Opérateur serait à l'envers → flip horizontal + ajustement angle
+    flip = true;
+    angle = -angle;
+    if(angle > 90)  angle -= 180;
+    if(angle < -90) angle += 180;
   }
+  return {angle: angle, flip: flip};
 }
 
 function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
@@ -1906,11 +1905,15 @@ function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
   var b64 = lanceB64(svgContent);
   var tx = lanceX - sz/2, ty = lanceY - szH/2;
 
-  var angle = calcLanceAngle(lanceX, lanceY, svgId);
+  var ori = calcLanceOrientation(lanceX, lanceY, svgId);
 
   var g = document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id', lanceId);
-  g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+lanceX+','+lanceY+')');
+  // Appliquer flip horizontal si nécessaire + rotation vers l'avion
+  var tfm = ori.flip
+    ? 'translate('+lanceX+','+lanceY+') rotate('+ori.angle.toFixed(1)+') scale(-1,1) translate('+(-(sz/2))+','+(-(szH/2))+')'
+    : 'rotate('+ori.angle.toFixed(1)+','+lanceX+','+lanceY+')';
+  g.setAttribute('transform', tfm);
   g.style.cursor='move';
   g.dataset.vimN = vimN;
   g.dataset.side = side;
@@ -1963,8 +1966,11 @@ function enableLanceDrag(g, svgId, sz, szH){
       img.setAttribute('y', ncy-szH/2);
     }
     // Recalculer l'angle vers l'avion
-    var angle = calcLanceAngle(ncx, ncy, svgId);
-    g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+ncx+','+ncy+')');
+    var ori = calcLanceOrientation(ncx, ncy, svgId);
+    var tfm = ori.flip
+      ? 'translate('+ncx+','+ncy+') rotate('+ori.angle.toFixed(1)+') scale(-1,1) translate('+(-(sz/2))+','+(-(szH/2))+')'
+      : 'rotate('+ori.angle.toFixed(1)+','+ncx+','+ncy+')';
+    g.setAttribute('transform', tfm);
     // Mettre à jour le tuyau
     var svgEl=document.getElementById(svgId);
     var vimN=parseInt(g.dataset.vimN);
