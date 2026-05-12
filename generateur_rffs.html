@@ -1752,6 +1752,7 @@ resetVims = function(){
 };
 
 
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PATCH LANCE — Opérateur avec lance, tuyau relié au VIM parent
 // Compatible générateur ET évaluation (préfixe configurable)
@@ -1766,7 +1767,7 @@ var lanceSide = 'L';       // 'L' ou 'R'
 function lanceOperateurSVG(color){
   color = '#c8102e';
   var lighterColor = color==='#1F3864'?'#2a5490':color==='#002F5F'?'#004080':color==='#375623'?'#4a7030':color;
-  return '<svg width="44" height="54" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">'
+  return '<svg width="28" height="34" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">'
   // Casque
   +'<ellipse cx="22" cy="9" rx="10" ry="7" fill="'+color+'" stroke="#1a1a1a" stroke-width="1"/>'
   +'<rect x="12" y="13" width="20" height="3" fill="'+color+'" stroke="#1a1a1a" stroke-width="0.8" rx="1"/>'
@@ -1865,12 +1866,12 @@ function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
   var oldT = document.getElementById(tuyauId); if(oldT) oldT.remove();
 
   var color = getVimColor(vimN);
-  var sz = 44, szH = 54;
+  var sz = 28, szH = 34;
   // Lance miroir si côté droit (flip horizontal)
   var svgContent = lanceOperateurSVG(color);
   if(side==='R'){
     svgContent = svgContent.replace('<svg width="44" height="54" viewBox="0 0 44 54"',
-      '<svg width="44" height="54" viewBox="0 0 44 54" style="transform:scaleX(-1)"');
+      '<svg width="28" height="34" viewBox="0 0 44 54" style="transform:scaleX(-1)"');
   }
   var b64 = lanceB64(svgContent);
   var tx = lanceX - sz/2, ty = lanceY - szH/2;
@@ -2124,7 +2125,6 @@ var __lanceOrigEvalSelFumee__ = (typeof evalSelFumee==='function') ? evalSelFume
 if(__lanceOrigEvalSelFumee__){ evalSelFumee = function(){ resetLanceBtn('svg-eval'); __lanceOrigEvalSelFumee__(); }; }
 
 // ── INJECTION DES BOUTONS AU CHARGEMENT / APRÈS GEN() ────────────────────────
-// Les boutons sont injectés dynamiquement car le schéma est généré à la volée
 var __lanceObserver__ = new MutationObserver(function(mutations){
   mutations.forEach(function(m){
     m.addedNodes.forEach(function(node){
@@ -2133,7 +2133,10 @@ var __lanceObserver__ = new MutationObserver(function(mutations){
           setTimeout(function(){ injectLanceButtons('svg-schema'); },80);
         }
         if(node.id==='svg-eval'||node.querySelector&&node.querySelector('#svg-eval')){
-          setTimeout(function(){ injectLanceButtons('svg-eval'); },80);
+          setTimeout(function(){
+            injectLanceButtons('svg-eval');
+            injectEvalFeuFumeeIcons();
+          },80);
         }
       }
     });
@@ -2144,7 +2147,10 @@ __lanceObserver__.observe(document.body, {childList:true, subtree:true});
 // Injection immédiate si les schémas existent déjà
 setTimeout(function(){
   if(document.getElementById('svg-schema')) injectLanceButtons('svg-schema');
-  if(document.getElementById('svg-eval'))   injectLanceButtons('svg-eval');
+  if(document.getElementById('svg-eval')){
+    injectLanceButtons('svg-eval');
+    injectEvalFeuFumeeIcons();
+  }
 }, 200);
 
 </script>
