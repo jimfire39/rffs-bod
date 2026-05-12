@@ -484,7 +484,7 @@ function buildSchema(nbv, aeronef){
       <svg id="svg-eval" viewBox="0 0 480 260" style="width:100%;display:block;cursor:crosshair;">
         <defs><clipPath id="clip-avion-eval"><rect x="120" y="40" width="240" height="180"/></clipPath></defs>
         <image href="${getEvalAeronefImg(aeronef)}" x="120" y="40" width="240" height="180"
-               preserveAspectRatio="xMidYMid slice"
+               preserveAspectRatio="xMidYMid meet"
                clip-path="url(#clip-avion-eval)"
                style="image-rendering:crisp-edges;"/>
         <line x1="240" y1="0" x2="240" y2="260" stroke="rgba(31,56,100,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
