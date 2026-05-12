@@ -296,9 +296,21 @@ const TH={
   accident_fato:{l:"Accident FATO / hélitreuillage"},collision_aviaire:{l:"Collision aviaire"},
   matieres_dangereuses:{l:"Incident matières dangereuses"},
   crash_ejection:{l:"Crash / éjection pilote"},aeronef_arme:{l:"Aéronef militaire armé"},
+  feu_turbine:{
+    l:"Feu de turbine (hélicoptère)",av:"Feu turbine — hélicoptère",
+    al:[{t:"Vous prenez l'alerte pour un hélicoptère en retour terrain avec problème moteur.",b:1},{t:"Feu turbine signalé — extinction bord en cours.",i:1},{t:"L'hélicoptère vient de s'immobiliser. Intervenez.",b:1}],
+    q:"POB — Carburant (Jet A1) — Rotor arrêté ? — Extinction bord efficace ? — SAMU ?",
+    sit:["Alerte TWR : hélicoptère en retour terrain avec feu turbine.","Extinction bord percutée — résultat inconnu.","Appareil immobilisé — intervenez immédiatement."],
+    m5:["VIM 1 COND. : Commandement — SIMS radio — CR TWR — SAMU.","VIM 1 OPER. : Extinction feu turbine — CO2 + poudre — protection couloir évacuation — hors arc rotor."],
+    m7:["VIM 1 → Secteur 1 (côté turbine sinistre) : Extinction feu turbine — CO2 + poudre.","VIM 2 → Secteur 2 (côté opposé) : Protection cellule — appui sauvetage — mousse si nappe Jet A1.","Chef de manœuvre : SIMS radio — SAMU — CR TWR."],
+    m8:["VIM 1 → Secteur 1 (côté turbine sinistre) : Extinction feu turbine — CO2 + poudre.","VIM 2 → Secteur 2 (côté opposé) : Protection cellule — mousse préventive Jet A1.","VIM 3 → Secteur 4 (arrière) : Surveillance propagation — protection réservoirs.","Chef de manœuvre : coordination générale — SAMU — CR TWR."],
+    sec:["ROTOR : NE JAMAIS approcher un rotor en rotation sans accord équipage.","Arc rotor principal ET anti-couple (queue) — approche INTERDITE par l'arrière.","Carburant Jet A1 : mousse préventive si nappe — interdire sources d'ignition.","CO2 par mouvements circulaires sur turbine — poudre BC si insuffisant.","ARI si fumées denses — espace confiné nacelle moteur."],
+    tc:[{ti:"🔥 Feu turbine",c:"red",li:["CO2 : extinction compartiment turbine","Poudre BC : nappe carburant Jet A1","Surveiller reprise de feu après extinction"]},{ti:"🚁 Danger rotor",c:"red",li:["Rotor principal : arc 360° INTERDIT si en rotation","Rotor queue (arrière) : approche INTERDITE","Attendre arrêt complet ou accord pilote"]},{ti:"⛽ Carburant Jet A1",c:"nv",li:["Mousse AFFF si nappe au sol","Point éclair 38°C — vapeurs lourdes","Interdire toute source d'ignition 50 m"]},{ti:"✈️ Points clés",c:"nv",li:["SAMU en priorité — blessés possibles","Accès côté portes uniquement","CR régulier à la TWR"]}],
+  },
 };
+
 const CATS={
-  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","feu_nappe"],
+  incendie:["feu_moteur","feu_generalise","feu_apu","feu_avitaillement","feu_nappe","feu_turbine"],
   structure:["train_non_verrouille","feu_train","pb_hydraulique","sortie_de_piste"],
   soute:["feu_soute_avant","feu_soute_arriere","detection_soute_avant","detection_soute_arriere","detection_soute_avionique"],
   sauvetage:["fumee_a_bord","atterrissage_urgence","accident_fato","collision_aviaire"],
@@ -1387,6 +1399,7 @@ function lanceB64(svgStr){
 
 // ── TUYAU SVG ENTRE LANCE ET VIM ─────────────────────────────────────────────
 function drawTuyau(svgEl, lanceId, vimCx, vimCy, lcx, lcy, color){
+  color = '#555555'; // Tuyau toujours gris foncé
   var tid = 'tuyau-'+lanceId;
   var old = svgEl.getElementById ? svgEl.getElementById(tid) : document.getElementById(tid);
   if(old) old.remove();
