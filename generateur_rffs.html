@@ -1865,6 +1865,32 @@ function getVimMarkerCoords(vimN, prefix){
 }
 
 // ── PLACER UNE LANCE SUR LE SCHÉMA ───────────────────────────────────────────
+// ── CENTRE AVION PAR SCHÉMA ───────────────────────────────────────────────────
+function getAvionCenter(svgId){
+  var svg = document.getElementById(svgId); if(!svg) return {x:240,y:140};
+  var vb = svg.viewBox.baseVal;
+  return {x:(vb.width||480)/2, y:(vb.height||280)/2};
+}
+
+// ── ANGLE LANCE VERS AVION (en degrés, 0=droite) ─────────────────────────────
+function calcLanceAngle(lx, ly, svgId){
+  var ac = getAvionCenter(svgId);
+  var dx = ac.x - lx, dy = ac.y - ly;
+  return Math.atan2(dy, dx) * 180 / Math.PI; // angle vers le centre avion
+}
+
+// ── REDESSINER L'IMAGE LANCE ORIENTÉE ────────────────────────────────────────
+function redrawLanceImage(g, lanceX, lanceY, sz, szH, svgId){
+  var angle = calcLanceAngle(lanceX, lanceY, svgId);
+  var img = g.querySelector('image');
+  if(img){
+    img.setAttribute('x', lanceX - sz/2);
+    img.setAttribute('y', lanceY - szH/2);
+    // Rotation du groupe autour du centre de la lance
+    g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+lanceX+','+lanceY+')');
+  }
+}
+
 function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
   var svg = document.getElementById(svgId); if(!svg) return;
   var lanceId = 'lance-vim'+vimN+'-'+side;
@@ -1874,17 +1900,17 @@ function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
 
   var color = getVimColor(vimN);
   var sz = 28, szH = 34;
-  // Lance miroir si côté droit (flip horizontal)
+  // Lance toujours "face droite" dans le SVG — la rotation vers l'avion
+  // est appliquée via transform rotate sur le groupe
   var svgContent = lanceOperateurSVG(color);
-  if(side==='R'){
-    svgContent = svgContent.replace('<svg width="44" height="54" viewBox="0 0 44 54"',
-      '<svg width="28" height="34" viewBox="0 0 44 54" style="transform:scaleX(-1)"');
-  }
   var b64 = lanceB64(svgContent);
   var tx = lanceX - sz/2, ty = lanceY - szH/2;
 
+  var angle = calcLanceAngle(lanceX, lanceY, svgId);
+
   var g = document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id', lanceId);
+  g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+lanceX+','+lanceY+')');
   g.style.cursor='move';
   g.dataset.vimN = vimN;
   g.dataset.side = side;
@@ -1932,13 +1958,19 @@ function enableLanceDrag(g, svgId, sz, szH){
     var ncx=scx+(p.x-sx0), ncy=scy+(p.y-sy0);
     g.dataset.cx=ncx; g.dataset.cy=ncy;
     var img=g.querySelector('image');
-    if(img){img.setAttribute('x',ncx-sz/2); img.setAttribute('y',ncy-szH/2);}
+    if(img){
+      img.setAttribute('x', ncx-sz/2);
+      img.setAttribute('y', ncy-szH/2);
+    }
+    // Recalculer l'angle vers l'avion
+    var angle = calcLanceAngle(ncx, ncy, svgId);
+    g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+ncx+','+ncy+')');
     // Mettre à jour le tuyau
-    var svg=document.getElementById(svgId);
+    var svgEl=document.getElementById(svgId);
     var vimN=parseInt(g.dataset.vimN);
     var lanceId=g.getAttribute('id');
     var vimCoords=getVimMarkerCoords(vimN);
-    if(vimCoords && svg) drawTuyau(svg, lanceId, vimCoords.cx, vimCoords.cy, ncx, ncy, getVimColor(vimN));
+    if(vimCoords && svgEl) drawTuyau(svgEl, lanceId, vimCoords.cx, vimCoords.cy, ncx, ncy, getVimColor(vimN));
   }
   function up(){
     dr=false; g.style.opacity='1';
