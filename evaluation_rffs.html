@@ -1427,11 +1427,19 @@ function getAvionCenter(svgId){
   return {x:(vb.width||480)/2, y:(vb.height||280)/2};
 }
 
-// ── ANGLE LANCE VERS AVION (en degrés) ───────────────────────────────────────
-function calcLanceAngle(lx, ly, svgId){
+// ── ORIENTATION LANCE VERS AVION ──────────────────────────────────────────────
+function calcLanceOrientation(lx, ly, svgId){
   var ac = getAvionCenter(svgId);
   var dx = ac.x - lx, dy = ac.y - ly;
-  return Math.atan2(dy, dx) * 180 / Math.PI;
+  var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  var flip = false;
+  if(Math.abs(angle) > 90){
+    flip = true;
+    angle = -angle;
+    if(angle > 90)  angle -= 180;
+    if(angle < -90) angle += 180;
+  }
+  return {angle: angle, flip: flip};
 }
 
 function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
@@ -1446,11 +1454,14 @@ function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
   var svgContent = lanceOperateurSVG(color);
   var b64 = lanceB64(svgContent);
   var tx = lanceX - sz/2, ty = lanceY - szH/2;
-  var angle = calcLanceAngle(lanceX, lanceY, svgId);
+  var ori = calcLanceOrientation(lanceX, lanceY, svgId);
 
   var g = document.createElementNS('http://www.w3.org/2000/svg','g');
   g.setAttribute('id', lanceId);
-  g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+lanceX+','+lanceY+')');
+  var tfm = ori.flip
+    ? 'translate('+lanceX+','+lanceY+') rotate('+ori.angle.toFixed(1)+') scale(-1,1) translate('+(-(sz/2))+','+(-(szH/2))+')'
+    : 'rotate('+ori.angle.toFixed(1)+','+lanceX+','+lanceY+')';
+  g.setAttribute('transform', tfm);
   g.style.cursor='move';
   g.dataset.vimN = vimN;
   g.dataset.side = side;
@@ -1500,8 +1511,11 @@ function enableLanceDrag(g, svgId, sz, szH){
       img.setAttribute('x', ncx-sz/2);
       img.setAttribute('y', ncy-szH/2);
     }
-    var angle = calcLanceAngle(ncx, ncy, svgId);
-    g.setAttribute('transform', 'rotate('+angle.toFixed(1)+','+ncx+','+ncy+')');
+    var ori = calcLanceOrientation(ncx, ncy, svgId);
+    var tfm = ori.flip
+      ? 'translate('+ncx+','+ncy+') rotate('+ori.angle.toFixed(1)+') scale(-1,1) translate('+(-(sz/2))+','+(-(szH/2))+')'
+      : 'rotate('+ori.angle.toFixed(1)+','+ncx+','+ncy+')';
+    g.setAttribute('transform', tfm);
     var svgEl=document.getElementById(svgId);
     var vimN=parseInt(g.dataset.vimN);
     var lanceId=g.getAttribute('id');
