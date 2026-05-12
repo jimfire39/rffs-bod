@@ -482,8 +482,11 @@ function buildSchema(nbv, aeronef){
     <div style="background:#e8eef4;border-radius:8px;padding:10px;border:1px solid #c8d4e0;">
       <div style="font-size:10px;color:#555;text-align:center;margin-bottom:6px;">① Sélectionner le VIM · ② Cliquer sur sa position</div>
       <svg id="svg-eval" viewBox="0 0 480 260" style="width:100%;display:block;cursor:crosshair;">
+        <defs><clipPath id="clip-avion-eval"><rect x="120" y="40" width="240" height="180"/></clipPath></defs>
         <image href="${getEvalAeronefImg(aeronef)}" x="120" y="40" width="240" height="180"
-               preserveAspectRatio="xMidYMid meet"/>
+               preserveAspectRatio="xMidYMid slice"
+               clip-path="url(#clip-avion-eval)"
+               style="image-rendering:crisp-edges;"/>
         <line x1="240" y1="0" x2="240" y2="260" stroke="rgba(31,56,100,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
         <line x1="0" y1="130" x2="480" y2="130" stroke="rgba(31,56,100,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
         <text x="14"  y="36"  font-size="26" font-weight="bold" fill="#1F3864" opacity="0.25" font-family="Arial">2</text>
@@ -1403,19 +1406,27 @@ function drawTuyau(svgEl, lanceId, vimCx, vimCy, lcx, lcy, color){
   var tid = 'tuyau-'+lanceId;
   var old = svgEl.getElementById ? svgEl.getElementById(tid) : document.getElementById(tid);
   if(old) old.remove();
-  // Point de sortie VIM (côté lance) et point d'entrée lance (côté VIM)
-  var cp1x = (vimCx + lcx)/2, cp1y = vimCy;
-  var cp2x = (vimCx + lcx)/2, cp2y = lcy;
+  var dx = lcx - vimCx, dy = lcy - vimCy;
+  var dist = Math.sqrt(dx*dx + dy*dy);
+  var d;
+  if(dist < 20){
+    d = 'M'+vimCx+','+vimCy+' L'+lcx+','+lcy;
+  } else {
+    var off = Math.min(dist * 0.35, 40);
+    var nx = -dy/dist, ny = dx/dist;
+    var cp1x = vimCx + dx*0.25 + nx*off, cp1y = vimCy + dy*0.25 + ny*off;
+    var cp2x = lcx   - dx*0.25 + nx*off, cp2y = lcy   - dy*0.25 + ny*off;
+    d = 'M'+vimCx+','+vimCy+' C'+cp1x.toFixed(1)+','+cp1y.toFixed(1)+' '+cp2x.toFixed(1)+','+cp2y.toFixed(1)+' '+lcx+','+lcy;
+  }
   var path = document.createElementNS('http://www.w3.org/2000/svg','path');
   path.setAttribute('id', tid);
-  path.setAttribute('d', 'M'+vimCx+','+vimCy+' C'+cp1x+','+cp1y+' '+cp2x+','+cp2y+' '+lcx+','+lcy);
+  path.setAttribute('d', d);
   path.setAttribute('fill','none');
   path.setAttribute('stroke', color);
   path.setAttribute('stroke-width','3.5');
   path.setAttribute('stroke-linecap','round');
   path.setAttribute('stroke-dasharray','6,3');
   path.setAttribute('opacity','0.85');
-  // Insérer avant les markers (en dessous)
   svgEl.insertBefore(path, svgEl.firstChild.nextSibling);
 }
 
