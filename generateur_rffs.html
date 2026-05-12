@@ -712,10 +712,17 @@ function buildFormative(niv, nbv, aeronef, theme, cond){
   <div style="background:#e8eef4;border-radius:8px;padding:10px;margin:8px 0;border:1px solid #c8d4e0;">
     <div style="font-size:10px;color:#666;margin-bottom:6px;text-align:center">① Sélectionner le VIM · ② ↻ Pivoter pour orienter · ③ Cliquer sur le schéma pour placer · ④ Glisser-déposer pour ajuster</div>
     <svg viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" id="svg-schema" style="max-width:100%;display:block;margin:0 auto;cursor:crosshair;background:#e8eef4;border-radius:6px;">
-      <!-- Image avion orientée nez à gauche -->
+      <defs>
+        <clipPath id="clip-avion">
+          <rect x="120" y="50" width="240" height="180"/>
+        </clipPath>
+      </defs>
+      <!-- Image avion recadrée et nette -->
       <image href="${getAeronefImg(aeronef)}"
              x="120" y="50" width="240" height="180"
-             preserveAspectRatio="xMidYMid meet"/>
+             preserveAspectRatio="xMidYMid slice"
+             clip-path="url(#clip-avion)"
+             style="image-rendering:crisp-edges;"/>
       <!-- Lignes sectorisation -->
       <line x1="240" y1="0" x2="240" y2="280" stroke="rgba(31,56,100,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
       <line x1="0" y1="140" x2="480" y2="140" stroke="rgba(31,56,100,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
@@ -1848,19 +1855,30 @@ function drawTuyau(svgEl, lanceId, vimCx, vimCy, lcx, lcy, color){
   var tid = 'tuyau-'+lanceId;
   var old = svgEl.getElementById ? svgEl.getElementById(tid) : document.getElementById(tid);
   if(old) old.remove();
-  // Point de sortie VIM (côté lance) et point d'entrée lance (côté VIM)
-  var cp1x = (vimCx + lcx)/2, cp1y = vimCy;
-  var cp2x = (vimCx + lcx)/2, cp2y = lcy;
+  var dx = lcx - vimCx, dy = lcy - vimCy;
+  var dist = Math.sqrt(dx*dx + dy*dy);
+  var d;
+  if(dist < 20){
+    // Trop proche : ligne droite courte visible
+    d = 'M'+vimCx+','+vimCy+' L'+lcx+','+lcy;
+  } else {
+    // Courbe de Bézier avec points de contrôle perpendiculaires — toujours visible
+    var mx = (vimCx+lcx)/2, my = (vimCy+lcy)/2;
+    var off = Math.min(dist * 0.35, 40); // offset perpendiculaire limité
+    var nx = -dy/dist, ny = dx/dist;    // vecteur perpendiculaire normalisé
+    var cp1x = vimCx + dx*0.25 + nx*off, cp1y = vimCy + dy*0.25 + ny*off;
+    var cp2x = lcx   - dx*0.25 + nx*off, cp2y = lcy   - dy*0.25 + ny*off;
+    d = 'M'+vimCx+','+vimCy+' C'+cp1x.toFixed(1)+','+cp1y.toFixed(1)+' '+cp2x.toFixed(1)+','+cp2y.toFixed(1)+' '+lcx+','+lcy;
+  }
   var path = document.createElementNS('http://www.w3.org/2000/svg','path');
   path.setAttribute('id', tid);
-  path.setAttribute('d', 'M'+vimCx+','+vimCy+' C'+cp1x+','+cp1y+' '+cp2x+','+cp2y+' '+lcx+','+lcy);
+  path.setAttribute('d', d);
   path.setAttribute('fill','none');
   path.setAttribute('stroke', color);
   path.setAttribute('stroke-width','3.5');
   path.setAttribute('stroke-linecap','round');
   path.setAttribute('stroke-dasharray','6,3');
   path.setAttribute('opacity','0.85');
-  // Insérer avant les markers (en dessous)
   svgEl.insertBefore(path, svgEl.firstChild.nextSibling);
 }
 
