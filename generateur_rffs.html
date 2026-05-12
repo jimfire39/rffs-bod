@@ -920,8 +920,8 @@ function redrawMarker(numVim, cx, cy){
 
   // Générer le SVG du camion avec rotation baked (transform rotate sur viewBox 700×320)
   const rotContent = angle !== 0
-    ? '<g transform="rotate('+angle+',350,160)">' + truckInnerHTML(numVim, angle) + '</g>'
-    : truckInnerHTML(numVim, angle);
+    ? '<g transform="rotate('+angle+',350,160)">' + truckInnerHTML(numVim) + '</g>'
+    : truckInnerHTML(numVim);
   const svgStr = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">' + rotContent + '</svg>';
   const b64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
 
@@ -937,8 +937,7 @@ function redrawMarker(numVim, cx, cy){
   enableDrag(g, numVim);
 }
 
-function truckInnerHTML(n, angle){
-  angle = angle || 0;
+function truckInnerHTML(n){
   return '<rect x="60" y="100" width="430" height="120" fill="#c8102e" stroke="#7a0a1c" stroke-width="2"/>'
     + '<rect x="490" y="90" width="120" height="140" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2" rx="5"/>'
     + '<rect x="498" y="118" width="104" height="84" fill="#4a5a6a" stroke="#2a3a4a" stroke-width="1.5" rx="3"/>'
@@ -954,8 +953,7 @@ function truckInnerHTML(n, angle){
     + '<rect x="118" y="70" width="36" height="28" fill="#111" rx="3"/>'
     + '<rect x="78" y="222" width="36" height="28" fill="#111" rx="3"/>'
     + '<rect x="118" y="222" width="36" height="28" fill="#111" rx="3"/>'
-    + '<circle cx="270" cy="160" r="72" fill="#fff" stroke="#9a0a1c" stroke-width="3"/>'
-    + '<text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#c8102e" transform="rotate(-'+angle+',270,160)">'+n+'</text>';
+    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">'+n+'</text>';
 }
 
 // Drag & drop d'un marqueur VIM dans le SVG du schéma
@@ -1334,8 +1332,7 @@ function truckBadgeSVG(n, angle){
     + '<rect x="118" y="70" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
     + '<rect x="78" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
     + '<rect x="118" y="222" width="36" height="28" fill="#111" stroke="#000" stroke-width="1" rx="3"/>'
-    + '<circle cx="270" cy="160" r="72" fill="#fff" stroke="#9a0a1c" stroke-width="3"/>'
-    + '<text x="270" y="160" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#c8102e" transform="rotate(-' + angle + ',270,160)">' + n + '</text>';
+    + '<text x="270" y="172" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="88" font-weight="900" fill="#fff" stroke="#9a0a1c" stroke-width="2">' + n + '</text>';
 
   // Le SVG interne tourne via style transform — le conteneur reste 40×40
   return '<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg"'
@@ -1753,6 +1750,402 @@ resetVims = function(){
   if(bf){bf.style.background='#fff';bf.style.color='#C00000';bf.style.borderColor='#C00000';bf.style.boxShadow='none';}
   if(bs){bs.style.background='#fff';bs.style.color='#595959';bs.style.borderColor='#bbb';bs.style.boxShadow='none';}
 };
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PATCH LANCE — Opérateur avec lance, tuyau relié au VIM parent
+// Compatible générateur ET évaluation (préfixe configurable)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ── ÉTAT LANCES ──────────────────────────────────────────────────────────────
+var lanceData = {};       // {vimN_L: {cx,cy}, vimN_R: {cx,cy}}
+var lanceParentVim = null; // VIM auquel rattacher la prochaine lance
+var lanceSide = 'L';       // 'L' ou 'R'
+
+// ── SVG POMPIER AVEC LANCE (vue de côté, 40×60 viewport) ─────────────────────
+function lanceOperateurSVG(color){
+  color = '#c8102e';
+  var lighterColor = color==='#1F3864'?'#2a5490':color==='#002F5F'?'#004080':color==='#375623'?'#4a7030':color;
+  return '<svg width="44" height="54" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">'
+  // Casque
+  +'<ellipse cx="22" cy="9" rx="10" ry="7" fill="'+color+'" stroke="#1a1a1a" stroke-width="1"/>'
+  +'<rect x="12" y="13" width="20" height="3" fill="'+color+'" stroke="#1a1a1a" stroke-width="0.8" rx="1"/>'
+  // Visière
+  +'<ellipse cx="22" cy="13" rx="7" ry="3" fill="#4a8ab5" opacity="0.7"/>'
+  // Corps (veste ignifugée)
+  +'<rect x="14" y="15" width="16" height="18" fill="'+color+'" stroke="#1a1a1a" stroke-width="1" rx="2"/>'
+  // Bandes réfléchissantes
+  +'<rect x="14" y="20" width="16" height="2.5" fill="#FFD600" opacity="0.9"/>'
+  +'<rect x="14" y="26" width="16" height="2.5" fill="#FFD600" opacity="0.9"/>'
+  // Bras gauche (tient le tuyau)
+  +'<rect x="7" y="16" width="8" height="5" fill="'+color+'" stroke="#1a1a1a" stroke-width="0.8" rx="2"/>'
+  // Bras droit (dirige la lance)
+  +'<rect x="29" y="14" width="8" height="5" fill="'+color+'" stroke="#1a1a1a" stroke-width="0.8" rx="2"/>'
+  // Jambes
+  +'<rect x="15" y="32" width="6" height="14" fill="'+lighterColor+'" stroke="#1a1a1a" stroke-width="0.8" rx="1"/>'
+  +'<rect x="23" y="32" width="6" height="14" fill="'+lighterColor+'" stroke="#1a1a1a" stroke-width="0.8" rx="1"/>'
+  // Chaussures
+  +'<rect x="13" y="44" width="9" height="5" fill="#1a1a1a" rx="2"/>'
+  +'<rect x="22" y="44" width="9" height="5" fill="#1a1a1a" rx="2"/>'
+  // Lance (canon à eau/mousse)
+  +'<rect x="33" y="14" width="9" height="4" fill="#888" stroke="#555" stroke-width="0.8" rx="1"/>'
+  +'<path d="M42,14 L44,12 L44,20 L42,18 Z" fill="#666"/>'
+  // Jet d'eau (petites gouttes)
+  +'<circle cx="44" cy="13" r="1.2" fill="#4fc3f7" opacity="0.8"/>'
+  +'<circle cx="44" cy="16" r="1.5" fill="#4fc3f7" opacity="0.7"/>'
+  +'<circle cx="44" cy="19" r="1.2" fill="#4fc3f7" opacity="0.8"/>'
+  +'</svg>';
+}
+
+// ── ICÔNE BOUTON LANCE (compact 26×26) ────────────────────────────────────────
+function lanceBtnSVG(color){
+  color = color || '#1F3864';
+  return '<svg width="24" height="26" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">'
+  +'<ellipse cx="22" cy="9" rx="10" ry="7" fill="'+color+'"/>'
+  +'<rect x="12" y="13" width="20" height="3" fill="'+color+'" rx="1"/>'
+  +'<rect x="14" y="15" width="16" height="18" fill="'+color+'" rx="2"/>'
+  +'<rect x="14" y="20" width="16" height="2.5" fill="#FFD600" opacity="0.9"/>'
+  +'<rect x="14" y="26" width="16" height="2.5" fill="#FFD600" opacity="0.9"/>'
+  +'<rect x="29" y="14" width="8" height="5" fill="'+color+'" rx="2"/>'
+  +'<rect x="33" y="14" width="9" height="4" fill="#888" rx="1"/>'
+  +'<path d="M42,14 L44,12 L44,20 L42,18 Z" fill="#666"/>'
+  +'<circle cx="44" cy="16" r="2" fill="#4fc3f7"/>'
+  +'</svg>';
+}
+
+// ── COULEUR VIM ───────────────────────────────────────────────────────────────
+function getVimColor(n){ return '#c8102e'; }
+
+// ── SVG BASE64 ────────────────────────────────────────────────────────────────
+function lanceB64(svgStr){
+  try{return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svgStr)));}
+  catch(e){return 'data:image/svg+xml;base64,'+btoa(svgStr);}
+}
+
+// ── TUYAU SVG ENTRE LANCE ET VIM ─────────────────────────────────────────────
+function drawTuyau(svgEl, lanceId, vimCx, vimCy, lcx, lcy, color){
+  var tid = 'tuyau-'+lanceId;
+  var old = svgEl.getElementById ? svgEl.getElementById(tid) : document.getElementById(tid);
+  if(old) old.remove();
+  // Point de sortie VIM (côté lance) et point d'entrée lance (côté VIM)
+  var cp1x = (vimCx + lcx)/2, cp1y = vimCy;
+  var cp2x = (vimCx + lcx)/2, cp2y = lcy;
+  var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('id', tid);
+  path.setAttribute('d', 'M'+vimCx+','+vimCy+' C'+cp1x+','+cp1y+' '+cp2x+','+cp2y+' '+lcx+','+lcy);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width','3.5');
+  path.setAttribute('stroke-linecap','round');
+  path.setAttribute('stroke-dasharray','6,3');
+  path.setAttribute('opacity','0.85');
+  // Insérer avant les markers (en dessous)
+  svgEl.insertBefore(path, svgEl.firstChild.nextSibling);
+}
+
+// ── OBTENIR COORDS D'UN VIM PLACÉ ────────────────────────────────────────────
+function getVimMarkerCoords(vimN, prefix){
+  prefix = prefix||'';
+  var mid = prefix+'mkvim'+vimN || 'marker-vim'+vimN;
+  // Essayer les deux conventions de nommage
+  var m = document.getElementById(prefix+'mkvim'+vimN)
+       || document.getElementById('mkvim'+vimN)
+       || document.getElementById('marker-vim'+vimN)
+       || document.getElementById('evmarker-'+vimN);
+  if(m) return {cx:parseFloat(m.dataset.cx), cy:parseFloat(m.dataset.cy)};
+  return null;
+}
+
+// ── PLACER UNE LANCE SUR LE SCHÉMA ───────────────────────────────────────────
+function placeLanceOnSchema(svgId, vimN, side, lanceX, lanceY){
+  var svg = document.getElementById(svgId); if(!svg) return;
+  var lanceId = 'lance-vim'+vimN+'-'+side;
+  var old = document.getElementById(lanceId); if(old) old.remove();
+  var tuyauId = 'tuyau-'+lanceId;
+  var oldT = document.getElementById(tuyauId); if(oldT) oldT.remove();
+
+  var color = getVimColor(vimN);
+  var sz = 44, szH = 54;
+  // Lance miroir si côté droit (flip horizontal)
+  var svgContent = lanceOperateurSVG(color);
+  if(side==='R'){
+    svgContent = svgContent.replace('<svg width="44" height="54" viewBox="0 0 44 54"',
+      '<svg width="44" height="54" viewBox="0 0 44 54" style="transform:scaleX(-1)"');
+  }
+  var b64 = lanceB64(svgContent);
+  var tx = lanceX - sz/2, ty = lanceY - szH/2;
+
+  var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', lanceId);
+  g.style.cursor='move';
+  g.dataset.vimN = vimN;
+  g.dataset.side = side;
+  g.dataset.cx = lanceX;
+  g.dataset.cy = lanceY;
+  g.dataset.svgId = svgId;
+  g.innerHTML = '<image href="'+b64+'" x="'+tx+'" y="'+ty+'" width="'+sz+'" height="'+szH+'" style="pointer-events:all"/>';
+  svg.appendChild(g);
+
+  // Dessiner le tuyau
+  var vimCoords = getVimMarkerCoords(vimN);
+  if(vimCoords){
+    drawTuyau(svg, lanceId, vimCoords.cx, vimCoords.cy, lanceX, lanceY, color);
+  }
+
+  // Drag
+  enableLanceDrag(g, svgId, sz, szH);
+  lanceData[lanceId] = {cx:lanceX, cy:lanceY, vimN:vimN, side:side};
+}
+
+function enableLanceDrag(g, svgId, sz, szH){
+  var dr=false, sx0=0, sy0=0, scx=0, scy=0;
+  function gP(e){
+    var svg=document.getElementById(svgId);
+    var r=svg.getBoundingClientRect();
+    var vb=svg.viewBox.baseVal;
+    var w=vb.width||480, h=vb.height||280;
+    var cx=e.touches?e.touches[0].clientX:e.clientX;
+    var cy=e.touches?e.touches[0].clientY:e.clientY;
+    return {x:(cx-r.left)*(w/r.width), y:(cy-r.top)*(h/r.height)};
+  }
+  function dn(e){
+    e.preventDefault(); e.stopPropagation(); dr=true;
+    var p=gP(e); sx0=p.x; sy0=p.y;
+    scx=parseFloat(g.dataset.cx); scy=parseFloat(g.dataset.cy);
+    g.style.opacity='0.7';
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+    document.addEventListener('touchmove',mv,{passive:false});
+    document.addEventListener('touchend',up);
+  }
+  function mv(e){
+    if(!dr)return; e.preventDefault();
+    var p=gP(e);
+    var ncx=scx+(p.x-sx0), ncy=scy+(p.y-sy0);
+    g.dataset.cx=ncx; g.dataset.cy=ncy;
+    var img=g.querySelector('image');
+    if(img){img.setAttribute('x',ncx-sz/2); img.setAttribute('y',ncy-szH/2);}
+    // Mettre à jour le tuyau
+    var svg=document.getElementById(svgId);
+    var vimN=parseInt(g.dataset.vimN);
+    var lanceId=g.getAttribute('id');
+    var vimCoords=getVimMarkerCoords(vimN);
+    if(vimCoords && svg) drawTuyau(svg, lanceId, vimCoords.cx, vimCoords.cy, ncx, ncy, getVimColor(vimN));
+  }
+  function up(){
+    dr=false; g.style.opacity='1';
+    document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
+    document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up);
+  }
+  g.addEventListener('mousedown',dn);
+  g.addEventListener('touchstart',dn,{passive:false});
+}
+
+// ── RAFRAÎCHIR LES TUYAUX QUAND UN VIM EST DÉPLACÉ ───────────────────────────
+function refreshLanceTuyaux(svgId){
+  var svg=document.getElementById(svgId); if(!svg) return;
+  Object.keys(lanceData).forEach(function(lid){
+    var g=document.getElementById(lid); if(!g) return;
+    var vimN=parseInt(g.dataset.vimN);
+    var vimCoords=getVimMarkerCoords(vimN);
+    if(vimCoords) drawTuyau(svg, lid, vimCoords.cx, vimCoords.cy, parseFloat(g.dataset.cx), parseFloat(g.dataset.cy), getVimColor(vimN));
+  });
+}
+
+// ── SÉLECTION LANCE ───────────────────────────────────────────────────────────
+function selLance(svgId){
+  // Lance disponible seulement si un VIM est placé
+  var prefix = svgId==='svg-eval' ? 'ev' : '';
+  var tool = svgId==='svg-eval' ? 'evalSelTool' : 'selectedTool';
+  if(svgId==='svg-schema') selectedTool = 'lance';
+  else evalSelTool = 'lance';
+
+  // Reset autres boutons
+  ['btn-feu','btn-fumee','eval-btn-feu','eval-btn-fumee'].forEach(function(id){
+    var el=document.getElementById(id); if(!el)return;
+    el.style.background='#fff';
+    el.style.borderColor = id.includes('feu') ? '#C00000' : '#bbb';
+    el.style.boxShadow='none';
+    el.style.color = id.includes('feu') ? '#C00000' : '#595959';
+  });
+  document.querySelectorAll('[id^="badge-"],[id^="evbadge-"]').forEach(function(b){
+    b.style.borderColor='transparent'; b.style.opacity='0.5'; b.style.boxShadow='none';
+  });
+
+  var btnL = document.getElementById('btn-lance-'+svgId);
+  if(btnL){ btnL.style.background='#1F3864'; btnL.style.color='#fff'; btnL.style.boxShadow='0 0 0 3px rgba(31,56,100,0.3)'; }
+  // Afficher le sélecteur L/R
+  var lrDiv = document.getElementById('lance-lr-'+svgId);
+  if(lrDiv) lrDiv.style.display='inline-flex';
+}
+
+function resetLanceBtn(svgId){
+  var btnL=document.getElementById('btn-lance-'+svgId);
+  if(btnL){btnL.style.background='#fff';btnL.style.color='#1F3864';btnL.style.boxShadow='none';}
+  var lrDiv=document.getElementById('lance-lr-'+svgId);
+  if(lrDiv) lrDiv.style.display='none';
+}
+
+// ── INJECTION DANS LES BARRES EXISTANTES ─────────────────────────────────────
+function injectLanceButtons(svgId){
+  var barId = svgId==='svg-schema' ? 'vim-positions' : 'eval-vim-pos';
+  // Chercher le bouton reset pour injecter avant lui
+  var resetBtn = svgId==='svg-schema'
+    ? document.querySelector('button[onclick="resetVims()"]')
+    : document.querySelector('button[onclick="resetVimEval()"]');
+  if(!resetBtn) return;
+
+  var sep = document.createElement('span');
+  sep.style.cssText='width:1px;height:24px;background:#ddd;display:inline-block;margin:0 3px;vertical-align:middle;';
+
+  var btnLance = document.createElement('button');
+  btnLance.id = 'btn-lance-'+svgId;
+  var vimN = svgId==='svg-schema' ? (typeof selectedVim!=='undefined'?selectedVim:1) : (typeof evalSelVim!=='undefined'?evalSelVim:1);
+  btnLance.innerHTML = lanceBtnSVG('#1F3864')+' Lance';
+  btnLance.title = 'Ajouter un opérateur lance';
+  btnLance.style.cssText='display:inline-flex;align-items:center;gap:4px;background:#fff;color:#1F3864;'
+    +'border:2px solid #1F3864;border-radius:7px;padding:3px 8px;font-size:11px;font-weight:700;'
+    +'cursor:pointer;transition:all .15s;vertical-align:middle;';
+  btnLance.onclick = function(){ selLance(svgId); };
+
+  // Sélecteur L/R (caché par défaut)
+  var lrDiv = document.createElement('span');
+  lrDiv.id = 'lance-lr-'+svgId;
+  lrDiv.style.cssText='display:none;align-items:center;gap:3px;vertical-align:middle;';
+  lrDiv.innerHTML = '<span style="font-size:9px;color:#595959;font-weight:600;margin-right:2px;">Côté:</span>'
+    +'<button id="lance-btn-L-'+svgId+'" onclick="setLanceSide(\'L\',\''+svgId+'\')" '
+    +'style="background:#1F3864;color:#fff;border:1.5px solid #1F3864;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;">G</button>'
+    +'<button id="lance-btn-R-'+svgId+'" onclick="setLanceSide(\'R\',\''+svgId+'\')" '
+    +'style="background:#fff;color:#1F3864;border:1.5px solid #1F3864;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;">D</button>';
+
+  var parent = resetBtn.parentNode;
+  parent.insertBefore(sep, resetBtn);
+  parent.insertBefore(btnLance, resetBtn);
+  parent.insertBefore(lrDiv, resetBtn);
+}
+
+function setLanceSide(side, svgId){
+  lanceSide = side;
+  var btnL=document.getElementById('lance-btn-L-'+svgId);
+  var btnR=document.getElementById('lance-btn-R-'+svgId);
+  if(btnL){btnL.style.background=side==='L'?'#1F3864':'#fff'; btnL.style.color=side==='L'?'#fff':'#1F3864';}
+  if(btnR){btnR.style.background=side==='R'?'#1F3864':'#fff'; btnR.style.color=side==='R'?'#fff':'#1F3864';}
+}
+
+// ── OVERRIDE PLACEVIM / PLACEVIMEVAL POUR INTERCEPTER L'OUTIL LANCE ──────────
+var __lancePlaceVimOrig__ = (typeof placeVim==='function') ? placeVim : null;
+if(__lancePlaceVimOrig__){
+  placeVim = function(secteur, event){
+    if(selectedTool==='lance'){
+      var svg=document.getElementById('svg-schema'); if(!svg) return;
+      var r=svg.getBoundingClientRect();
+      var vb=svg.viewBox.baseVal;
+      var x=(event.clientX-r.left)*(vb.width/r.width);
+      var y=(event.clientY-r.top)*(vb.height/r.height);
+      var vimN = typeof selectedVim!=='undefined' ? selectedVim : 1;
+      placeLanceOnSchema('svg-schema', vimN, lanceSide, x, y);
+      return;
+    }
+    __lancePlaceVimOrig__(secteur, event);
+  };
+}
+
+var __lancePlaceVimEvalOrig__ = (typeof placeVimEval==='function') ? placeVimEval : null;
+if(__lancePlaceVimEvalOrig__){
+  placeVimEval = function(sect, evt){
+    if(evalSelTool==='lance'){
+      var svg=document.getElementById('svg-eval'); if(!svg) return;
+      var r=svg.getBoundingClientRect();
+      var x=(evt.clientX-r.left)*(480/r.width);
+      var y=(evt.clientY-r.top)*(260/r.height);
+      var vimN = typeof evalSelVim!=='undefined' ? evalSelVim : 1;
+      placeLanceOnSchema('svg-eval', vimN, lanceSide, x, y);
+      return;
+    }
+    __lancePlaceVimEvalOrig__(sect, evt);
+  };
+}
+
+// ── OVERRIDE selVim / evalSelBadge POUR RESET LE BOUTON LANCE ────────────────
+var __lanceOrigSelVim__ = (typeof selVim==='function') ? selVim : null;
+if(__lanceOrigSelVim__){
+  selVim = function(n, dir){
+    resetLanceBtn('svg-schema');
+    if(typeof selectedTool!=='undefined') selectedTool='vim';
+    __lanceOrigSelVim__(n, dir);
+  };
+}
+
+var __lanceOrigEvalSelBadge__ = (typeof evalSelBadge==='function') ? evalSelBadge : null;
+if(__lanceOrigEvalSelBadge__){
+  evalSelBadge = function(n, angle){
+    resetLanceBtn('svg-eval');
+    if(typeof evalSelTool!=='undefined') evalSelTool='vim';
+    __lanceOrigEvalSelBadge__(n, angle);
+  };
+}
+
+// ── OVERRIDE resetVims / resetVimEval POUR NETTOYER LES LANCES ───────────────
+var __lanceOrigResetVims__ = (typeof resetVims==='function') ? resetVims : null;
+if(__lanceOrigResetVims__){
+  resetVims = function(){
+    __lanceOrigResetVims__();
+    cleanLances('svg-schema');
+  };
+}
+
+var __lanceOrigResetVimEval__ = (typeof resetVimEval==='function') ? resetVimEval : null;
+if(__lanceOrigResetVimEval__){
+  resetVimEval = function(){
+    __lanceOrigResetVimEval__();
+    cleanLances('svg-eval');
+  };
+}
+
+function cleanLances(svgId){
+  Object.keys(lanceData).forEach(function(lid){
+    var el=document.getElementById(lid); if(el) el.remove();
+    var t=document.getElementById('tuyau-'+lid); if(t) t.remove();
+    delete lanceData[lid];
+  });
+  resetLanceBtn(svgId);
+  if(svgId==='svg-schema' && typeof selectedTool!=='undefined') selectedTool='vim';
+  else if(svgId==='svg-eval' && typeof evalSelTool!=='undefined') evalSelTool='vim';
+}
+
+// ── OVERRIDE selFeu / selFumee / evalSelFeu / evalSelFumee POUR RESET LANCE ──
+var __lanceOrigSelFeu__ = (typeof selFeu==='function') ? selFeu : null;
+if(__lanceOrigSelFeu__){ selFeu = function(){ resetLanceBtn('svg-schema'); __lanceOrigSelFeu__(); }; }
+var __lanceOrigSelFumee__ = (typeof selFumee==='function') ? selFumee : null;
+if(__lanceOrigSelFumee__){ selFumee = function(){ resetLanceBtn('svg-schema'); __lanceOrigSelFumee__(); }; }
+var __lanceOrigEvalSelFeu__ = (typeof evalSelFeu==='function') ? evalSelFeu : null;
+if(__lanceOrigEvalSelFeu__){ evalSelFeu = function(){ resetLanceBtn('svg-eval'); __lanceOrigEvalSelFeu__(); }; }
+var __lanceOrigEvalSelFumee__ = (typeof evalSelFumee==='function') ? evalSelFumee : null;
+if(__lanceOrigEvalSelFumee__){ evalSelFumee = function(){ resetLanceBtn('svg-eval'); __lanceOrigEvalSelFumee__(); }; }
+
+// ── INJECTION DES BOUTONS AU CHARGEMENT / APRÈS GEN() ────────────────────────
+// Les boutons sont injectés dynamiquement car le schéma est généré à la volée
+var __lanceObserver__ = new MutationObserver(function(mutations){
+  mutations.forEach(function(m){
+    m.addedNodes.forEach(function(node){
+      if(node.nodeType===1){
+        if(node.id==='svg-schema'||node.querySelector&&node.querySelector('#svg-schema')){
+          setTimeout(function(){ injectLanceButtons('svg-schema'); },80);
+        }
+        if(node.id==='svg-eval'||node.querySelector&&node.querySelector('#svg-eval')){
+          setTimeout(function(){ injectLanceButtons('svg-eval'); },80);
+        }
+      }
+    });
+  });
+});
+__lanceObserver__.observe(document.body, {childList:true, subtree:true});
+
+// Injection immédiate si les schémas existent déjà
+setTimeout(function(){
+  if(document.getElementById('svg-schema')) injectLanceButtons('svg-schema');
+  if(document.getElementById('svg-eval'))   injectLanceButtons('svg-eval');
+}, 200);
 
 </script>
 </body>
