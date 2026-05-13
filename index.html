@@ -259,8 +259,8 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
   </div>
   <div class="main">
 
-    <!-- PYRO + BULLES + MINIATURE FICHE -->
-    <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;">
+    <!-- PYRO + BULLE -->
+    <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1.5rem;flex-wrap:wrap;">
 
       <!-- Pyro -->
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
@@ -274,12 +274,9 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
             <path d="M48 54 Q52 49 54 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
             <path d="M56 54 Q60 49 62 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
             <path d="M64 56 Q67 52 69 57" fill="#e8b430" stroke="#d4a020" stroke-width="0.5"/>
-            <circle cx="46" cy="64" r="4.5" fill="white"/>
-            <circle cx="64" cy="64" r="4.5" fill="white"/>
-            <circle cx="47" cy="64" r="2.5" fill="#2c1a0e"/>
-            <circle cx="65" cy="64" r="2.5" fill="#2c1a0e"/>
-            <circle cx="48" cy="63" r="1" fill="white"/>
-            <circle cx="66" cy="63" r="1" fill="white"/>
+            <circle cx="46" cy="64" r="4.5" fill="white"/><circle cx="64" cy="64" r="4.5" fill="white"/>
+            <circle cx="47" cy="64" r="2.5" fill="#2c1a0e"/><circle cx="65" cy="64" r="2.5" fill="#2c1a0e"/>
+            <circle cx="48" cy="63" r="1" fill="white"/><circle cx="66" cy="63" r="1" fill="white"/>
             <path d="M42 59 Q46 57 50 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
             <path d="M60 59 Q64 57 68 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
             <ellipse cx="55" cy="71" rx="3" ry="2.2" fill="#e0a070"/>
@@ -288,7 +285,6 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
             <ellipse cx="40" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
             <ellipse cx="70" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
             <rect x="32" y="96" width="46" height="42" rx="7" fill="var(--navy)"/>
-            <path d="M42 96 Q55 104 68 96" fill="#162d52"/>
             <rect x="32" y="109" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
             <rect x="32" y="122" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
             <rect x="37" y="98" width="14" height="9" rx="1.5" fill="var(--orange)"/>
@@ -297,88 +293,26 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
             <text x="65" y="105" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">RFFS</text>
             <rect x="13" y="96" width="19" height="10" rx="5" fill="var(--navy)"/>
             <rect x="78" y="96" width="19" height="10" rx="5" fill="var(--navy)"/>
-            <circle cx="13" cy="101" r="7" fill="#f5c89a"/>
-            <circle cx="97" cy="101" r="7" fill="#f5c89a"/>
+            <circle cx="13" cy="101" r="7" fill="#f5c89a"/><circle cx="97" cy="101" r="7" fill="#f5c89a"/>
             <rect x="34" y="136" width="17" height="18" rx="5" fill="#162d52"/>
             <rect x="59" y="136" width="17" height="18" rx="5" fill="#162d52"/>
             <rect x="31" y="148" width="22" height="11" rx="3" fill="#111"/>
             <rect x="57" y="148" width="22" height="11" rx="3" fill="#111"/>
-            <rect x="29" y="157" width="26" height="3" rx="1.5" fill="#333"/>
-            <rect x="55" y="157" width="26" height="3" rx="1.5" fill="#333"/>
           </svg>
         </div>
         <div style="font-size:11px;color:#888;font-weight:600;">Pyro</div>
       </div>
 
-      <!-- Bulle + Miniature fiche -->
-      <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:10px;">
-        <div id="pyro-bubble" style="background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
-          Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
-          <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
-          <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
-        </div>
-
-        <!-- Miniature fiche formative -->
-        <div style="background:#fff;border:1px solid #e0e4ea;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-          <div style="background:var(--navy);padding:5px 10px;display:flex;gap:4px;align-items:center;">
-            <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
-            <div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div>
-            <div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div>
-            <span style="font-size:8px;color:rgba(255,255,255,.6);margin-left:6px;">Fiche SIMS — Générateur RFFS BOD</span>
-          </div>
-          <!-- Onglets -->
-          <div style="display:flex;gap:0;border-bottom:2px solid var(--navy);background:#f4f6f9;">
-            <div style="padding:4px 10px;background:var(--navy);border-radius:4px 4px 0 0;font-size:8px;color:#fff;font-weight:700;">📋 Fiche SIMS</div>
-            <div style="padding:4px 10px;font-size:8px;color:#888;">📊 Éval.</div>
-          </div>
-          <!-- Header fiche -->
-          <div style="background:var(--navy);padding:5px 8px;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:7px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.5px;">AÉROPORT DE BORDEAUX-MÉRIGNAC · RFFS BOD</div>
-            <div style="background:var(--orange);color:#fff;font-size:7px;font-weight:700;padding:2px 6px;border-radius:2px;">NIV. 7</div>
-          </div>
-          <!-- Tableau ID -->
-          <div style="padding:6px 8px;background:#f9fafb;border-bottom:1px solid #e0e4ea;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
-              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Aéronef</span><br><strong style="color:var(--navy);font-size:8px;">ATR 72</strong></div>
-              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Thème</span><br><strong style="color:var(--navy);font-size:8px;">Feu moteur</strong></div>
-              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">PN / PAX</span><br><strong style="color:var(--navy);font-size:8px;">3 / 68</strong></div>
-              <div style="font-size:6px;"><span style="color:#888;text-transform:uppercase;">Carburant</span><br><strong style="color:var(--orange);font-size:8px;">5.4 t</strong></div>
-            </div>
-          </div>
-          <!-- SIMS -->
-          <div style="padding:6px 8px;">
-            <div style="background:var(--navy);color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">S — Situation</div>
-            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">Feu moteur signalé — ATR 72 en retour terrain.</div>
-            <div style="background:var(--orange);color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">I — Informations</div>
-            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">POB : 71 · Carburant : 5.4t · Piste 23.</div>
-            <div style="background:#375623;color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">M — Mission</div>
-            <div style="font-size:7px;color:#555;margin-bottom:4px;line-height:1.4;">VIM 1 → Secteur 1 : Extinction feu moteur gauche.</div>
-            <div style="background:#c0392b;color:#fff;border-radius:3px;padding:2px 6px;font-size:7px;font-weight:700;margin-bottom:3px;">S — Sécurité</div>
-            <div style="font-size:7px;color:#555;line-height:1.4;">Hors axe ingestion · ARI · CR TWR.</div>
-          </div>
-          <!-- Schéma mini -->
-          <div style="background:#e8eef4;margin:0 8px 8px;border-radius:4px;height:36px;position:relative;border:1px solid #c8d4e0;">
-            <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(31,56,100,.3);"></div>
-            <div style="position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(31,56,100,.3);"></div>
-            <div style="position:absolute;top:3px;left:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">2</div>
-            <div style="position:absolute;top:3px;right:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">3</div>
-            <div style="position:absolute;bottom:3px;left:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">1</div>
-            <div style="position:absolute;bottom:3px;right:5px;font-size:8px;font-weight:700;color:rgba(31,56,100,.25);">4</div>
-            <div style="position:absolute;bottom:5px;left:12px;background:var(--orange);color:#fff;font-size:5px;font-weight:700;padding:1px 4px;border-radius:2px;">VIM 1</div>
-          </div>
-        </div>
-
+      <!-- Bulle -->
+      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
+        Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
+        <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
+        <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
       </div>
+
     </div>
 
-    <!-- ONGLETS TUTORIELS -->
-    <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
-      <div class="tuto-tab active" onclick="setTutoTab('rffs')">RFFS BOD</div>
-      <div class="tuto-tab disabled">Incendie — bientôt</div>
-      <div class="tuto-tab disabled">SUAP — bientôt</div>
-    </div>
-
-    <!-- ÉTAPES GÉNÉRER -->
+<!-- ÉTAPES GÉNÉRER -->
     <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Générer une fiche d'exercice</div>
     <div id="tuto-steps-gen" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;"></div>
 
@@ -1098,7 +1032,7 @@ const TUTO_GEN = [
 ];
 const TUTO_SAVE = [
   {
-    icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé, Non validé ou En cours en bas de la fiche.",
+    icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé ou Non validé en bas de la fiche.",
     msg:"Le résultat est essentiel pour les statistiques. Ajoute tes observations !",
     anim:"nod",
     preview:`<div style="padding:8px;width:230px;">
@@ -1106,7 +1040,6 @@ const TUTO_SAVE = [
       <div style="display:flex;gap:4px;flex-wrap:wrap;">
         <div style="border:2px solid #375623;border-radius:4px;padding:3px 7px;font-size:7px;color:#375623;font-weight:700;background:#e8f5e9;">✓ VALIDÉ</div>
         <div style="border:2px solid #ddd;border-radius:4px;padding:3px 7px;font-size:7px;color:#999;font-weight:700;">✗ NON VALIDÉ</div>
-        <div style="border:2px solid #ddd;border-radius:4px;padding:3px 7px;font-size:7px;color:#999;font-weight:700;">⟳ EN COURS</div>
       </div>
     </div>`
   },
