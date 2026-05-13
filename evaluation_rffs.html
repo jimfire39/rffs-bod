@@ -611,7 +611,7 @@ function redrawMarkerEval(numVim, cx, cy){
   var old=document.getElementById('evmarker-'+numVim);
   if(old)old.remove();
   var angle=(vimDirs&&vimDirs[numVim]!=null)?vimDirs[numVim]:0;
-  var color=['#c8102e','#002F5F','#375623'][numVim-1]||'#c8102e';
+  var color='#c8102e';
   var inner=VIM_SVG_INNER_EVAL(numVim, color, angle);
   var sz=64;
   var tx=cx-sz/2, ty=cy-sz/2;
@@ -1343,7 +1343,7 @@ var lanceSide = 'L';       // 'L' ou 'R'
 // ── SVG POMPIER AVEC LANCE (vue de côté, 40×60 viewport) ─────────────────────
 function lanceOperateurSVG(color){
   color = '#c8102e';
-  var lighterColor = color==='#1F3864'?'#2a5490':color==='#002F5F'?'#004080':color==='#375623'?'#4a7030':color;
+  var lighterColor = '#a00000';
   return '<svg width="28" height="34" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">'
   // Casque
   +'<ellipse cx="22" cy="9" rx="10" ry="7" fill="'+color+'" stroke="#1a1a1a" stroke-width="1"/>'
