@@ -688,8 +688,10 @@ function backRessources() {
 }
 
 var DOCS = [
-  { icon: '📋', title: 'GDTO SSUAP v2025', desc: 'Guide de Doctrine et Techniques Opérationnelles — Secours et Soins aux Personnes, version septembre 2025.', url: 'https://drive.google.com/file/d/14LMT3BWdu_tk0SeoONsDu7tJHAEmF782/preview' },
-  { icon: '📘', title: 'Référentiel SSUAP', desc: 'Référentiel national de compétences de sécurité civile.', url: '' }
+  { icon: '📋', title: 'GDTO SSUAP v2025', desc: 'Guide de Doctrine et Techniques Opérationnelles — Secours et Soins aux Personnes, version septembre 2025.', url: 'https://drive.google.com/file/d/14LMT3BWdu_tk0SeoONsDu7tJHAEmF782/preview', cat: 'SSUAP' },
+  { icon: '📘', title: 'Référentiel SSUAP', desc: 'Référentiel national de compétences de sécurité civile.', url: '', cat: 'SSUAP' },
+  { icon: '🔥', title: 'GDO — Protection contre les fumées et toxicité', desc: 'Guide opérationnel — Protection des intervenants contre les fumées et les risques toxiques.', url: 'https://drive.google.com/file/d/1xTjw2y1nTKasZqXYmsw2FpduN7livdBt/view?usp=sharing', cat: 'Incendie' },
+  { icon: '🚒', title: 'GDO — Établissement et techniques d\'extinction', desc: 'Guide opérationnel — Établissement des moyens hydrauliques et techniques d\'extinction.', url: 'https://drive.google.com/file/d/14_EwAftULOSV-P1s1qaFXEgocxwOG3tA/view?usp=sharing', cat: 'Incendie' }
 ];
 
 function renderDocs() {
@@ -699,18 +701,33 @@ function renderDocs() {
     el.innerHTML = '<div class="empty-state"><div>📭</div>Aucun document disponible.</div>';
     return;
   }
-  var html = '';
+  // Grouper par catégorie
+  var cats = {};
   DOCS.forEach(function(doc) {
-    html += '<div class="doc-card">';
-    html += '<div class="doc-card-icon">' + doc.icon + '</div>';
-    html += '<div class="doc-card-title">' + doc.title + '</div>';
-    html += '<div class="doc-card-desc">' + doc.desc + '</div>';
-    if (doc.url) {
-      html += '<a href="' + doc.url + '" target="_blank" class="doc-card-btn">📄 Ouvrir le document</a>';
-    } else {
-      html += '<span style="font-size:12px;color:#999;font-style:italic">Lien à venir</span>';
-    }
-    html += '</div>';
+    var cat = doc.cat || 'Général';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push(doc);
+  });
+  var catColors = { 'SSUAP': '#2980b9', 'Incendie': '#e67e22', 'Général': '#7f8c8d' };
+  var html = '';
+  Object.keys(cats).forEach(function(cat) {
+    var col = catColors[cat] || '#7f8c8d';
+    html += '<div style="font-size:10px;font-weight:700;color:'+col+';text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">'+cat+'</div>';
+    cats[cat].forEach(function(doc) {
+      html += '<div class="doc-card" style="border-left:3px solid '+col+';">';
+      html += '<div style="display:flex;align-items:center;gap:10px;">';
+      html += '<div class="doc-card-icon">'+doc.icon+'</div>';
+      html += '<div style="flex:1;min-width:0;">';
+      html += '<div class="doc-card-title">'+doc.title+'</div>';
+      html += '<div class="doc-card-desc">'+doc.desc+'</div>';
+      html += '</div>';
+      if (doc.url) {
+        html += '<a href="'+doc.url+'" target="_blank" class="doc-card-btn" style="flex-shrink:0;">⬇ Ouvrir</a>';
+      } else {
+        html += '<span style="font-size:11px;color:#bbb;flex-shrink:0;">À venir</span>';
+      }
+      html += '</div></div>';
+    });
   });
   el.innerHTML = html;
 }
@@ -941,7 +958,7 @@ window.addEventListener('DOMContentLoaded', function() {
         return;
       }
     } catch(e) {
-      console.warn('Supabase bandeau lecture:', e);
+      // Fallback silencieux vers localStorage
     }
     // Fallback local
     var savedBanner = localStorage.getItem('rffs-banner');
