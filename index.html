@@ -393,7 +393,14 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
     <div id="view-incendie" style="display:none">
       <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
       <div class="section-title" style="color:#e67e22">🔥 Incendie</div>
-      <div class="empty-state"><div>📭</div>Fiches disponibles prochainement.</div>
+      <div class="subthemes-grid" style="--tc:#e67e22">
+        <div class="subtheme-card" onclick="window.location.href='generateur_incendie.html'" style="border-color:#e67e22;background:linear-gradient(135deg,#fff8f3,#fff);position:relative;overflow:hidden">
+          <span class="subtheme-icon">⚡</span>
+          <div class="subtheme-label" style="color:#e67e22">Générateur d'exercices</div>
+          <div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">Bâtiments · Véhicules · Infrastructure — VPI &amp; VIM</div>
+        </div>
+        <div class="subtheme-card" onclick="showFiches('incendie-fiches','🔥 Fiches Incendie')"><span class="subtheme-icon">📄</span><div class="subtheme-label">Fiches techniques</div><div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">À venir</div></div>
+      </div>
     </div>
 
     <div id="view-rffs" style="display:none">
@@ -454,6 +461,7 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
       <!-- BOUTONS HERO -->
       <div style="display:flex;flex-wrap:wrap;gap:10px;">
         <a href="generateur_rffs.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">⚡ Générateur RFFS</a>
+        <a href="generateur_incendie.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">🔥 Générateur Incendie</a>
         <button onclick="showSection('themes')" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">📚 Thèmes de formation</button>
         <a href="historique.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">📋 Historique</a>
       </div>
@@ -495,6 +503,12 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
         <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Générateur RFFS</div>
         <div style="font-size:11px;color:#666;line-height:1.5;">Fiches SIMS, évaluation formative et CM & Pompiers.</div>
         <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">RFFS 5 · 7 · 8</div>
+      </a>
+      <a href="generateur_incendie.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid #e67e22;border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">🏢</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Générateur Incendie</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Bâtiments, véhicules, infrastructure — VPI &amp; VIM.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(230,126,34,.2);color:#e67e22;">Terrestre · BOD</div>
       </a>
       <a href="historique.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
         <div style="font-size:22px;margin-bottom:8px;">📋</div>
