@@ -1110,6 +1110,7 @@ function saveFormative(aeronef, theme, niv, cond){
   const existing = JSON.parse(localStorage.getItem(key) || '[]');
   existing.push(fiche);
   localStorage.setItem(key, JSON.stringify(existing));
+  if(typeof supabaseInsert==='function') supabaseInsert({...fiche, source:'Fiche évaluation'});
 
   // Confirmer
   const confirm = document.getElementById('ff_save_confirm');
@@ -1434,12 +1435,18 @@ function genRandom(){
 function getMiss(th,niv){return niv==5?th.m5:niv==7?th.m7:th.m8;}
 
 
+// Paramètres de la fiche courante (accessibles globalement)
+var _currentAeronef="", _currentTheme="", _currentNiv=8, _currentCond="Jour";
 function gen(){
   const niv=+document.querySelector('input[name="niv"]:checked').value;
   const aNom=document.getElementById('aeronef').value;
   const av=AV.find(a=>a.n===aNom)||{t:'',c:''};
   const tk=document.getElementById('theme').value;
   const th=TH[tk];
+  // Mémoriser pour printFicheEval
+  _currentAeronef=aNom; _currentNiv=niv;
+  _currentCond=document.querySelector('input[name="cond"]:checked').value;
+  _currentTheme=th?th.l:tk;
   const loc=document.getElementById('loc').value;
   const pn=+document.getElementById('pn').value;
   const pax=+document.getElementById('pax').value;
@@ -1693,6 +1700,9 @@ function printFicheEval(){
       printWin.print();
     }
   }, 800);
+
+  // Enregistrer dans l'historique
+  saveFormative(_currentAeronef, _currentTheme, _currentNiv, _currentCond);
 
   if(wasHidden) panelEval.style.display = 'none';
 }
