@@ -704,6 +704,7 @@ function pdfFiche(id){
     <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
   </div>
   ${f.observations?`<div class="obs"><strong>Observations :</strong><br>${f.observations}</div>`:''}
+  ${f.ficheFormHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Fiche formative complète</h2><div style="font-size:11px;">${f.ficheFormHtml}</div></div>` : f.schemaHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Schéma d'intervention</h2>${f.schemaHtml}</div>` : ''}
   <div class="footer">RFFS BOD · Fiche enregistrée le ${f.date} · Source : ${f.source||'Web'}</div>
   </body></html>`);
   w.document.close();
@@ -718,6 +719,11 @@ function openFiche(id){
   const label = f.resultat==='validé'?'✓ VALIDÉ':f.resultat==='non_validé'?'✗ NON VALIDÉ':'⟳ EN COURS';
   const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
   document.getElementById('modal-title').textContent = f.aeronef + ' — ' + f.date;
+  const schemaBlock = f.ficheFormHtml
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Fiche formative complète</div><div style="border:1px solid #ddd;border-radius:6px;overflow:auto;padding:10px;background:#fafafa;max-height:500px;">${f.ficheFormHtml}</div></div>`
+    : f.schemaHtml
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Schéma d'intervention</div><div style="border:1px solid #ddd;border-radius:6px;padding:8px;background:#fafafa;">${f.schemaHtml}</div></div>`
+    : '';
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-field"><div class="modal-label">Date / Heure</div><div class="modal-value">${f.date||'—'} à ${f.heure||'—'}</div></div>
     <div class="modal-field"><div class="modal-label">Aéronef</div><div class="modal-value" style="font-size:15px;font-weight:600;color:var(--navy);">${f.aeronef||'—'}</div></div>
@@ -728,6 +734,7 @@ function openFiche(id){
     <div class="modal-field"><div class="modal-label">Résultat</div><div class="modal-value"><span class="badge ${badge}">${label}</span></div></div>
     <div class="modal-field"><div class="modal-label">Observations</div><div class="modal-value" style="background:var(--bg);border-radius:6px;padding:8px;font-style:${f.observations?'normal':'italic'};color:${f.observations?'var(--text)':'var(--muted)'};">${f.observations||'Aucune observation'}</div></div>
     <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:right;">Source : ${f.source||'Web'} · ID : ${f.id}</div>
+    ${schemaBlock}
   `;
   document.getElementById('modal-fiche').classList.add('open');
 }
