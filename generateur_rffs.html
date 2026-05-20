@@ -1092,6 +1092,37 @@ function saveFormative(aeronef, theme, niv, cond){
   const resultat = resEl ? resEl.value : 'non_renseigné';
   const obs = document.getElementById('ff_obs_generale') ? document.getElementById('ff_obs_generale').value : '';
 
+  // ── Capturer le schéma SVG avec tous les marqueurs placés ──────────────────
+  var schemaHtml = '';
+  var svgEval = document.getElementById('svg-eval');
+  if(svgEval){
+    // Sérialiser le SVG vivant (VIM, feux, fumées, lances inclus)
+    var serializer = new XMLSerializer();
+    var svgStr = serializer.serializeToString(svgEval);
+    // Forcer les dimensions pour le rendu dans l'historique
+    svgStr = svgStr.replace(/<svg /, '<svg style="width:100%;height:auto;max-width:100%;" ');
+    schemaHtml = svgStr;
+  }
+
+  // ── Capturer le HTML de la fiche formative complète ────────────────────────
+  var ficheFormEl = document.getElementById('fiche-formative');
+  var ficheFormHtml = '';
+  if(ficheFormEl){
+    // Cloner pour ne pas perturber l'affichage
+    var clone = ficheFormEl.cloneNode(true);
+    // Remplacer le SVG cloné par le SVG sérialisé (capturé ci-dessus)
+    var svgClone = clone.querySelector('#svg-eval');
+    if(svgClone && schemaHtml){
+      var tmp = document.createElement('div');
+      tmp.innerHTML = schemaHtml;
+      var freshSvg = tmp.firstElementChild;
+      if(freshSvg) svgClone.parentNode.replaceChild(freshSvg, svgClone);
+    }
+    // Supprimer les boutons interactifs inutiles dans l'historique
+    clone.querySelectorAll('button').forEach(function(b){ b.remove(); });
+    ficheFormHtml = clone.outerHTML;
+  }
+
   const fiche = {
     id: Date.now(),
     date: new Date().toLocaleDateString('fr-FR'),
@@ -1102,7 +1133,10 @@ function saveFormative(aeronef, theme, niv, cond){
     conditions: cond,
     agents: agents.join(' | '),
     resultat,
-    observations: obs
+    observations: obs,
+    schemaHtml: schemaHtml,
+    ficheFormHtml: ficheFormHtml,
+    source: 'Fiche évaluation'
   };
 
   // Sauvegarder dans localStorage
