@@ -244,7 +244,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
         <button class="btn-gen" onclick="gen()" style="flex:3;">⚡ Générer la fiche</button>
         <button class="btn-gen" onclick="genRandom()" style="flex:1;background:var(--navy);" title="Tirage aléatoire">🎲</button>
       </div>
-      <button class="btn-prt" onclick="trackPrint();window.print()">🖨 Imprimer / PDF</button>
+      <button class="btn-prt" onclick="trackPrint();printFicheExercice()">🖨 Imprimer fiche exercice</button>
+      <button class="btn-prt" onclick="printFicheEval()" style="margin-top:4px;background:#fff;color:var(--orange);border-color:var(--orange);">📊 Imprimer fiche évaluation</button>
       <div class="dv"></div>
       <a href="historique.html" style="display:block;width:100%;padding:8px;background:#1F3864;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;margin-top:4px;">📋 Voir l'historique</a>
     </div>
@@ -1581,6 +1582,120 @@ document.addEventListener('change', function(e){
   }
 });
 
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// IMPRESSION FICHE EXERCICE (sans fiche éval)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function printFicheExercice(){
+  // Masquer temporairement le panel eval avant d'imprimer
+  var panelEval = document.getElementById('panel-eval');
+  var panelSims = document.getElementById('panel-sims');
+  var tabs = document.querySelector('[id^="tab-"]') ? document.querySelectorAll('[data-tab]') : null;
+  var prevEval = panelEval ? panelEval.style.display : null;
+  var prevSims = panelSims ? panelSims.style.display : null;
+  if(panelEval) panelEval.style.display = 'none';
+  if(panelSims) panelSims.style.display = 'block';
+  window.print();
+  if(panelEval && prevEval !== null) panelEval.style.display = prevEval;
+  if(panelSims && prevSims !== null) panelSims.style.display = prevSims;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// IMPRESSION FICHE ÉVALUATION COMPLÈTE (avec schéma SVG inline)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function printFicheEval(){
+  var ficheFormative = document.getElementById('fiche-formative');
+  if(!ficheFormative){
+    alert('Générez d\'abord une fiche, puis passez sur l\'onglet Évaluation formative.');
+    return;
+  }
+
+  // S'assurer que le panel eval est visible pour cloner correctement
+  var panelEval = document.getElementById('panel-eval');
+  var wasHidden = panelEval && panelEval.style.display === 'none';
+  if(wasHidden) panelEval.style.display = 'block';
+
+  // Capturer le SVG des schémas avec leur état actuel (VIM, feux, lances placés)
+  // On sérialise chaque SVG en string inline pour garantir l'impression fidèle
+  var cloned = ficheFormative.cloneNode(true);
+
+  // Remplacer chaque SVG cloné par le SVG vivant sérialisé (captures les marqueurs dynamiques)
+  var svgLive = document.getElementById('svg-eval');
+  var svgCloned = cloned.querySelector('#svg-eval');
+  if(svgLive && svgCloned){
+    // Serialiser le SVG vivant (avec tous les éléments placés)
+    var serializer = new XMLSerializer();
+    var svgString = serializer.serializeToString(svgLive);
+    var svgInline = document.createElement('div');
+    svgInline.innerHTML = svgString;
+    var svgEl = svgInline.querySelector('svg') || svgInline.firstElementChild;
+    if(svgEl){
+      svgEl.style.width = '100%';
+      svgEl.style.height = 'auto';
+      svgCloned.parentNode.replaceChild(svgEl, svgCloned);
+    }
+  }
+
+  // Récupérer le header de la fiche principale pour contexte
+  var ficheHdr = document.querySelector('.fhdr-l');
+  var ficheInfo = ficheHdr ? ficheHdr.innerHTML : '';
+
+  // Récupérer la table d'identification
+  var idTable = document.querySelector('.id-t');
+  var idTableHTML = idTable ? idTable.outerHTML : '';
+
+  // Construire le HTML de la fenêtre d'impression
+  var css = Array.from(document.querySelectorAll('style')).map(s=>s.innerHTML).join('\n');
+
+  var printWin = window.open('','_blank','width=900,height=700');
+  if(!printWin){ alert('Autorisez les pop-ups pour imprimer la fiche évaluation.'); return; }
+
+  printWin.document.open();
+  printWin.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">');
+  printWin.document.write('<title>Évaluation formative — RFFS BOD</title>');
+  printWin.document.write('<style>');
+  printWin.document.write(css);
+  printWin.document.write(`
+    body { background:#fff; font-family:'Segoe UI',system-ui,sans-serif; }
+    .print-header { background:#1F3864; color:#fff; padding:10px 16px; margin-bottom:14px; border-radius:4px; }
+    .print-header h2 { font-size:13px; font-weight:700; }
+    .print-header span { font-size:10px; opacity:.6; display:block; margin-top:2px; }
+    .id-t { margin-bottom:14px; }
+    .ff-wrap { border:2px solid #1F3864; border-radius:8px; overflow:visible !important; }
+    svg { width:100% !important; height:auto !important; max-width:100%; }
+    .vim-label { display:block !important; }
+    input[type=checkbox], input[type=radio] { width:14px; height:14px; }
+    textarea { border:1px solid #ccc; border-radius:4px; padding:5px; width:100%; min-height:40px; }
+    @media print {
+      @page { margin: 1.2cm; size: A4; }
+      body { margin:0; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    }
+  `);
+  printWin.document.write('</style></head><body>');
+  printWin.document.write('<div class="print-header">' + ficheInfo + '</div>');
+  printWin.document.write(idTableHTML);
+  printWin.document.write(cloned.outerHTML);
+  printWin.document.write('</body></html>');
+  printWin.document.close();
+
+  // Attendre chargement puis imprimer
+  printWin.onload = function(){
+    setTimeout(function(){
+      printWin.focus();
+      printWin.print();
+    }, 400);
+  };
+  // Fallback si onload ne se déclenche pas
+  setTimeout(function(){
+    if(printWin && !printWin.closed){
+      printWin.focus();
+      printWin.print();
+    }
+  }, 800);
+
+  if(wasHidden) panelEval.style.display = 'none';
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PATCH v2.2 — Marqueur Feu & Fumée draggable sur schéma avion
