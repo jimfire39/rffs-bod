@@ -1421,7 +1421,6 @@ async function saveIncendie() {
   const lieu      = document.getElementById('lieu').value;
   const sousCatEl = document.getElementById('sous_cat');
   const catEl     = document.getElementById('categorie');
-  const catKey    = catEl ? catEl.value : '';
   const themeLabel = sousCatEl ? sousCatEl.options[sousCatEl.selectedIndex].text : '';
   const vehType   = document.querySelector('input[name="veh"]:checked').value;
   const nbAgents  = document.getElementById('nb_agents').value;
@@ -1429,6 +1428,34 @@ async function saveIncendie() {
   const now   = new Date();
   const date  = now.toLocaleDateString('fr-FR');
   const heure = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  // ── Capturer le schéma SVG avec tous les marqueurs ──────────────────────────
+  let schemaHtml = '';
+  const svgInc = document.getElementById('svg-incendie');
+  if(svgInc){
+    const serializer = new XMLSerializer();
+    let svgStr = serializer.serializeToString(svgInc);
+    svgStr = svgStr.replace(/<svg /, '<svg style="width:100%;height:auto;max-width:100%;" ');
+    schemaHtml = svgStr;
+  }
+
+  // ── Capturer le HTML de la fiche formative ──────────────────────────────────
+  const ficheFormEl = document.getElementById('fiche-formative');
+  let ficheFormHtml = '';
+  if(ficheFormEl){
+    const clone = ficheFormEl.cloneNode(true);
+    // Remplacer le SVG cloné par le SVG sérialisé
+    const svgClone = clone.querySelector('#svg-incendie');
+    if(svgClone && schemaHtml){
+      const tmp = document.createElement('div');
+      tmp.innerHTML = schemaHtml;
+      const freshSvg = tmp.firstElementChild;
+      if(freshSvg) svgClone.parentNode.replaceChild(freshSvg, svgClone);
+    }
+    // Supprimer boutons interactifs
+    clone.querySelectorAll('button').forEach(b => b.remove());
+    ficheFormHtml = clone.outerHTML;
+  }
 
   const fiche = {
     id: Date.now(),
@@ -1438,7 +1465,10 @@ async function saveIncendie() {
     vehType,
     agents: nbAgents,
     resultat,
-    observations: obs
+    observations: obs,
+    schemaHtml,
+    ficheFormHtml,
+    source: 'Incendie'
   };
 
   // LocalStorage
@@ -1450,14 +1480,14 @@ async function saveIncendie() {
   const ok = await supabaseInsertInc(fiche);
 
   // Feedback
-  const confirm = document.getElementById('save-confirm-inc');
-  const errEl   = document.getElementById('save-error-inc');
-  if(confirm){
-    confirm.style.display = 'block';
-    confirm.textContent = ok
+  const confirmEl = document.getElementById('save-confirm-inc');
+  const errEl     = document.getElementById('save-error-inc');
+  if(confirmEl){
+    confirmEl.style.display = 'block';
+    confirmEl.textContent = ok
       ? '✓ Fiche enregistrée et synchronisée !'
       : '✓ Fiche enregistrée localement (sync offline)';
-    setTimeout(()=>{ confirm.style.display='none'; }, 4000);
+    setTimeout(()=>{ confirmEl.style.display='none'; }, 4000);
   }
   if(errEl) errEl.style.display = 'none';
 }
