@@ -150,6 +150,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 .ff-radio-grp{display:flex;gap:12px;}
 .ff-radio-grp label{display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;}
 
+/* SCHÉMA — TOOLBAR FORMES */
+.schema-shapes-bar{background:#f7f0e8;padding:7px 12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;border-bottom:1px solid #e0d0c0;}
+.shape-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1.5px solid #8a6a3a;background:#fff;color:#5a3e10;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;user-select:none;}
+.shape-btn:hover,.shape-btn.active-shape{background:#8a6a3a;color:#fff;border-color:#5a3e10;}
+.del-shape-btn{padding:4px 10px;border:1.5px solid var(--red);background:#fff;color:var(--red);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.del-shape-btn:hover{background:var(--red);color:#fff;}
+
 /* LOCAL PERSO */
 .local-input-row{display:flex;gap:7px;margin-top:8px;}
 .local-input-row input{flex:1;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;}
@@ -749,63 +756,63 @@ function buildSchema(vehType, nbVim){
 
   return `
   <div class="schema-wrap">
+    <!-- Barre véhicules -->
     <div class="schema-ctrl no-print">
       <span class="schema-ctrl-lbl">Véhicule :</span>
       ${badges}
       <button class="rot-btn" onclick="rotateSel()">↻ Rotation</button>
       <button class="rst-btn" onclick="resetSchema()">✕ Reset</button>
     </div>
+    <!-- Barre formes bâtiment -->
+    <div class="schema-shapes-bar no-print">
+      <span class="schema-ctrl-lbl" style="color:#5a3e10">Bâtiment :</span>
+      <button class="shape-btn" id="shape-btn-grand" onclick="selShape('grand')">▬ Grand</button>
+      <button class="shape-btn" id="shape-btn-moyen" onclick="selShape('moyen')">▬ Moyen</button>
+      <button class="shape-btn" id="shape-btn-petit" onclick="selShape('petit')">■ Petit</button>
+      <button class="shape-btn" id="shape-btn-carre" onclick="selShape('carre')">◼ Carré</button>
+      <span style="width:1px;background:#c0a870;margin:0 2px;align-self:stretch"></span>
+      <button class="shape-btn" id="btn-feu-inc" onclick="selToolFeu()">🔥 Feu</button>
+      <button class="shape-btn" id="btn-fumee-inc" onclick="selToolFumee()" style="color:#555;border-color:#aaa">🌫️ Fumée</button>
+      <button class="del-shape-btn" onclick="deleteLastShape()">⌫ Suppr</button>
+    </div>
+    <!-- SVG canvas -->
     <div class="schema-svg-wrap">
-      <svg id="svg-incendie" viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg"
-           style="cursor:crosshair" onclick="placeVehSchema(event)">
-        <!-- Fond -->
-        <rect width="560" height="320" fill="#e8eff7"/>
-        <!-- Route d'accès -->
-        <rect x="0" y="136" width="80" height="48" fill="#b0bec5"/>
-        <line x1="80" y1="160" x2="120" y2="160" stroke="#ffd600" stroke-width="2" stroke-dasharray="8,6"/>
-        <!-- Bâtiment principal -->
-        <rect x="120" y="60" width="300" height="200" fill="#cfd8dc" stroke="#455a64" stroke-width="3" rx="4"/>
-        <!-- Fenêtres -->
-        <rect x="140" y="80" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="200" y="80" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="260" y="80" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="320" y="80" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="140" y="180" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="200" y="180" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="260" y="180" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <rect x="320" y="180" width="40" height="30" fill="#90a4ae" stroke="#546e7a" stroke-width="1" rx="2"/>
-        <!-- Porte -->
-        <rect x="240" y="218" width="40" height="42" fill="#78909c" stroke="#37474f" stroke-width="2" rx="2"/>
-        <!-- Label bâtiment -->
-        <text x="270" y="145" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#263238">BÂTIMENT</text>
-        <text x="270" y="162" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="11" fill="#455a64" id="label-lieu-schema">Lieu de manœuvre</text>
-        <!-- Zones accès -->
-        <text x="40" y="158" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" fill="#455a64">ACCÈS</text>
-        <!-- Sortie haut -->
-        <rect x="230" y="40" width="80" height="20" fill="#b0bec5"/>
-        <text x="270" y="54" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" fill="#455a64">SORTIE SECOURS</text>
+      <svg id="svg-incendie" viewBox="0 0 560 340" xmlns="http://www.w3.org/2000/svg"
+           style="cursor:crosshair" onclick="handleCanvasClick(event)">
+        <!-- Fond terrain -->
+        <rect width="560" height="340" fill="#e8eff7"/>
+        <!-- Quadrillage guide discret -->
+        <defs>
+          <pattern id="grid-inc" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,130,180,0.12)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="560" height="340" fill="url(#grid-inc)"/>
+        <!-- Voie d'accès générique -->
+        <rect x="0" y="148" width="70" height="44" fill="#b0bec5" opacity="0.7"/>
+        <line x1="70" y1="170" x2="110" y2="170" stroke="#ffd600" stroke-width="1.5" stroke-dasharray="7,5"/>
+        <text x="35" y="168" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" fill="#546e7a">ACCÈS</text>
+        <!-- Groupe calque formes bâtiment (inséré avant les véhicules) -->
+        <g id="shapes-layer"></g>
         <!-- Hydrant -->
-        <circle cx="490" cy="100" r="14" fill="#e53935" stroke="#b71c1c" stroke-width="2"/>
-        <text x="490" y="104" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#fff">BI</text>
-        <text x="490" y="120" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" fill="#455a64">Borne incendie</text>
-        <!-- Point feu par défaut -->
-        <circle cx="200" cy="130" r="10" fill="#ff5722" stroke="#bf360c" stroke-width="2" id="feu-schema" style="cursor:move"/>
-        <text x="200" y="134" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">🔥</text>
+        <circle cx="510" cy="60" r="13" fill="#e53935" stroke="#b71c1c" stroke-width="2"/>
+        <text x="510" y="64" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#fff">BI</text>
         <!-- Légende -->
-        <rect x="430" y="220" width="120" height="80" fill="rgba(255,255,255,0.85)" rx="4" stroke="#ccc" stroke-width="1"/>
-        <circle cx="444" cy="238" r="6" fill="#e53935"/>
-        <text x="455" y="242" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Borne incendie</text>
-        <circle cx="444" cy="256" r="6" fill="#ff5722"/>
-        <text x="455" y="260" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Foyer (déplaçable)</text>
-        <rect cx="444" cy="270" width="12" height="8" fill="#7a2d00" rx="1"/>
-        <text x="444" y="271" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#7a2d00">VPI</text>
-        <text x="455" y="276" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VPI</text>
-        <text x="444" y="290" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#002F5F">VIM</text>
-        <text x="455" y="290" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VIM</text>
+        <g transform="translate(420,260)">
+          <rect width="130" height="70" fill="rgba(255,255,255,0.88)" rx="4" stroke="#ccc" stroke-width="1"/>
+          <circle cx="14" cy="16" r="6" fill="#e53935"/>
+          <text x="25" y="20" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Borne incendie</text>
+          <text x="8" y="38" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#7a2d00">VPI</text>
+          <text x="25" y="38" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VPI</text>
+          <text x="8" y="54" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#002F5F">VIM</text>
+          <text x="25" y="54" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VIM</text>
+          <text x="8" y="66" font-family="Segoe UI,sans-serif" font-size="9" fill="#C00000">🔥</text>
+          <text x="25" y="66" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Foyer (déplaçable)</text>
+        </g>
       </svg>
     </div>
     <div class="vim-positions-bar" id="veh-positions-bar">
-      <span style="color:var(--text-m);font-size:11px">Clique sur le plan pour placer les véhicules — fais glisser le 🔥 pour repositionner le foyer.</span>
+      <span style="color:var(--text-m);font-size:11px">Sélectionne un véhicule puis clique sur le plan — ajoute des formes bâtiment avec la barre au-dessus.</span>
     </div>
   </div>`;
 }
@@ -814,24 +821,285 @@ function initSchema(){
   selVehId = 'VPI';
   vehDirs = {};
   vehPositions = {};
-  // Majuscule lieu dans schéma
-  const lbl = document.getElementById('label-lieu-schema');
-  if(lbl) lbl.textContent = document.getElementById('lieu').value;
-  // Drag du foyer
-  enableFeuDrag();
+  incToolMode = 'vim'; // reset outil
+  incShapes = [];       // reset formes bâtiment
   // Activer premier badge
   const firstBadge = document.querySelector('.vbadge');
   if(firstBadge){
     selVehId = firstBadge.dataset.vid;
     firstBadge.classList.add('active');
   }
+  // Reset boutons feu/fumée visuellement
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.style.background=''; bf.style.color=''; bf.classList.remove('active-shape'); }
+  if(bs){ bs.style.background=''; bs.style.color=''; bs.classList.remove('active-shape'); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   OUTILS — MODE (vim | feu | fumee | shape:xxx)
+═══════════════════════════════════════════════════════ */
+let incToolMode = 'vim';
+
+function selToolFeu(){
+  incToolMode = 'feu';
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.classList.add('active-shape'); }
+  if(bs){ bs.classList.remove('active-shape'); }
+  document.querySelectorAll('.shape-btn:not(#btn-feu-inc):not(#btn-fumee-inc)').forEach(b=>b.classList.remove('active-shape'));
+}
+
+function selToolFumee(){
+  incToolMode = 'fumee';
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.classList.remove('active-shape'); }
+  if(bs){ bs.classList.add('active-shape'); }
+  document.querySelectorAll('.shape-btn:not(#btn-feu-inc):not(#btn-fumee-inc)').forEach(b=>b.classList.remove('active-shape'));
+}
+
+function selShape(size){
+  incToolMode = 'shape:' + size;
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
+  const btn = document.getElementById('shape-btn-' + size);
+  if(btn) btn.classList.add('active-shape');
+}
+
+/* ═══════════════════════════════════════════════════════
+   FORMES BÂTIMENT
+═══════════════════════════════════════════════════════ */
+let incShapes = [];
+let incShapeCounter = 0;
+
+const SHAPE_SIZES = {
+  grand:  { w: 200, h: 100 },
+  moyen:  { w: 130, h: 80  },
+  petit:  { w: 80,  h: 55  },
+  carre:  { w: 70,  h: 70  }
+};
+
+function addShape(size, cx, cy){
+  const svg = document.getElementById('svg-incendie');
+  const layer = document.getElementById('shapes-layer');
+  if(!svg || !layer) return;
+  const dim = SHAPE_SIZES[size] || SHAPE_SIZES.grand;
+  const id = 'shape-' + (++incShapeCounter);
+  const x = cx - dim.w/2, y = cy - dim.h/2;
+  incShapes.push({ id, size, x, y, w: dim.w, h: dim.h });
+  renderShape({ id, size, x, y, w: dim.w, h: dim.h });
+}
+
+function renderShape(s){
+  const svg = document.getElementById('svg-incendie');
+  const layer = document.getElementById('shapes-layer');
+  if(!layer) return;
+  const old = document.getElementById(s.id); if(old) old.remove();
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', s.id);
+  g.style.cursor = 'move';
+  g.dataset.sid = s.id;
+  g.dataset.x = s.x; g.dataset.y = s.y;
+  g.dataset.w = s.w; g.dataset.h = s.h;
+
+  g.innerHTML = `
+    <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}"
+          fill="#cfd8dc" stroke="#455a64" stroke-width="2.5" rx="3"/>
+    <text x="${s.x + s.w/2}" y="${s.y + s.h/2 + 4}" text-anchor="middle"
+          font-family="Segoe UI,sans-serif" font-size="11" font-weight="700" fill="#37474f">BÂTIMENT</text>`;
+
+  layer.appendChild(g);
+  enableShapeDrag(g, s);
+}
+
+function enableShapeDrag(g, s){
+  let dragging=false, sx=0, sy=0, sgx=0, sgy=0;
+  function svgCoords(e){
+    const svg=document.getElementById('svg-incendie');
+    const r=svg.getBoundingClientRect();
+    const vbW=svg.viewBox.baseVal.width, vbH=svg.viewBox.baseVal.height;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(cx-r.left)*(vbW/r.width),y:(cy-r.top)*(vbH/r.height)};
+  }
+  function onDown(e){
+    e.preventDefault(); e.stopPropagation(); dragging=true;
+    const p=svgCoords(e); sx=p.x; sy=p.y;
+    sgx=parseFloat(g.dataset.x); sgy=parseFloat(g.dataset.y);
+    g.style.opacity='0.72';
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onUp);
+  }
+  function onMove(e){
+    if(!dragging) return; e.preventDefault();
+    const p=svgCoords(e);
+    const nx=sgx+(p.x-sx), ny=sgy+(p.y-sy);
+    g.dataset.x=nx; g.dataset.y=ny;
+    const rect=g.querySelector('rect');
+    const txt=g.querySelector('text');
+    const w=parseFloat(g.dataset.w), h=parseFloat(g.dataset.h);
+    if(rect){ rect.setAttribute('x',nx); rect.setAttribute('y',ny); }
+    if(txt){ txt.setAttribute('x',nx+w/2); txt.setAttribute('y',ny+h/2+4); }
+    // sync dans incShapes
+    const shape = incShapes.find(sh=>sh.id===s.id);
+    if(shape){ shape.x=nx; shape.y=ny; }
+  }
+  function onUp(){
+    dragging=false; g.style.opacity='1';
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onUp);
+  }
+  g.addEventListener('mousedown',onDown);
+  g.addEventListener('touchstart',onDown,{passive:false});
+}
+
+function deleteLastShape(){
+  if(!incShapes.length) return;
+  const last = incShapes.pop();
+  const el = document.getElementById(last.id);
+  if(el) el.remove();
+}
+
+/* ═══════════════════════════════════════════════════════
+   BADGES FEU & FUMÉE (style RFFS)
+═══════════════════════════════════════════════════════ */
+function flammeIncSVG(sz){
+  sz=sz||44;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><radialGradient id="fgi'+sz+'" cx="50%" cy="72%" r="62%">'
+    +'<stop offset="0%" stop-color="#FFF9C4"/>'
+    +'<stop offset="30%" stop-color="#FFD600"/>'
+    +'<stop offset="65%" stop-color="#FF6D00"/>'
+    +'<stop offset="100%" stop-color="#B71C1C"/>'
+    +'</radialGradient></defs>'
+    +'<path d="M14,1 C14,1 11,7 9,9.5 C7.5,11.5 5,10.5 5,7.5 C3.5,10.5 3.5,14.5 5.5,17.5 C3,16.5 1,13.5 1,10.5 C0,14.5 2,19.5 5.5,22.5 C3.5,24.5 2.5,27.5 3.5,30 C2,28 1,25.5 1,23.5 C1,27.5 3,31.5 7,33.5 C9,34.5 11,35.5 11,37 C13,35 15,32 15,29 C17,32 17,35 15,37 C19,35 21,32 21,29 C21,26 19,23 21,21 C23,25 23,29 21,33 C25,29 25,23 21,19 C23,19 25,17 25,13 C23,15 21,15 19,13 C21,9 21,5 19,3 C18,6 17,9 15,11 C15,7 16,3 14,1 Z"'
+    +' fill="url(#fgi'+sz+')" stroke="#8B0000" stroke-width="0.8"/>'
+    +'</svg>';
+}
+
+function fumeeIncSVG(sz){
+  sz=sz||44;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><linearGradient id="fmi'+sz+'" x1="0%" y1="0%" x2="30%" y2="100%">'
+    +'<stop offset="0%" stop-color="#E8E8E8"/>'
+    +'<stop offset="60%" stop-color="#BDBDBD"/>'
+    +'<stop offset="100%" stop-color="#9E9E9E"/>'
+    +'</linearGradient></defs>'
+    +'<circle cx="8" cy="18" r="6" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="14" cy="16" r="7.5" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="21" cy="18" r="5.5" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<rect x="3" y="19" width="20" height="5" fill="url(#fmi'+sz+')"/>'
+    +'<path d="M11,15 C11,12 13,10 12,7 C13,9 15,10 14,13" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'<path d="M17,14 C17,11 19,9 18,6 C19,8 21,9 20,12" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'<rect x="3" y="24" width="22" height="2" fill="#9E9E9E" rx="1"/>'
+    +'</svg>';
+}
+
+function svgToB64Inc(svgStr){
+  try{ return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr))); }
+  catch(e){ return 'data:image/svg+xml;base64,' + btoa(svgStr); }
+}
+
+function placeFoyerInc(type, cx, cy){
+  const svg = document.getElementById('svg-incendie');
+  if(!svg) return;
+  const mid = 'inc-marker-' + type;
+  const old = document.getElementById(mid); if(old) old.remove();
+  const sz = 44;
+  const iconSrc = svgToB64Inc(type==='feu' ? flammeIncSVG(sz) : fumeeIncSVG(sz));
+  const tx = cx - sz/2;
+  const ty = type==='feu' ? cy - sz : cy - sz/2;
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', mid);
+  g.style.cursor = 'move';
+  g.dataset.cx = cx; g.dataset.cy = cy; g.dataset.type = type;
+  const shadow = type==='feu'
+    ? `<ellipse cx="${cx}" cy="${cy}" rx="14" ry="5" fill="rgba(0,0,0,0.25)"/>`
+    : '';
+  g.innerHTML = shadow + `<image href="${iconSrc}" x="${tx}" y="${ty}" width="${sz}" height="${sz}" style="pointer-events:all"/>`;
+  svg.appendChild(g);
+  enableFoyerIncDrag(g, type, sz);
+}
+
+function enableFoyerIncDrag(g, type, sz){
+  let dragging=false, sX=0, sY=0, sCx=0, sCy=0;
+  sz=sz||44;
+  function gP(e){
+    const svg=document.getElementById('svg-incendie'), r=svg.getBoundingClientRect();
+    const w=svg.viewBox.baseVal.width, h=svg.viewBox.baseVal.height;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(cx-r.left)*(w/r.width),y:(cy-r.top)*(h/r.height)};
+  }
+  function dn(e){ e.preventDefault(); e.stopPropagation(); dragging=true;
+    const p=gP(e); sX=p.x; sY=p.y;
+    sCx=parseFloat(g.dataset.cx); sCy=parseFloat(g.dataset.cy);
+    g.style.opacity='0.72';
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+    document.addEventListener('touchmove',mv,{passive:false});
+    document.addEventListener('touchend',up);
+  }
+  function mv(e){ if(!dragging) return; e.preventDefault();
+    const p=gP(e); const ncx=sCx+(p.x-sX), ncy=sCy+(p.y-sY);
+    g.dataset.cx=ncx; g.dataset.cy=ncy;
+    const img=g.querySelector('image'), ell=g.querySelector('ellipse');
+    if(img){ img.setAttribute('x',ncx-sz/2); img.setAttribute('y',type==='feu'?ncy-sz:ncy-sz/2); }
+    if(ell){ ell.setAttribute('cx',ncx); ell.setAttribute('cy',ncy); }
+  }
+  function up(){ dragging=false; g.style.opacity='1';
+    document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
+    document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up);
+  }
+  g.addEventListener('mousedown',dn);
+  g.addEventListener('touchstart',dn,{passive:false});
+}
+
+/* ═══════════════════════════════════════════════════════
+   DISPATCHER CLICK CANVAS
+═══════════════════════════════════════════════════════ */
+function handleCanvasClick(evt){
+  // Ignorer si clic sur un élément draggable déjà posé
+  if(evt.target.closest && (
+    evt.target.closest('[id^="marker-veh-"]') ||
+    evt.target.closest('[id^="shape-"]') ||
+    evt.target.closest('[id^="inc-marker-"]')
+  )) return;
+
+  const svg = document.getElementById('svg-incendie');
+  const r = svg.getBoundingClientRect();
+  const vbW = svg.viewBox.baseVal.width, vbH = svg.viewBox.baseVal.height;
+  const x = (evt.clientX - r.left)*(vbW/r.width);
+  const y = (evt.clientY - r.top)*(vbH/r.height);
+
+  if(incToolMode === 'feu'){
+    placeFoyerInc('feu', x, y);
+  } else if(incToolMode === 'fumee'){
+    placeFoyerInc('fumee', x, y);
+  } else if(incToolMode.startsWith('shape:')){
+    const size = incToolMode.split(':')[1];
+    addShape(size, x, y);
+  } else {
+    // mode vim — placement véhicule
+    placeVehAt(selVehId, x, y);
+  }
 }
 
 function selVeh(vid){
+  incToolMode = 'vim';
   selVehId = vid;
   document.querySelectorAll('.vbadge').forEach(b=>{
     b.classList.toggle('active', b.dataset.vid === vid);
   });
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
 }
 
 function rotateSel(){
@@ -840,27 +1108,30 @@ function rotateSel(){
 }
 
 function resetSchema(){
-  // Supprimer tous les marqueurs
+  // Supprimer tous les marqueurs véhicules
   document.querySelectorAll('[id^="marker-veh-"]').forEach(m=>m.remove());
+  // Supprimer formes bâtiment
+  const layer = document.getElementById('shapes-layer');
+  if(layer) layer.innerHTML = '';
+  incShapes = [];
+  // Supprimer badges feu/fumée
+  ['inc-marker-feu','inc-marker-fumee'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.remove();
+  });
   vehPositions = {};
   vehDirs = {};
+  incToolMode = 'vim';
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
+  const firstBadge = document.querySelector('.vbadge');
+  if(firstBadge){ selVehId = firstBadge.dataset.vid; }
+  document.querySelectorAll('.vbadge').forEach(b=>{
+    b.classList.toggle('active', b.dataset.vid === selVehId);
+  });
   document.getElementById('veh-positions-bar').innerHTML =
-    '<span style="color:var(--text-m);font-size:11px">Clique sur le plan pour placer les véhicules — fais glisser le 🔥 pour repositionner le foyer.</span>';
+    '<span style="color:var(--text-m);font-size:11px">Sélectionne un véhicule puis clique sur le plan — ajoute des formes bâtiment avec la barre au-dessus.</span>';
 }
 
-function placeVehSchema(evt){
-  const svg = document.getElementById('svg-incendie');
-  if(!svg) return;
-  // Éviter clic sur marqueurs existants
-  if(evt.target.closest && evt.target.closest('[id^="marker-veh-"]')) return;
-  if(evt.target.id === 'feu-schema') return;
-  const r = svg.getBoundingClientRect();
-  const vbW = svg.viewBox.baseVal.width;
-  const vbH = svg.viewBox.baseVal.height;
-  const x = (evt.clientX - r.left)*(vbW/r.width);
-  const y = (evt.clientY - r.top)*(vbH/r.height);
-  placeVehAt(selVehId, x, y);
-}
+// (placeVehSchema remplacé par handleCanvasClick)
 
 function placeVehAt(vid, x, y){
   vehPositions[vid] = {x,y};
@@ -951,39 +1222,7 @@ function enableVehDrag(g, vid){
   g.addEventListener('touchstart',onDown,{passive:false});
 }
 
-function enableFeuDrag(){
-  const svg = document.getElementById('svg-incendie');
-  if(!svg) return;
-  const feu = document.getElementById('feu-schema');
-  if(!feu) return;
-  let dragging=false, sx=0, sy=0, scx=0, scy=0;
-  function svgCoords(evt){
-    const r=svg.getBoundingClientRect();
-    const vbW=svg.viewBox.baseVal.width, vbH=svg.viewBox.baseVal.height;
-    const cx=evt.touches?evt.touches[0].clientX:evt.clientX;
-    const cy=evt.touches?evt.touches[0].clientY:evt.clientY;
-    return{x:(cx-r.left)*(vbW/r.width),y:(cy-r.top)*(vbH/r.height)};
-  }
-  function onDown(e){e.preventDefault();e.stopPropagation();dragging=true;
-    const p=svgCoords(e);sx=p.x;sy=p.y;
-    scx=parseFloat(feu.getAttribute('cx'));scy=parseFloat(feu.getAttribute('cy'));
-    document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
-    document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onUp);
-  }
-  function onMove(e){if(!dragging)return;e.preventDefault();
-    const p=svgCoords(e);
-    const nx=scx+(p.x-sx),ny=scy+(p.y-sy);
-    feu.setAttribute('cx',nx);feu.setAttribute('cy',ny);
-    // Texte feu
-    const ft=feu.nextElementSibling;if(ft){ft.setAttribute('x',nx);ft.setAttribute('y',ny+4);}
-  }
-  function onUp(){dragging=false;
-    document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);
-    document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);
-  }
-  feu.addEventListener('mousedown',onDown);
-  feu.addEventListener('touchstart',onDown,{passive:false});
-}
+// (enableFeuDrag remplacé par enableFoyerIncDrag / placeFoyerInc)
 
 function updatePosBar(){
   const bar = document.getElementById('veh-positions-bar');
