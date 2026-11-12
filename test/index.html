@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RFFS-BOD — Fiches de Formation</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rouge: #c0392b;
+  --rouge-dark: #922b21;
+  --rouge-light: #fadbd8;
+  --or: #f39c12;
+  --bleu: #2980b9;
+  --vert: #27ae60;
+  --orange: #E8500A;
+  --noir: #1a1a1a;
+  --gris: #4a4a4a;
+  --gris-clair: #f5f5f0;
+  --blanc: #ffffff;
+  --border: #e0ddd8;
+  /* Nouveau thème Bordeaux */
+  --navy: #002F5F;
+  --navy-dark: #001f44;
+  --navy-light: #0072BC;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',sans-serif;background:#f4f6f9;color:var(--noir);min-height:100vh}
+
+/* HEADER */
+header{background:var(--navy-dark);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,.08)}
+.logo{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:3px;display:flex;align-items:center;gap:10px}
+.logo-badge{background:var(--orange);color:#fff;width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.logo span{color:var(--or)}
+nav{display:flex;gap:4px}
+nav a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:14px;font-weight:500;padding:8px 14px;border-radius:6px;transition:all 0.2s;cursor:pointer}
+nav a:hover{background:rgba(255,255,255,0.15);color:#fff}
+nav a.active{background:rgba(255,255,255,0.2);color:#fff;border-bottom:2px solid var(--or)}
+
+/* SECTIONS */
+.section-page{display:none}
+.section-page.active{display:block}
+
+/* HERO */
+.hero{background:var(--navy);padding:48px 28px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;right:0;width:50%;height:100%;background:var(--navy-light);clip-path:polygon(30% 0,100% 0,100% 100%);opacity:.18;pointer-events:none;}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:2px;display:inline-block;margin-bottom:14px;letter-spacing:1.5px;text-transform:uppercase}
+.hero h1{font-family:'Oswald',sans-serif;font-size:clamp(24px,5vw,36px);font-weight:600;color:#fff;letter-spacing:1px;line-height:1.1;margin-bottom:10px}
+.hero p{color:rgba(255,255,255,0.75);font-size:15px;max-width:460px;line-height:1.6}
+
+/* MAIN */
+.main{max-width:860px;margin:0 auto;padding:36px 28px 60px}
+.section-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;color:var(--rouge);letter-spacing:1px;text-transform:uppercase;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--rouge-light);display:flex;align-items:center;gap:8px}
+
+/* ANIMATION CARD */
+.anim-card{background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:36px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.anim-header{background:var(--rouge);padding:12px 18px;display:flex;align-items:center;gap:8px}
+.anim-header span{color:#fff;font-size:13px;font-weight:500;letter-spacing:0.5px}
+.anim-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4)}
+.anim-body{padding:22px}
+
+/* PYRO STAGE */
+@keyframes pbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pwave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes pscan{0%{top:0}100%{top:44px}}
+@keyframes pdl{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(4px)}}
+@keyframes ppop{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+.scene{display:none}
+.scene.active{display:flex;flex-direction:column;align-items:center;animation:ppop 0.3s ease}
+.stage{width:100%;border-radius:10px;padding:20px 16px 16px;background:linear-gradient(180deg,#d0eaf8 0%,#e8f4fd 60%,#c8e6c9 100%);border:1px solid #b8d4e8;position:relative;min-height:200px;display:flex;align-items:flex-end;justify-content:center;gap:28px;overflow:hidden}
+.pompier{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.helmet{width:36px;height:20px;background:var(--rouge);border-radius:18px 18px 4px 4px;position:relative}
+.helmet::after{content:'';position:absolute;bottom:-2px;left:-4px;right:-4px;height:5px;background:var(--rouge-dark);border-radius:2px}
+.hbadge{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:10px;height:8px;background:var(--or);border-radius:2px}
+.phead{width:30px;height:28px;background:#f5cba7;border-radius:50%;position:relative;margin-top:-4px}
+.peye{position:absolute;width:5px;height:5px;background:#2c3e50;border-radius:50%;top:10px}
+.peye.l{left:6px}.peye.r{right:6px}
+.psmile{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:12px;height:5px;border-bottom:2px solid var(--rouge);border-radius:0 0 6px 6px}
+.pbrow{position:absolute;width:7px;height:2px;background:#6d4c41;border-radius:1px;top:6px}
+.pbrow.l{left:5px;transform:rotate(-5deg)}.pbrow.r{right:5px;transform:rotate(5deg)}
+.pbody{width:34px;height:36px;background:#2980b9;border-radius:4px;margin-top:2px;position:relative}
+.pbody::after{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:10px;height:14px;background:#1a5276;border-radius:2px}
+.pbelt{position:absolute;bottom:0;left:0;right:0;height:6px;background:var(--or);border-radius:0 0 4px 4px}
+.parm-l{position:absolute;left:-10px;top:4px;width:10px;height:22px;background:#2980b9;border-radius:5px}
+.parm-r{position:absolute;right:-10px;top:4px;width:10px;height:22px;background:#2980b9;border-radius:5px}
+.plegs{display:flex;gap:4px;margin-top:1px}
+.pleg{width:12px;height:22px;background:#1a252f;border-radius:3px;position:relative}
+.pboot{position:absolute;bottom:-4px;left:-2px;right:-2px;height:8px;background:#111;border-radius:2px}
+.bubble{background:#fff;border:2px solid var(--rouge);border-radius:14px;padding:10px 14px;font-size:13px;color:#1a252f;max-width:190px;text-align:center;position:relative;z-index:3;animation:pfloat 2s ease-in-out infinite;align-self:flex-start;margin-bottom:24px;font-weight:500;line-height:1.5}
+.bubble::after{content:'';position:absolute;bottom:-10px;left:20px;width:14px;height:10px;background:#fff;clip-path:polygon(0 0,100% 0,0 100%);border-left:2px solid var(--rouge);border-bottom:2px solid var(--rouge)}
+.prop{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.phone-frame{width:52px;height:88px;background:#2c3e50;border-radius:8px;padding:4px}
+.phone-screen{width:100%;height:100%;background:#fff;border-radius:4px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:var(--rouge);opacity:0.8;animation:pscan 1.2s linear infinite}
+.theme-card-sm{width:38px;height:50px;border-radius:4px;display:flex;flex-direction:column;gap:3px;padding:4px;border:2px solid}
+.theme-card-sm.sel{transform:scale(1.12);box-shadow:0 4px 12px rgba(0,0,0,0.12)}
+.tbar{height:5px;border-radius:1px}
+.fiche-sm{width:60px;height:74px;background:#fff;border:2px solid #bdc3c7;border-radius:5px;padding:5px;position:relative;margin-bottom:18px}
+.fiche-top{height:10px;background:var(--rouge);border-radius:2px;margin-bottom:4px}
+.fiche-line{height:4px;background:#ecf0f1;border-radius:1px;margin-bottom:3px}
+.fiche-line.s{width:70%}
+.dl-arrow{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:18px;color:#27ae60;animation:pdl 0.7s ease-in-out infinite}
+
+/* NAV SCÈNES */
+.scene-nav{display:flex;align-items:center;gap:12px;padding:14px 0 4px;width:100%}
+.scene-dots{display:flex;gap:8px;justify-content:center;flex:1}
+.sdot{width:10px;height:10px;border-radius:50%;background:#d0ccc5;transition:all 0.2s}
+.sdot.active{background:var(--rouge);transform:scale(1.2)}
+.scene-btn{background:#fff;border:1.5px solid #d0ccc5;color:var(--gris);padding:8px 18px;border-radius:6px;font-size:13px;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:all 0.15s}
+.scene-btn:hover:not(:disabled){background:var(--rouge);color:#fff;border-color:var(--rouge)}
+.scene-btn:disabled{opacity:0.3;cursor:default}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+@media(max-width:600px){.steps-grid{grid-template-columns:1fr}}
+.step-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px 16px;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.step-num{font-family:'Oswald',sans-serif;font-size:38px;font-weight:700;color:var(--rouge-light);line-height:1;margin-bottom:6px}
+.step-card h3{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.step-card p{font-size:13px;color:var(--gris);line-height:1.5}
+.step-ico{position:absolute;top:14px;right:14px;width:32px;height:32px;background:var(--rouge-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.qr-wrap{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.qr-url{font-size:11px;color:var(--bleu);font-weight:700;letter-spacing:0.5px}
+
+/* TIPS */
+.tip-box{background:#fff9e6;border:1.5px solid var(--or);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.tip-icon{width:30px;height:30px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tip-box p{font-size:13px;color:#7d6608;line-height:1.5}
+
+/* THÈMES */
+.themes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:600px){.themes-grid{grid-template-columns:1fr}}
+.theme-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:26px 22px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.theme-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--tc);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+.theme-card:hover::before{transform:scaleX(1)}
+.theme-card:hover{border-color:var(--tc);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.1)}
+.theme-icon{font-size:38px;margin-bottom:12px;display:block}
+.theme-label{font-family:'Oswald',sans-serif;font-size:21px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tc);margin-bottom:5px}
+.theme-desc{font-size:13px;color:var(--gris);line-height:1.5}
+
+/* SOUS-THÈMES */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid #d0ccc5;border-radius:8px;padding:7px 14px;font-size:13px;font-family:'Source Sans 3',sans-serif;color:var(--gris);cursor:pointer;margin-bottom:18px;transition:all 0.2s}
+.back-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+.subthemes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.subtheme-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px 14px;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.subtheme-card:hover{border-color:var(--tc,var(--rouge));background:var(--rouge-light)}
+.subtheme-icon{font-size:24px;margin-bottom:8px;display:block}
+.subtheme-label{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--tc,var(--rouge));text-transform:uppercase;letter-spacing:0.5px}
+.empty-state{background:#fff;border:1px solid var(--border);border-radius:10px;padding:36px;text-align:center;color:var(--gris);font-size:14px}
+.empty-state div{font-size:36px;margin-bottom:10px}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+@media(max-width:600px){.contact-grid{grid-template-columns:1fr}}
+.contact-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.contact-ico{width:44px;height:44px;background:var(--rouge-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.contact-label{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.contact-val{font-size:13px;color:var(--bleu);font-weight:600;text-decoration:none}
+.contact-desc{font-size:12px;color:var(--gris);margin-bottom:8px;line-height:1.4}
+.form-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--gris);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.form-input{width:100%;background:var(--gris-clair);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;font-family:'Source Sans 3',sans-serif;color:var(--noir);outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--rouge)}
+.form-submit{background:var(--rouge);color:#fff;border:none;border-radius:8px;padding:12px 26px;font-size:14px;font-weight:600;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.3px}
+.form-submit:hover{opacity:0.85}
+.form-confirm{display:none;margin-top:14px;background:var(--rouge-light);border:1.5px solid var(--rouge);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--rouge-dark);font-weight:500}
+
+/* FICHES LIST */
+.fiches-list{display:flex;flex-direction:column;gap:10px}
+.fiche-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.fiche-item:hover{border-color:var(--rouge);background:var(--rouge-light)}
+.fiche-item-title{font-size:15px;font-weight:600;color:var(--noir);margin-bottom:3px}
+.fiche-item-meta{font-size:12px;color:var(--gris);display:flex;gap:8px;align-items:center}
+.fiche-badge{font-size:11px;background:var(--rouge-light);color:var(--rouge);padding:2px 8px;border-radius:4px;font-weight:600}
+.fiche-arrow{color:var(--rouge);font-size:20px;font-weight:300}
+.fiche-detail-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.fiche-detail-title{font-family:'Oswald',sans-serif;font-size:24px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--rouge-light)}
+.fiche-section-h{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;color:var(--rouge);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.fiche-content-p{font-size:14px;color:var(--gris);line-height:1.7}
+.pdf-link{display:inline-flex;align-items:center;gap:10px;background:var(--rouge);color:#fff;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:600;text-decoration:none;font-family:'Source Sans 3',sans-serif;transition:opacity 0.2s;margin-top:8px}
+.pdf-link:hover{opacity:0.85}
+.pdf-embed{width:100%;height:500px;border:none;border-radius:8px;margin-top:12px;border:1px solid var(--border)}
+
+/* FOOTER */
+footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:0.5px}
+
+/* MODAL ADMIN */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;padding:28px 24px;width:90%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.modal-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.modal-input{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:10px 14px;font-size:14px;font-family:inherit;box-sizing:border-box;margin-bottom:12px;outline:none}
+.modal-input:focus{border-color:var(--navy)}
+.modal-btn{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px}
+.modal-btn-sec{background:#f5f5f5;color:#666;border:1.5px solid #ddd;border-radius:8px;padding:9px 20px;font-size:14px;cursor:pointer;width:100%}
+.modal-error{color:#c0392b;font-size:13px;margin-bottom:8px;display:none}
+.modal-success{color:#27ae60;font-size:13px;margin-bottom:8px;display:none}
+
+/* ── TUTORIEL PYRO ── */
+@keyframes pyro-idle{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+@keyframes pyro-wave{0%,100%{transform:rotate(0deg);}25%{transform:rotate(18deg);}75%{transform:rotate(-8deg);}}
+@keyframes pyro-jump{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+@keyframes pyro-point{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+@keyframes pyro-nod{0%,100%{transform:rotate(0deg);}30%{transform:rotate(7deg);}60%{transform:rotate(-4deg);}}
+.pyro-wave{animation:pyro-wave 0.6s ease-in-out 3!important;}
+.pyro-jump{animation:pyro-jump 0.5s ease-in-out 2!important;}
+.pyro-point{animation:pyro-point 0.7s ease-in-out 3!important;}
+.pyro-nod{animation:pyro-nod 0.5s ease-in-out 3!important;}
+.tuto-tab{padding:6px 16px;border-radius:20px;border:1px solid #ddd;font-size:12px;cursor:pointer;background:#fff;color:#888;transition:all .15s;font-family:'Source Sans 3',sans-serif;}
+.tuto-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tuto-tab.disabled{opacity:.45;cursor:not-allowed;}
+.tuto-step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:8px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;transition:all .15s;}
+.tuto-step:hover{border-color:var(--navy);}
+.tuto-step.active{border-color:var(--navy);background:#f0f4f8;}
+.tuto-step-num{width:26px;height:26px;border-radius:50%;background:#e0e0e0;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Source Sans 3',sans-serif;}
+.tuto-step.active .tuto-step-num{background:var(--navy);color:#fff;}
+.tuto-step-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;font-family:'Source Sans 3',sans-serif;}
+.tuto-step-desc{font-size:12px;color:#666;font-family:'Source Sans 3',sans-serif;}
+.tuto-step-detail{display:none;margin-top:8px;padding:10px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;color:#555;line-height:1.6;font-family:'Source Sans 3',sans-serif;}
+.tuto-step.active .tuto-step-detail{display:block;}
+.tuto-tip{color:#375623;font-weight:600;margin-top:5px;font-size:11px;}
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8BKS8L5MS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y8BKS8L5MS');
+</script>
+<!-- Application installable et utilisable hors connexion -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#002F5F">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js?v=5"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showSection('home')" style="cursor:pointer" title="Accueil"><div class="logo-badge">🔥</div>RFFS-<span>BOD</span></div>
+  <nav>
+    <a id="nav-home" onclick="showSection('home')">🏠</a>
+    <a id="nav-themes" onclick="showSection('themes')">🗂️ Thèmes</a>
+    <a id="nav-contact" onclick="showSection('contact')">📞 Contact</a>
+
+    <a href="historique.html" style="font-size:12px;opacity:0.85;">📋 Historique</a>
+    <a onclick="openAdmin()" style="opacity:0.4;font-size:11px;cursor:pointer">⚙</a>
+  </nav>
+</header>
+
+<!-- ===== TUTORIEL ===== -->
+<div id="section-tutoriel" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Guide d'utilisation</div>
+      <h1>Tutoriel RFFS BOD</h1>
+      <p>Pyro te guide pas à pas pour utiliser le générateur de fiches et enregistrer tes exercices.</p>
+    </div>
+  </div>
+  <div class="main">
+
+    <!-- PYRO + BULLE -->
+    <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1.5rem;flex-wrap:wrap;">
+
+      <!-- Pyro -->
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div id="pyro-anim" style="animation:pyro-idle 2.5s ease-in-out infinite;">
+          <svg width="100" height="155" viewBox="0 0 110 160" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="55" cy="68" rx="20" ry="20" fill="#f5c89a"/>
+            <ellipse cx="35" cy="68" rx="4.5" ry="5.5" fill="#f0b888"/>
+            <ellipse cx="75" cy="68" rx="4.5" ry="5.5" fill="#f0b888"/>
+            <path d="M35 54 Q55 44 75 54 Q75 50 55 48 Q35 50 35 54Z" fill="#e8b430"/>
+            <path d="M40 56 Q44 52 46 57" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M48 54 Q52 49 54 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M56 54 Q60 49 62 55" fill="#f0c040" stroke="#e8b430" stroke-width="0.5"/>
+            <path d="M64 56 Q67 52 69 57" fill="#e8b430" stroke="#d4a020" stroke-width="0.5"/>
+            <circle cx="46" cy="64" r="4.5" fill="white"/><circle cx="64" cy="64" r="4.5" fill="white"/>
+            <circle cx="47" cy="64" r="2.5" fill="#2c1a0e"/><circle cx="65" cy="64" r="2.5" fill="#2c1a0e"/>
+            <circle cx="48" cy="63" r="1" fill="white"/><circle cx="66" cy="63" r="1" fill="white"/>
+            <path d="M42 59 Q46 57 50 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <path d="M60 59 Q64 57 68 59" stroke="#c07840" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <ellipse cx="55" cy="71" rx="3" ry="2.2" fill="#e0a070"/>
+            <path d="M45 78 Q55 86 65 78" fill="none" stroke="#c0785a" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M48 79 Q55 84 62 79 Q55 83 48 79Z" fill="white" opacity=".7"/>
+            <ellipse cx="40" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
+            <ellipse cx="70" cy="75" rx="5.5" ry="4" fill="#f0a080" opacity=".4"/>
+            <rect x="32" y="96" width="46" height="42" rx="7" fill="var(--navy)"/>
+            <rect x="32" y="109" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
+            <rect x="32" y="122" width="46" height="4" rx="1.5" fill="#f0c040" opacity=".85"/>
+            <rect x="37" y="98" width="14" height="9" rx="1.5" fill="var(--orange)"/>
+            <text x="44" y="105" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">BOD</text>
+            <rect x="58" y="98" width="14" height="9" rx="1.5" fill="#375623"/>
+            <text x="65" y="105" text-anchor="middle" font-size="5" fill="white" font-family="Arial" font-weight="bold">RFFS</text>
+            <rect x="13" y="96" width="19" height="10" rx="5" fill="var(--navy)"/>
+            <rect x="78" y="96" width="19" height="10" rx="5" fill="var(--navy)"/>
+            <circle cx="13" cy="101" r="7" fill="#f5c89a"/><circle cx="97" cy="101" r="7" fill="#f5c89a"/>
+            <rect x="34" y="136" width="17" height="18" rx="5" fill="#162d52"/>
+            <rect x="59" y="136" width="17" height="18" rx="5" fill="#162d52"/>
+            <rect x="31" y="148" width="22" height="11" rx="3" fill="#111"/>
+            <rect x="57" y="148" width="22" height="11" rx="3" fill="#111"/>
+          </svg>
+        </div>
+        <div style="font-size:11px;color:#888;font-weight:600;">Pyro</div>
+      </div>
+
+      <!-- Bulle -->
+      <div id="pyro-bubble" style="flex:1;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px 16px;font-size:13px;color:#1a1a1a;line-height:1.6;position:relative;">
+        Salut ! Je suis <strong>Pyro</strong>, ton guide RFFS BOD. Clique sur une étape pour que je t'explique !
+        <div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div>
+        <div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>
+      </div>
+
+    </div>
+
+<!-- ÉTAPES GÉNÉRER -->
+    <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Générer une fiche d'exercice</div>
+    <div id="tuto-steps-gen" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;"></div>
+
+    <!-- ÉTAPES ENREGISTRER -->
+    <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Enregistrer et consulter l'historique</div>
+    <div id="tuto-steps-save" style="display:flex;flex-direction:column;gap:10px;"></div>
+
+  </div>
+</div>
+
+<div id="section-themes" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Espace Formation</div>
+      <h1>Fiches de formation<br>RFFS-BOD</h1>
+      <p>Sélectionne un thème pour accéder aux fiches et ressources pédagogiques.</p>
+    </div>
+  </div>
+  <div class="main">
+    <div id="view-home">
+      <div class="section-title"><span>📚</span> Choisissez un thème</div>
+      <div class="themes-grid">
+        <div class="theme-card" style="--tc:#c0392b" onclick="showSub('ssuap')">
+          <span class="theme-icon">🚑</span>
+          <div class="theme-label">SSUAP</div>
+          <div class="theme-desc">Secours et Soins aux personnes — procédures et techniques opérationnelles</div>
+        </div>
+        <div class="theme-card" style="--tc:#e67e22" onclick="showSub('incendie')">
+          <span class="theme-icon">🔥</span>
+          <div class="theme-label">Incendie</div>
+          <div class="theme-desc">Fiches techniques incendie, extinction et lutte contre le feu</div>
+        </div>
+        <div class="theme-card" style="--tc:#2980b9" onclick="showSub('rffs')">
+          <span class="theme-icon">✈️</span>
+          <div class="theme-label">RFFS</div>
+          <div class="theme-desc">Sauvetage et lutte contre l'incendie d'aéronef</div>
+        </div>
+        <div class="theme-card" style="--tc:#27ae60" onclick="showSub('ressources')">
+          <span class="theme-icon">📚</span>
+          <div class="theme-label">Ressources</div>
+          <div class="theme-desc">PDF, vidéos et quiz pour enrichir la formation</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-ssuap" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+
+      <!-- Sous-thèmes SSUAP -->
+      <div id="ssuap-sub">
+        <div class="section-title" style="color:#c0392b">🚑 SSUAP</div>
+        <div class="subthemes-grid" style="--tc:#c0392b">
+          <div class="subtheme-card" onclick="showFiches('ssuap-urgence-vitale','🆘 Urgence Vitale')"><span class="subtheme-icon">🆘</span><div class="subtheme-label">Urgence Vitale</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-malaises','🤒 Malaises & Maladies')"><span class="subtheme-icon">🤒</span><div class="subtheme-label">Malaises & Maladies</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-traumatismes','🦴 Traumatismes')"><span class="subtheme-icon">🦴</span><div class="subtheme-label">Traumatismes</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-atteintes','🌡️ Atteintes liées aux circonstances')"><span class="subtheme-icon">🌡️</span><div class="subtheme-label">Atteintes liées aux circonstances</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-peau','🩹 Accident de la peau')"><span class="subtheme-icon">🩹</span><div class="subtheme-label">Accident de la peau</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-route','🚗 Accident de la route')"><span class="subtheme-icon">🚗</span><div class="subtheme-label">Accident de la route</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-relevages','🚑 Relevages & Brancardages')"><span class="subtheme-icon">🚑</span><div class="subtheme-label">Relevages & Brancardages</div></div>
+          <div class="subtheme-card" onclick="showFiches('ssuap-detresses','🔀 Détresses vitales')"><span class="subtheme-icon">🔀</span><div class="subtheme-label">Détresses vitales</div></div>
+        </div>
+      </div>
+
+      <!-- Liste des fiches -->
+      <div id="ssuap-fiches" style="display:none">
+        <button class="back-btn" onclick="backSub()">← Retour aux sous-thèmes</button>
+        <div class="section-title" style="color:#c0392b" id="fiches-title"></div>
+        <div id="fiches-list"></div>
+      </div>
+
+      <!-- Détail d'une fiche -->
+      <div id="ssuap-detail" style="display:none">
+        <button class="back-btn" onclick="backFiches()">← Retour à la liste</button>
+        <div id="fiche-detail-inner"></div>
+      </div>
+    </div>
+
+    <div id="view-incendie" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#e67e22">🔥 Incendie</div>
+      <div class="subthemes-grid" style="--tc:#e67e22">
+        <div class="subtheme-card" onclick="window.location.href='generateur_incendie.html'" style="border-color:#e67e22;background:linear-gradient(135deg,#fff8f3,#fff);position:relative;overflow:hidden">
+          <span class="subtheme-icon">⚡</span>
+          <div class="subtheme-label" style="color:#e67e22">Générateur d'exercices</div>
+          <div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">Bâtiments · Véhicules · Infrastructure — VPI &amp; VIM</div>
+        </div>
+        <div class="subtheme-card" onclick="showFiches('incendie-fiches','🔥 Fiches Incendie')"><span class="subtheme-icon">📄</span><div class="subtheme-label">Fiches techniques</div><div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">À venir</div></div>
+      </div>
+    </div>
+
+    <div id="view-rffs" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#2980b9">✈️ RFFS</div>
+      <div class="subthemes-grid" style="--tc:#2980b9">
+        <div class="subtheme-card" onclick="window.location.href='generateur_rffs.html'" style="border-color:var(--orange);background:linear-gradient(135deg,#fff7f3,#fff);position:relative;overflow:hidden">
+          <span class="subtheme-icon">⚡</span>
+          <div class="subtheme-label" style="color:var(--orange)">Générateur d'exercices</div>
+          <div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">Niveaux 5 / 7 / 8 — Tous aéronefs</div>
+        </div>
+        <div class="subtheme-card" onclick="window.location.href='evaluation_rffs.html'" style="border-color:var(--navy)">
+          <span class="subtheme-icon">📊</span>
+          <div class="subtheme-label">Fiches d'évaluation</div>
+          <div style="font-size:11px;color:#888;margin-top:4px;font-family:'Source Sans 3',sans-serif;font-weight:400;text-transform:none;letter-spacing:0">CM — Conducteur — Opérateur</div>
+        </div>
+        <div class="subtheme-card" onclick="showFiches('rffs-reglementation','📜 Réglementation RFFS')"><span class="subtheme-icon">📜</span><div class="subtheme-label">Réglementation</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-aerodromes','🛫 Aérodrome & Piste')"><span class="subtheme-icon">🛫</span><div class="subtheme-label">Aérodrome & Piste</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-aeronefs','✈️ Aéronefs')"><span class="subtheme-icon">✈️</span><div class="subtheme-label">Aéronefs</div></div>
+        <div class="subtheme-card" onclick="showFiches('rffs-agents','🧯 Agents extincteurs')"><span class="subtheme-icon">🧯</span><div class="subtheme-label">Agents extincteurs</div></div>
+      </div>
+    </div>
+
+    <div id="view-ressources" style="display:none">
+      <button class="back-btn" onclick="backHome()">← Retour aux thèmes</button>
+      <div class="section-title" style="color:#27ae60">📚 Ressources</div>
+      <div class="subthemes-grid" style="--tc:#27ae60">
+        <div class="subtheme-card" onclick="showDocs()"><span class="subtheme-icon">📄</span><div class="subtheme-label">Documentation</div></div>
+        <div class="subtheme-card"><span class="subtheme-icon">🎬</span><div class="subtheme-label">Vidéos</div></div>
+        <div class="subtheme-card"><span class="subtheme-icon">📝</span><div class="subtheme-label">Quiz</div></div>
+      </div>
+    </div>
+
+    <!-- Section Documentation -->
+    <div id="view-docs" style="display:none">
+      <button class="back-btn" onclick="backRessources()">← Retour aux ressources</button>
+      <div class="section-title" style="color:#27ae60">📄 Documentation</div>
+      <div id="docs-list" class="docs-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="section-home" class="section-page active">
+
+  <!-- BANDEAU PYRO -->
+  <div id="info-banner" style="position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy) 0%,#2c4f8a 50%,var(--navy) 100%);padding:14px 24px;text-align:center;min-height:52px;display:flex;align-items:center;justify-content:center">
+    <canvas id="pyro-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.6"></canvas>
+    <span id="banner-text" style="position:relative;z-index:2;color:#fff;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,0.3)">Bienvenue sur RFFS BOD Formation 🚑</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">RFFS BOD · BORDEAUX-MÉRIGNAC</div>
+      <h1>Fiches de formation<br>à portée de main</h1>
+      <p style="color:rgba(255,255,255,.6);font-size:13px;margin-bottom:26px;max-width:480px;">Générez vos fiches RFFS, évaluez vos équipages et suivez vos formations réglementaires.</p>
+      <!-- BOUTONS HERO -->
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        <a href="generateur_rffs.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">⚡ Générateur RFFS</a>
+        <a href="generateur_incendie.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">🔥 Générateur Incendie</a>
+        <button onclick="showSection('themes')" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">📚 Thèmes de formation</button>
+        <a href="historique.html" style="display:inline-flex;align-items:center;gap:8px;background:#0a4a8a;color:#fff;border:1.5px solid rgba(232,80,10,.6);border-radius:6px;padding:12px 22px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3);text-decoration:none;-webkit-text-fill-color:#fff;transition:all .15s;" onmouseover="this.style.background='#0d5aa8';this.style.boxShadow='0 0 20px rgba(232,80,10,.55),0 6px 18px rgba(0,0,0,.3)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#0a4a8a';this.style.boxShadow='0 0 12px rgba(232,80,10,.35),0 4px 14px rgba(0,0,0,.3)';this.style.transform=''">📋 Historique</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="display:flex;border-top:1px solid #e0e4ea;border-bottom:1px solid #e0e4ea;background:#fff;">
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
+      <div style="font-size:22px;font-weight:900;color:var(--orange);">36</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Aéronefs</div>
+    </div>
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
+      <div style="font-size:22px;font-weight:900;color:var(--orange);">21</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Thèmes</div>
+    </div>
+    <div style="flex:1;padding:14px 16px;text-align:center;border-right:1px solid #e0e4ea;">
+      <div style="font-size:22px;font-weight:900;color:var(--orange);">3</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Niveaux RFFS</div>
+    </div>
+    <div style="flex:1;padding:14px 16px;text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:var(--orange);">🎲</div>
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-top:2px;">Mode aléatoire</div>
+    </div>
+  </div>
+
+  <!-- CARDS MODULES -->
+  <div style="padding:24px;background:#f4f6f9;">
+    <div style="font-size:10px;font-weight:700;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">Modules de formation</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div onclick="showSection('tutoriel')" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">🎓</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Tutoriel interactif</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Guide pas à pas avec Pyro. Aperçus animés.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">Pyro te guide</div>
+      </div>
+      <a href="generateur_rffs.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">🔥</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Générateur RFFS</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Fiches SIMS, évaluation formative et CM & Pompiers.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(232,80,10,.2);color:var(--orange);">RFFS 5 · 7 · 8</div>
+      </a>
+      <a href="generateur_incendie.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid #e67e22;border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">🏢</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Générateur Incendie</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Bâtiments, véhicules, infrastructure — VPI &amp; VIM.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(230,126,34,.2);color:#e67e22;">Terrestre · BOD</div>
+      </a>
+      <a href="historique.html" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;text-decoration:none;display:block;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">📋</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Historique formations</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">Suivi réglementaire. Export CSV et PDF. Sync cloud.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(0,122,77,.2);color:#00c97a;">Suivi réglementaire</div>
+      </a>
+      <div onclick="showSection('themes')" style="background:#fff;border:1px solid #e0e4ea;border-left:3px solid var(--orange);border-radius:8px;padding:16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05);" onmouseover="this.style.background='#f8f9fa';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff';this.style.transform=''">
+        <div style="font-size:22px;margin-bottom:8px;">📚</div>
+        <div style="font-size:13px;font-weight:700;color:#002F5F;margin-bottom:4px;">Thèmes de formation</div>
+        <div style="font-size:11px;color:#666;line-height:1.5;">SSUAP, Incendie, RFFS. Fiches pédagogiques complètes.</div>
+        <div style="display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px;background:rgba(0,114,188,.2);color:#5bbfff;">SSUAP · Incendie · RFFS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER HOME -->
+  <div style="padding:14px 24px;border-top:1px solid #e0e4ea;background:#fff;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:10px;color:#888;">RFFS BOD · Bordeaux-Mérignac · 2026</div>
+    <button onclick="showSection('contact')" style="background:none;border:none;font-size:10px;color:var(--orange);cursor:pointer;">📞 Contact</button>
+  </div>
+
+</div>
+
+<!-- ===== CONTACT ===== -->
+<div id="section-contact" class="section-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Nous contacter</div>
+      <h1>Une question ?<br>On est là.</h1>
+      <p>Pour toute demande concernant les fiches, le site ou les formations RFFS-BOD.</p>
+    </div>
+  </div>
+  <div class="main">
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-ico">📧</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-desc">Pour toute question sur les fiches ou les formations.</div>
+        <a href="/cdn-cgi/l/email-protection#62010d0c160301162210040411000d064c0410" class="contact-val"><span class="__cf_email__" data-cfemail="fa9995948e9b998eba889c9c8998959ed49c88">[email&#160;protected]</span></a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-ico">🌐</div>
+        <div class="contact-label">Site</div>
+        <div class="contact-desc">Accède directement aux ressources en ligne.</div>
+        <a href="https://jimfire39.github.io/rffs-bod" target="_blank" class="contact-val">jimfire39.github.io/rffs-bod</a>
+      </div>
+    </div>
+    <div class="section-title"><span>✉️</span> Envoyer un message</div>
+    <div class="form-box">
+      <form action="https://formspree.io/f/mvzdrrqo" method="POST" onsubmit="sendForm(event)">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Prénom & Nom</label>
+            <input type="text" name="nom" required placeholder="Jean Dupont" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Email</label>
+            <input type="email" name="email" required placeholder="jean@exemple.fr" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sujet</label>
+          <input type="text" name="sujet" required placeholder="Question sur une fiche, suggestion..." class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea name="message" required rows="5" placeholder="Votre message..." class="form-input" style="resize:vertical"></textarea>
+        </div>
+        <button type="submit" class="form-submit">📨 Envoyer le message</button>
+        <div class="form-confirm" id="form-confirm">✅ Message envoyé ! Nous vous répondrons dans les plus brefs délais.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>© <span id="annee-pied">2026</span> RFFS-BOD — Ressources pédagogiques pompiers · Tous droits réservés</footer>
+<script>document.getElementById('annee-pied').textContent = new Date().getFullYear();</script>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function showSection(name) {
+  if (name === 'home') {
+    document.querySelectorAll('.section-page').forEach(function(s){ s.classList.remove('active'); });
+    var home = document.getElementById('section-home');
+    if (home) home.classList.add('active');
+    document.querySelectorAll('nav a').forEach(function(a){ a.classList.remove('active'); });
+    window.scrollTo(0, 0);
+    return;
+  }
+  document.querySelectorAll('.section-page').forEach(function(s){ s.classList.remove('active'); });
+  var sec = document.getElementById('section-' + name);
+  if (sec) sec.classList.add('active');
+  document.querySelectorAll('nav a').forEach(function(a){ a.classList.remove('active'); });
+  var nav = document.getElementById('nav-' + name);
+  if (nav) nav.classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'themes') backHome();
+}
+
+var views = ['ssuap','incendie','rffs','ressources'];
+var allFiches = [];
+var currentCat = '';
+
+fetch('fiches.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){ allFiches = data; })
+  .catch(function(){ allFiches = []; });
+
+function showFiches(cat, title) {
+  currentCat = cat;
+  document.getElementById('ssuap-sub').style.display = 'none';
+  document.getElementById('ssuap-fiches').style.display = 'block';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  document.getElementById('fiches-title').textContent = title;
+  var list = allFiches.filter(function(f){ return f.cat === cat; });
+  var html = '';
+  if (list.length === 0) {
+    html = '<div class="empty-state"><div>📭</div>Aucune fiche dans cette catégorie.</div>';
+  } else {
+    html = '<div class="fiches-list">' + list.map(function(f){
+      return '<div class="fiche-item" onclick="showFiche(\''+f.id+'\')">'+
+        '<div>'+
+          '<div class="fiche-item-title">'+f.title+'</div>'+
+          '<div class="fiche-item-meta">'+
+            (f.pdf ? '<span class="fiche-badge">📄 PDF</span>' : '')+
+            (f.content ? '<span>Procédure disponible</span>' : '')+
+          '</div>'+
+        '</div>'+
+        '<div class="fiche-arrow">›</div>'+
+      '</div>';
+    }).join('') + '</div>';
+  }
+  document.getElementById('fiches-list').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function showFiche(id) {
+  var f = allFiches.find(function(x){ return x.id === id; });
+  if (!f) return;
+  document.getElementById('ssuap-fiches').style.display = 'none';
+  document.getElementById('ssuap-detail').style.display = 'block';
+  var html = '<div class="fiche-detail-card">';
+  html += '<div class="fiche-detail-title">'+f.title+'</div>';
+  if (f.content) {
+    html += '<div class="fiche-section-h">Procédure</div>';
+    html += '<p class="fiche-content-p">'+f.content.replace(/\n/g,'<br>')+'</p>';
+  }
+  if (f.pdf) {
+    html += '<div style="margin-top:20px"><div class="fiche-section-h">Document PDF</div>';
+    html += '<a href="'+f.pdf+'" target="_blank" class="pdf-link">📄 Ouvrir le PDF</a>';
+    html += '<iframe src="'+f.pdf+'" class="pdf-embed"></iframe></div>';
+  }
+  if (!f.content && !f.pdf) {
+    html += '<div class="empty-state"><div>📭</div>Contenu disponible prochainement.</div>';
+  }
+  html += '</div>';
+  document.getElementById('fiche-detail-inner').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function backSub() {
+  document.getElementById('ssuap-sub').style.display = 'block';
+  document.getElementById('ssuap-fiches').style.display = 'none';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function backFiches() {
+  document.getElementById('ssuap-fiches').style.display = 'block';
+  document.getElementById('ssuap-detail').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+function showSub(name) {
+  document.getElementById('view-home').style.display = 'none';
+  views.forEach(function(v){ document.getElementById('view-' + v).style.display = 'none'; });
+  document.getElementById('view-' + name).style.display = 'block';
+}
+function backHome() {
+  views.forEach(function(v){ document.getElementById('view-' + v).style.display = 'none'; });
+  document.getElementById('view-home').style.display = 'block';
+}
+
+function showDocs() {
+  document.getElementById('view-ressources').style.display = 'none';
+  document.getElementById('view-docs').style.display = 'block';
+  renderDocs();
+}
+
+function backRessources() {
+  document.getElementById('view-docs').style.display = 'none';
+  document.getElementById('view-ressources').style.display = 'block';
+}
+
+var DOCS = [
+  { icon: '📋', title: 'GDTO SSUAP v2025', desc: 'Guide de Doctrine et Techniques Opérationnelles — Secours et Soins aux Personnes, version septembre 2025.', url: 'https://drive.google.com/file/d/14LMT3BWdu_tk0SeoONsDu7tJHAEmF782/preview', cat: 'SSUAP' },
+  { icon: '📘', title: 'Référentiel SSUAP', desc: 'Référentiel national de compétences de sécurité civile.', url: '', cat: 'SSUAP' },
+  { icon: '🔥', title: 'GDO — Protection contre les fumées et toxicité', desc: 'Guide opérationnel — Protection des intervenants contre les fumées et les risques toxiques.', url: 'https://drive.google.com/file/d/1xTjw2y1nTKasZqXYmsw2FpduN7livdBt/view?usp=sharing', cat: 'Incendie' },
+  { icon: '🚒', title: 'GDO — Établissement et techniques d\'extinction', desc: 'Guide opérationnel — Établissement des moyens hydrauliques et techniques d\'extinction.', url: 'https://drive.google.com/file/d/14_EwAftULOSV-P1s1qaFXEgocxwOG3tA/view?usp=sharing', cat: 'Incendie' }
+];
+
+function renderDocs() {
+  var el = document.getElementById('docs-list');
+  if (!el) return;
+  if (DOCS.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div>📭</div>Aucun document disponible.</div>';
+    return;
+  }
+  // Grouper par catégorie
+  var cats = {};
+  DOCS.forEach(function(doc) {
+    var cat = doc.cat || 'Général';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push(doc);
+  });
+  var catColors = { 'SSUAP': '#2980b9', 'Incendie': '#e67e22', 'Général': '#7f8c8d' };
+  var html = '';
+  Object.keys(cats).forEach(function(cat) {
+    var col = catColors[cat] || '#7f8c8d';
+    html += '<div style="font-size:10px;font-weight:700;color:'+col+';text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">'+cat+'</div>';
+    cats[cat].forEach(function(doc) {
+      html += '<div class="doc-card" style="border-left:3px solid '+col+';">';
+      html += '<div style="display:flex;align-items:center;gap:10px;">';
+      html += '<div class="doc-card-icon">'+doc.icon+'</div>';
+      html += '<div style="flex:1;min-width:0;">';
+      html += '<div class="doc-card-title">'+doc.title+'</div>';
+      html += '<div class="doc-card-desc">'+doc.desc+'</div>';
+      html += '</div>';
+      if (doc.url) {
+        html += '<a href="'+doc.url+'" target="_blank" class="doc-card-btn" style="flex-shrink:0;">⬇ Ouvrir</a>';
+      } else {
+        html += '<span style="font-size:11px;color:#bbb;flex-shrink:0;">À venir</span>';
+      }
+      html += '</div></div>';
+    });
+  });
+  el.innerHTML = html;
+}
+
+// ===== ADMIN (bandeau d'accueil, réservé au chef de service) =====
+function openAdmin() {
+  RFFS.requireRole('chef', function () {
+    openModal('modal-admin');
+    var saved = localStorage.getItem('rffs-banner') || 'Bienvenue sur RFFS BOD Formation 🚑';
+    document.getElementById('banner-input').value = saved;
+  });
+}
+
+async function saveBanner() {
+  var txt = document.getElementById('banner-input').value.trim();
+  if (!txt) return;
+  var res = await RFFS.setBandeau(txt);
+  if (res === false) {
+    RFFS.toast('Bandeau non modifié : action réservée au chef de service.', 'err');
+    return;
+  }
+  localStorage.setItem('rffs-banner', txt);
+  document.getElementById('banner-text').textContent = txt;
+  var s = document.getElementById('banner-success');
+  s.style.display = 'block';
+  setTimeout(function(){ s.style.display = 'none'; closeModal('modal-admin'); }, 1500);
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+var cur = 0;
+function goScene(n) {
+  if (n < 0 || n >= 4) return;
+  document.getElementById('s' + cur).classList.remove('active');
+  document.getElementById('d' + cur).classList.remove('active');
+  cur = n;
+  document.getElementById('s' + cur).classList.add('active');
+  document.getElementById('d' + cur).classList.add('active');
+  document.getElementById('btnPrev').disabled = (cur === 0);
+  document.getElementById('btnNext').disabled = (cur === 3);
+}
+
+function sendForm(e) {
+  e.preventDefault();
+  var form = e.target;
+  fetch('https://formspree.io/f/mvzdrrqo', {
+    method: 'POST',
+    headers: {'Accept': 'application/json'},
+    body: new FormData(form)
+  }).then(function(r) {
+    document.getElementById('form-confirm').style.display = 'block';
+    form.reset();
+  }).catch(function() {
+    alert('Erreur envoi — réessayez ou contactez directement par email.');
+  });
+}
+</script>
+
+<!-- MODAL ADMIN BANDEAU -->
+<div class="modal-overlay" id="modal-admin">
+  <div class="modal-box">
+    <div class="modal-title">⚙️ Modifier le bandeau</div>
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">Texte du bandeau :</label>
+    <input class="modal-input" type="text" id="banner-input" placeholder="Ex: Bienvenue sur RFFS BOD Formation 🚑" maxlength="100">
+    <div class="modal-success" id="banner-success">✅ Bandeau mis à jour !</div>
+    <button class="modal-btn" onclick="saveBanner()">💾 Enregistrer</button>
+    <button class="modal-btn-sec" onclick="closeModal('modal-admin')">Fermer</button>
+  </div>
+</div>
+
+<!-- La bibliothèque de QR code n'est plus chargée : la page n'affiche pas de QR code. -->
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  // QR CODE
+  var qrEl = document.getElementById('qrcode-hero');
+  if (qrEl && typeof QRCode !== 'undefined') {
+    new QRCode(qrEl, {
+      text: 'https://jimfire39.github.io/rffs-bod',
+      width: 110, height: 110,
+      colorDark: 'var(--navy)', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+  var qrTuto = document.getElementById('qrcode-tuto');
+  if (qrTuto && typeof QRCode !== 'undefined') {
+    new QRCode(qrTuto, {
+      text: 'https://jimfire39.github.io/rffs-bod',
+      width: 110, height: 110,
+      colorDark: 'var(--navy)', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+
+  // PAGE DE DÉMARRAGE
+  showSection('home');
+
+  // ANIMATION FLAMMES POMPIER
+  var canvas = document.getElementById('pyro-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var flames = [];
+  var W, H;
+
+  function resize() {
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W; canvas.height = H;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(a, b) { return Math.random() * (b - a) + a; }
+
+  function spawnFlame() {
+    flames.push({
+      x: rand(0, W),
+      y: H + rand(0, 6),
+      vx: rand(-0.3, 0.3),
+      vy: rand(-1.8, -0.8),
+      life: 1,
+      decay: rand(0.012, 0.025),
+      size: rand(3, 7),
+      wobble: rand(0, Math.PI * 2),
+      wobbleSpeed: rand(0.05, 0.12)
+    });
+  }
+
+  for (var i = 0; i < 20; i++) {
+    spawnFlame();
+    flames[flames.length-1].life = Math.random();
+  }
+
+  var frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+    if (frame % 4 === 0) spawnFlame();
+    flames = flames.filter(function(f) {
+      f.wobble += f.wobbleSpeed;
+      f.x += f.vx + Math.sin(f.wobble) * 0.4;
+      f.y += f.vy;
+      f.life -= f.decay;
+      var t = 1 - f.life;
+      var r, g, b;
+      if (t < 0.3) { r=255; g=Math.floor(255-t*200); b=Math.floor(100-t*300); }
+      else if (t < 0.7) { r=255; g=Math.floor(165-(t-0.3)*300); b=0; }
+      else { r=Math.floor(255-(t-0.7)*500); g=0; b=0; }
+      var grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.size*(1-t*0.4));
+      grad.addColorStop(0, 'rgba('+r+','+g+','+b+','+(f.life*0.85)+')');
+      grad.addColorStop(0.5, 'rgba('+r+','+Math.floor(g*0.5)+',0,'+(f.life*0.4)+')');
+      grad.addColorStop(1, 'rgba(180,0,0,0)');
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.size*(1-t*0.3), 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      return f.life > 0;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // BANDEAU — texte du cloud en priorité, sinon dernier texte connu sur l'appareil
+  var savedBanner = localStorage.getItem('rffs-banner');
+  if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
+  RFFS.getBandeau().then(function (txt) {
+    if (!txt) return;
+    localStorage.setItem('rffs-banner', txt);
+    document.getElementById('banner-text').textContent = txt;
+  });
+});
+
+// ── TUTORIEL PYRO ────────────────────────────────────────────────────────────
+const TUTO_GEN = [
+  {
+    icon:"🛩", title:"Choisir le niveau RFFS", desc:"Sélectionnez le niveau 5, 7 ou 8 dans le panneau de gauche.",
+    msg:"Dans le panneau de gauche, choisis le niveau. Le nombre de VIM s'adapte automatiquement !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:200px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">NIVEAU RFFS</div>
+      <div style="display:flex;gap:4px;">
+        <div style="padding:4px 8px;background:#e0e0e0;border-radius:4px;font-size:8px;color:#666;">Niv. 5</div>
+        <div style="padding:4px 8px;background:#e0e0e0;border-radius:4px;font-size:8px;color:#666;">Niv. 7</div>
+        <div style="padding:4px 8px;background:var(--navy);border-radius:4px;font-size:8px;color:#fff;font-weight:700;">Niv. 8 ✓</div>
+      </div>
+      <div style="margin-top:6px;font-size:7px;color:var(--orange);">→ 3 VIM pour le niveau 8</div>
+    </div>`
+  },
+  {
+    icon:"✈", title:"Sélectionner l'aéronef", desc:"PN, PAX et carburant se remplissent automatiquement.",
+    msg:"Choisis l'aéronef et les données se remplissent toutes seules ! Le 🎲 génère une fiche aléatoire.",
+    anim:"wave",
+    preview:`<div style="padding:8px;width:220px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">AÉRONEF</div>
+      <div style="border:1px solid #ddd;border-radius:4px;padding:4px 6px;font-size:8px;background:#fff;margin-bottom:6px;">ATR 72 — Air France / HOP! ▼</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">PN</div><div style="font-size:9px;font-weight:700;color:var(--navy);">3</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">PAX</div><div style="font-size:9px;font-weight:700;color:var(--navy);">68</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">CARBURANT</div><div style="font-size:9px;font-weight:700;color:var(--orange);">6.2 t</div></div>
+        <div style="background:#f0f4f8;border-radius:4px;padding:4px;"><div style="font-size:6px;color:#888;">POB</div><div style="font-size:9px;font-weight:700;color:#C00000;">71</div></div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"🔥", title:"Choisir le thème", desc:"Sélectionnez une catégorie puis un thème d'intervention.",
+    msg:"6 catégories disponibles : Incendie, Structure, Soute, Sauvetage, Spécial, Militaire.",
+    anim:"point",
+    preview:`<div style="padding:8px;width:210px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">CATÉGORIE</div>
+      <div style="border:1px solid #ddd;border-radius:4px;padding:4px 6px;font-size:8px;background:#fff;margin-bottom:5px;">🔥 Incendie aéronef ▼</div>
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:4px;">THÈME</div>
+      <div style="border:1px solid var(--orange);border-radius:4px;padding:4px 6px;font-size:8px;background:#fff3ee;font-weight:600;color:var(--orange);">Feu moteur ▼</div>
+    </div>`
+  },
+  {
+    icon:"⚡", title:"Générer la fiche", desc:"Trois onglets apparaissent : SIMS, Éval. formative, CM & Pompiers.",
+    msg:"Un clic et la fiche complète est générée avec le SIMS et toutes les évaluations !",
+    anim:"jump",
+    preview:`<div style="width:260px;">
+      <div style="display:flex;gap:2px;border-bottom:2px solid var(--navy);">
+        <div style="padding:4px 8px;background:var(--navy);border-radius:4px 4px 0 0;font-size:7px;color:#fff;font-weight:700;">📋 Fiche SIMS</div>
+        <div style="padding:4px 8px;background:#fff;border:1px solid var(--navy);border-bottom:none;border-radius:4px 4px 0 0;font-size:7px;color:var(--navy);">📊 Éval. formative</div>
+        <div style="padding:4px 8px;background:#fff;border:1px solid var(--navy);border-bottom:none;border-radius:4px 4px 0 0;font-size:7px;color:var(--navy);">🎖️ CM</div>
+      </div>
+      <div style="border:1px solid var(--navy);border-top:none;padding:8px;background:#fff;">
+        <div style="background:var(--navy);color:#fff;border-radius:3px;padding:4px 6px;font-size:7px;font-weight:700;margin-bottom:4px;">S — Situation</div>
+        <div style="font-size:7px;color:#333;margin-bottom:3px;">Feu moteur signalé — ATR 72 — Piste 23.</div>
+        <div style="background:var(--orange);color:#fff;border-radius:3px;padding:4px 6px;font-size:7px;font-weight:700;margin-bottom:4px;">M — Mission</div>
+        <div style="font-size:7px;color:#333;">VIM 1 → Secteur 1 : Extinction feu...</div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"📍", title:"Positionner les VIM", desc:"Sélectionnez un badge VIM puis cliquez sur le schéma.",
+    msg:"Clique sur un badge VIM, puis place-le en cliquant sur le schéma interactif !",
+    anim:"point",
+    preview:`<div style="width:240px;">
+      <div style="background:#e8eef4;border-radius:4px;height:90px;position:relative;border:1px solid #c8d4e0;overflow:hidden;">
+        <div style="position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(31,56,100,.4);"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(31,56,100,.4);"></div>
+        <div style="position:absolute;top:5px;left:8px;font-size:13px;font-weight:700;color:var(--navy);opacity:.25;">2</div>
+        <div style="position:absolute;top:5px;right:8px;font-size:13px;font-weight:700;color:var(--navy);opacity:.25;">3</div>
+        <div style="position:absolute;bottom:5px;left:8px;font-size:13px;font-weight:700;color:var(--navy);opacity:.25;">1</div>
+        <div style="position:absolute;bottom:5px;right:8px;font-size:13px;font-weight:700;color:var(--navy);opacity:.25;">4</div>
+        <div style="position:absolute;bottom:16px;left:12px;background:var(--orange);color:#fff;font-size:6px;font-weight:700;padding:2px 5px;border-radius:3px;">VIM 1</div>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px;justify-content:center;">
+        <div style="background:var(--orange);color:#fff;font-size:6px;font-weight:700;padding:3px 7px;border-radius:3px;border:2px solid #fff;box-shadow:0 0 0 2px var(--orange);">◄ VIM 1</div>
+        <div style="background:#8B4513;color:#fff;font-size:6px;font-weight:700;padding:3px 7px;border-radius:3px;">VIM 2 ►</div>
+      </div>
+    </div>`
+  },
+];
+const TUTO_SAVE = [
+  {
+    icon:"✅", title:"Choisir le résultat", desc:"Cochez Validé ou Non validé en bas de la fiche.",
+    msg:"Le résultat est essentiel pour les statistiques. Ajoute tes observations !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:5px;">RÉSULTAT</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <div style="border:2px solid #375623;border-radius:4px;padding:3px 7px;font-size:7px;color:#375623;font-weight:700;background:#e8f5e9;">✓ VALIDÉ</div>
+        <div style="border:2px solid #ddd;border-radius:4px;padding:3px 7px;font-size:7px;color:#999;font-weight:700;">✗ NON VALIDÉ</div>
+      </div>
+    </div>`
+  },
+  {
+    icon:"💾", title:"Enregistrer la fiche", desc:"Sauvegarde locale + synchronisation cloud automatique.",
+    msg:"La fiche est sauvegardée sur l'appareil ET dans le cloud. Accessible depuis tous les appareils !",
+    anim:"jump",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="background:var(--navy);color:#fff;border-radius:4px;padding:6px;text-align:center;font-size:8px;font-weight:700;margin-bottom:5px;">💾 Enregistrer la fiche</div>
+      <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+        <div style="font-size:7px;color:#555;">🖥️ Local</div>
+        <div style="font-size:9px;color:var(--orange);">→</div>
+        <div style="font-size:7px;color:#555;">☁️ Cloud</div>
+      </div>
+      <div style="text-align:center;margin-top:5px;font-size:7px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
+    </div>`
+  },
+  {
+    icon:"📋", title:"Consulter l'historique", desc:"Fiches groupées par mois. Bouton Sync pour synchroniser.",
+    msg:"L'historique regroupe toutes les fiches par mois. Sync récupère les données cloud !",
+    anim:"point",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="font-size:9px;font-weight:700;color:var(--navy);margin-bottom:5px;">2026 — 3 fiches</div>
+      <div style="display:flex;gap:3px;margin-bottom:5px;">
+        <div style="background:var(--navy);color:#fff;border-radius:10px;font-size:7px;padding:2px 8px;">Mai (2)</div>
+        <div style="background:#fff;border:1px solid #ddd;color:#888;border-radius:10px;font-size:7px;padding:2px 8px;">Avril (1)</div>
+      </div>
+      <div style="border:1px solid #e8f5e9;background:#f8fff8;border-radius:4px;padding:4px 6px;font-size:7px;margin-bottom:3px;display:flex;justify-content:space-between;"><span><b>ATR 72</b> — Feu moteur</span><span style="color:#375623;font-weight:700;">Validé</span></div>
+      <div style="border:1px solid #fce4e4;background:#fff8f8;border-radius:4px;padding:4px 6px;font-size:7px;display:flex;justify-content:space-between;"><span><b>A320</b> — Train</span><span style="color:#C00000;font-weight:700;">Non validé</span></div>
+    </div>`
+  },
+  {
+    icon:"⬇", title:"Exporter en CSV", desc:"Le Chef de service exporte toutes les fiches en Excel.",
+    msg:"L'export CSV est protégé par mot de passe Chef de service. Fichier Excel prêt pour le tableau de bord !",
+    anim:"nod",
+    preview:`<div style="padding:8px;width:230px;">
+      <div style="background:#375623;color:#fff;border-radius:4px;padding:6px;text-align:center;font-size:8px;font-weight:700;margin-bottom:5px;">⬇ Exporter CSV</div>
+      <div style="font-size:7px;color:#555;margin-bottom:3px;">📄 RFFS_BOD_Formations_2026.csv</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ddd;border-radius:2px;overflow:hidden;">
+        <div style="background:var(--navy);color:#fff;font-size:5px;padding:2px;text-align:center;">Date</div>
+        <div style="background:var(--navy);color:#fff;font-size:5px;padding:2px;text-align:center;">Aéronef</div>
+        <div style="background:var(--navy);color:#fff;font-size:5px;padding:2px;text-align:center;">Résultat</div>
+        <div style="background:var(--navy);color:#fff;font-size:5px;padding:2px;text-align:center;">Agents</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">05/05</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">ATR 72</div>
+        <div style="background:#e8f5e9;font-size:5px;padding:2px;text-align:center;color:#375623;">Validé</div>
+        <div style="background:#fff;font-size:5px;padding:2px;text-align:center;">MARTIN</div>
+      </div>
+    </div>`
+  },
+];
+
+let activeGenIdx=-1, activeSaveIdx=-1;
+
+function renderTutoSteps(steps, containerId, activeIdx, prefix){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = steps.map((s,i)=>`
+    <div class="tuto-step ${i===activeIdx?'active':''}" onclick="toggleTutoStep('${prefix}',${i})">
+      <div style="font-size:16px;margin-top:4px;">${s.icon}</div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+          <div class="tuto-step-num">${i+1}</div>
+          <div class="tuto-step-title">${s.title}</div>
+        </div>
+        <div class="tuto-step-desc">${s.desc}</div>
+        ${i===activeIdx && s.preview ? `
+        <div class="tuto-step-detail" style="display:block;">
+          <div style="background:var(--navy);color:rgba(255,255,255,.7);font-size:10px;padding:4px 8px;border-radius:4px 4px 0 0;display:flex;align-items:center;gap:5px;">
+            <span>🔍</span><span>Aperçu</span>
+          </div>
+          <div style="border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;padding:10px;background:#fafafa;display:flex;justify-content:center;">
+            ${s.preview}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleTutoStep(prefix, idx){
+  const steps = prefix==='gen' ? TUTO_GEN : TUTO_SAVE;
+  if(prefix==='gen'){
+    activeGenIdx = activeGenIdx===idx ? -1 : idx;
+    renderTutoSteps(TUTO_GEN, 'tuto-steps-gen', activeGenIdx, 'gen');
+    if(activeGenIdx>=0) pyroSay(steps[activeGenIdx].anim, steps[activeGenIdx].msg);
+  } else {
+    activeSaveIdx = activeSaveIdx===idx ? -1 : idx;
+    renderTutoSteps(TUTO_SAVE, 'tuto-steps-save', activeSaveIdx, 'save');
+    if(activeSaveIdx>=0) pyroSay(steps[activeSaveIdx].anim, steps[activeSaveIdx].msg);
+  }
+}
+
+function pyroSay(anim, text){
+  const p = document.getElementById('pyro-anim');
+  const b = document.getElementById('pyro-bubble');
+  if(!p || !b) return;
+  p.className = '';
+  void p.offsetWidth;
+  p.className = 'pyro-' + anim;
+  b.innerHTML = text + '<div style="position:absolute;left:-10px;bottom:20px;border:5px solid transparent;border-right-color:#ddd;"></div><div style="position:absolute;left:-8px;bottom:20px;border:5px solid transparent;border-right-color:#fff;z-index:1;"></div>';
+  setTimeout(()=>{ if(p) p.style.animation='pyro-idle 2.5s ease-in-out infinite'; }, 2000);
+}
+
+function setTutoTab(name){
+  document.querySelectorAll('.tuto-tab').forEach((t,i)=>{
+    if(!t.classList.contains('disabled')) t.classList.toggle('active', i===0);
+  });
+}
+
+// Init tutoriel
+renderTutoSteps(TUTO_GEN, 'tuto-steps-gen', -1, 'gen');
+renderTutoSteps(TUTO_SAVE, 'tuto-steps-save', -1, 'save');
+
+</script>
+</body>
+</html>

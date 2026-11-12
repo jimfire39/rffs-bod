@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historique formations — RFFS BOD</title>
+<style>
+:root{--navy:#1F3864;--orange:#C55A11;--green:#375623;--red:#C00000;--gray:#595959;--border:#e0e0e0;--bg:#f0f4f8;--card:#fff;--text:#1a1a1a;--muted:#666;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.screen{display:none;padding:1.5rem;}
+.screen.active{display:block;}
+/* LOGIN */
+.login-wrap{max-width:380px;margin:4rem auto;}
+.login-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:2rem;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.login-icon{text-align:center;font-size:36px;margin-bottom:1rem;}
+.login-title{text-align:center;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.login-sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:1.5rem;}
+/* MAIN */
+.main-wrap{max-width:860px;margin:0 auto;}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px;}
+.page-hdr h1{font-size:18px;font-weight:700;color:var(--navy);}
+.hdr-actions{display:flex;gap:8px;flex-wrap:wrap;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;}
+.stat-n{font-size:26px;font-weight:700;color:var(--navy);}
+.stat-n.ok{color:var(--green);}
+.stat-n.ko{color:var(--red);}
+.stat-n.wip{color:var(--orange);}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.4px;}
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem;}
+/* TABS MOIS */
+.month-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.m-tab{font-size:12px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;}
+.m-tab:hover{border-color:var(--navy);color:var(--navy);}
+.m-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+/* TABLE FICHES */
+.fiches-hdr{display:grid;grid-template-columns:100px 1fr 70px 130px 90px;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:6px 0;border-bottom:2px solid var(--border);margin-bottom:4px;}
+.fiche-row{display:grid;grid-template-columns:100px 1fr 70px 130px 90px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
+.fiche-row:last-child{border-bottom:none;}
+.col-date{color:var(--muted);}
+.col-theme{font-size:11px;color:var(--muted);}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;}
+.badge-ok{background:#e8f5e9;color:var(--green);}
+.badge-ko{background:#fce4e4;color:var(--red);}
+.badge-wip{background:#fff3e0;color:var(--orange);}
+.empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:13px;}
+/* Modale lecture fiche */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+.modal-hdr{background:var(--navy);color:#fff;padding:14px 18px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;}
+.modal-hdr h3{font-size:14px;font-weight:500;}
+.modal-body{padding:16px;}
+.modal-field{margin-bottom:12px;}
+.modal-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.modal-value{font-size:13px;color:var(--text);}
+.suivi-table{width:100%;border-collapse:collapse;font-size:12px;}
+.suivi-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:8px 8px;border-bottom:2px solid var(--border);white-space:nowrap;}
+.suivi-table td{padding:8px 8px;border-bottom:1px solid #f0f0f0;vertical-align:top;}
+.suivi-table tr.sv-ligne{cursor:pointer;}
+.suivi-table tr.sv-ligne:hover td{background:var(--bg);}
+.suivi-table tr.sv-zero td{background:#fff8e6;}
+.suivi-table .sv-num{text-align:center;font-weight:700;}
+.suivi-table .sv-detail td{background:#f7f9fc;font-size:11px;color:var(--gray);}
+.sv-filtres{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.sv-filtres select{padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:#fff;}
+.sv-scroll{overflow-x:auto;}
+.yr-btn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--navy);font-size:13px;line-height:1;padding:4px 8px;margin:0 6px;cursor:pointer;vertical-align:middle;}
+.yr-btn:disabled{opacity:.3;cursor:default;}
+@media screen and (pointer:coarse){
+  .fiches-hdr,.fiche-row{grid-template-columns:30px 88px 1fr 54px 168px!important;}
+  .fiche-row button{min-width:44px;}
+  .yr-btn{min-width:44px;}
+}
+@media screen and (pointer:coarse) and (max-width:600px){
+  .fiches-hdr,.fiche-row{grid-template-columns:28px 66px 1fr 100px!important;}
+  .fiche-row>span:last-child{flex-wrap:wrap;justify-content:flex-end;}
+}
+.chef-only{display:none!important;}
+body.is-chef .chef-only{display:inline-flex!important;}
+.modal-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+@media print{.modal-overlay{display:block!important;position:static;background:none;padding:0;}
+.modal{box-shadow:none;max-height:none;border-radius:0;}
+.modal-footer,.modal-hdr button,.app-bar,.hdr-actions{display:none!important;}
+body>*:not(.modal-overlay){display:none!important;}}
+/* FORMS */
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;margin-top:10px;}
+label:first-child{margin-top:0;}
+input[type=password],input[type=text]{width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+input:focus{border-color:var(--navy);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:inherit;}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-navy:hover{background:#162d52;}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green);}
+.btn-green:hover{background:#2a4f1b;}
+.btn-red{background:#fff;color:var(--red);border-color:var(--red);}
+.btn-red:hover{background:#fce4e4;}
+.btn-ghost{background:#fff;color:var(--gray);border-color:var(--border);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-full{width:100%;justify-content:center;margin-top:8px;}
+.err{font-size:12px;color:var(--red);min-height:18px;margin-top:4px;}
+.suc{font-size:12px;color:var(--green);min-height:18px;margin-top:4px;}
+.dv{height:1px;background:var(--border);margin:1.2rem 0;}
+/* ADMIN */
+.admin-wrap{max-width:440px;margin:0 auto;}
+.admin-section-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+/* APP HEADER */
+.app-bar{background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-bar-title{font-size:13px;font-weight:700;color:#fff;}
+.app-bar-sub{font-size:10px;color:rgba(255,255,255,.5);}
+.back-link{font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;text-decoration:underline;}
+/* ANNÉE TITRE */
+.year-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .fiches-hdr,.fiche-row{grid-template-columns:80px 1fr 60px 80px;}
+  .fiche-row>:nth-child(4){display:none;}
+  .fiches-hdr>:nth-child(4){display:none;}
+}
+</style>
+<!-- Application installable et utilisable hors connexion -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#002F5F">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js?v=5"></script>
+</head>
+<body>
+
+<!-- Login supprimé — accès direct -->
+
+<!-- ── MAIN ──────────────────────────────────────────────────────────────── -->
+<div id="screen-main" class="screen active">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Historique formations — RFFS BOD</div>
+      <div class="app-bar-sub">Suivi réglementaire annuel</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" id="btn-sync" onclick="syncCloud(false)" style="margin-right:10px;">🔄 Sync</span><span class="back-link" onclick="showAdmin()">👥 Équipes</span>
+    </div>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="main-wrap">
+      <div class="page-hdr">
+        <h1 id="year-counter">— 0 fiche</h1>
+        <div class="hdr-actions">
+          <button class="btn btn-ghost chef-only" onclick="showSuivi()">📊 Suivi par agent</button>
+          <button class="btn btn-red chef-only" onclick="deleteSelected()">🗑 Supprimer la sélection</button>
+          <button class="btn btn-green" onclick="exportCSVProtected()">⬇ Exporter CSV</button>
+          <button class="btn btn-navy" onclick="showChef()" style="background:var(--navy);">👨‍✈️ Chef de service</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats" id="stats-block"></div>
+
+      <!-- FICHES PAR MOIS -->
+      <div class="card">
+        <div class="month-tabs" id="month-tabs"></div>
+        <div id="fiches-content"><div class="empty">Aucune fiche enregistrée.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHEF DE SERVICE ───────────────────────────────────────────────────── -->
+<div id="screen-chef" class="screen">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Chef de service — Gestion des fiches</div>
+    </div>
+    <span class="back-link" onclick="showMain()">← Retour</span>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="main-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;">
+            <input type="checkbox" id="chk-chef-all" onchange="document.querySelectorAll('.chk-chef').forEach(c=>c.checked=this.checked)">
+            Tout sélectionner
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-green" onclick="exportCSV()">⬇ Exporter CSV</button>
+          <button class="btn btn-red" onclick="deleteChefSelected()">🗑 Supprimer la sélection</button>
+        </div>
+      </div>
+      <div class="card" id="chef-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUIVI PAR AGENT (chef de service) ─────────────────────────────────── -->
+<div id="screen-suivi" class="screen">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Suivi par agent</div>
+      <div class="app-bar-sub">Séances de formation enregistrées, par année</div>
+    </div>
+    <span class="back-link" onclick="showMain()">← Retour</span>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="main-wrap">
+      <div class="page-hdr">
+        <h1 id="suivi-titre">Suivi</h1>
+        <div class="hdr-actions">
+          <button class="btn btn-green" onclick="exportSuiviCSV()">⬇ Exporter le suivi</button>
+        </div>
+      </div>
+      <div class="stats" id="suivi-stats"></div>
+      <div class="card">
+        <div class="sv-filtres">
+          <label style="font-size:12px;color:var(--muted);">Équipe
+            <select id="suivi-equipe" onchange="renderSuivi()"></select></label>
+          <label style="font-size:12px;color:var(--muted);">Trier par
+            <select id="suivi-tri" onchange="renderSuivi()">
+              <option value="seances">Moins de séances d'abord</option>
+              <option value="derniere">Séance la plus ancienne d'abord</option>
+              <option value="nom">Nom</option>
+            </select></label>
+        </div>
+        <div class="sv-scroll" id="suivi-content"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;">Touche une ligne pour voir le détail des séances. Une séance compte pour chaque agent nommé sur la fiche. Les fiches incendie ne portent pas de noms d'agents : elles ne sont pas comptées ici.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN ─────────────────────────────────────────────────────────────── -->
+<div id="screen-admin" class="screen">
+  <div class="app-bar">
+    <div>
+      <div class="app-bar-title">Équipes et agents</div>
+    </div>
+    <span class="back-link" onclick="showMain()">← Retour</span>
+  </div>
+  <div style="padding:1.5rem;">
+    <div class="admin-wrap">
+      <div class="card">
+        <div class="admin-section-title">Équipes et agents</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Cette liste alimente les menus « Nom » des générateurs et des évaluations. Elle est gardée dans le cloud, visible uniquement après connexion.</div>
+      </div>
+      <div id="equipes-list"></div>
+      <div class="card">
+        <button class="btn btn-ghost btn-full" type="button" onclick="addEquipe()" style="margin-bottom:8px;">＋ Ajouter une équipe</button>
+        <div class="err" id="eq-msg"></div>
+        <button class="btn btn-navy btn-full" type="button" onclick="saveEquipes()">Enregistrer les équipes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const KEY_DATA = 'rffs_formatives';
+const esc = RFFS.esc;
+const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+let activeMonth = null;
+
+function getData(){ return JSON.parse(localStorage.getItem(KEY_DATA) || '[]'); }   // toutes les fiches de l'appareil
+
+// ── ANNÉE AFFICHÉE ───────────────────────────────────────────────────────────
+const ANNEE_COURANTE = new Date().getFullYear();
+let anneeActive = ANNEE_COURANTE;
+function anneeDe(f){
+  const p = (f.date||'').split('/');
+  const a = p.length===3 ? parseInt(p[2],10) : NaN;
+  return a>1990 && a<2200 ? a : ANNEE_COURANTE;
+}
+function getDataAnnee(){ return getData().filter(f=>anneeDe(f)===anneeActive); }   // fiches de l'année affichée
+function anneesDisponibles(){
+  const set = new Set(getData().map(anneeDe)); set.add(ANNEE_COURANTE); set.add(anneeActive);
+  return [...set].sort((a,b)=>a-b);
+}
+function changerAnnee(pas){
+  const annees = anneesDisponibles(), i = annees.indexOf(anneeActive)+pas;
+  if(i<0 || i>=annees.length) return;
+  anneeActive = annees[i]; activeMonth = null;
+  renderAll();
+  if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+  if(document.getElementById('screen-suivi').classList.contains('active')) renderSuivi();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function exportCSVProtected(){
+  RFFS.requireRole('chef', exportCSV);
+}
+
+function showAdmin(){
+  RFFS.requireRole('chef', function(){ show('screen-admin'); renderEquipes(); });
+}
+
+function showMain(){ show('screen-main'); renderAll(); }
+
+function msg(id, txt, ok){
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  el.className = ok ? 'suc' : 'err';
+  if(ok) setTimeout(()=>el.textContent='', 3000);
+}
+
+// ── SUIVI PAR AGENT (réservé au chef de service) ─────────────────────────────
+function nomsAgents(f){
+  // "A | B | C" -> ['A','B','C'] ; un nombre (fiche incendie) -> aucun nom
+  return String(f.agents==null?'':f.agents).split('|').map(x=>x.trim().toUpperCase()).filter(x=>x && !/^\d+$/.test(x));
+}
+function cleDate(f){ const p=(f.date||'').split('/'); return p.length===3 ? p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0') : ''; }
+// Calcule une ligne par agent à partir des fiches et de la liste des équipes.
+function calcSuivi(fiches, equipes){
+  const lignes = {};
+  const ligne = (nom, equipe) => lignes[nom] || (lignes[nom] = {nom, equipe, seances:0, validees:0, nonValidees:0, autres:0, derniere:'', aeronefs:{}, themes:{}, fiches:[]});
+  Object.keys(equipes||{}).forEach(eq => (equipes[eq]||[]).forEach(n => ligne(String(n).trim().toUpperCase(), eq)));
+  fiches.forEach(f=>{
+    nomsAgents(f).forEach(nom=>{
+      const l = ligne(nom, 'Hors équipe');
+      l.seances++;
+      if(f.resultat==='validé') l.validees++; else if(f.resultat==='non_validé') l.nonValidees++; else l.autres++;
+      const d = cleDate(f); if(d > l.derniere){ l.derniere = d; l.derniereTxt = f.date; }
+      if(f.aeronef) l.aeronefs[f.aeronef] = (l.aeronefs[f.aeronef]||0)+1;
+      if(f.theme)   l.themes[f.theme]     = (l.themes[f.theme]||0)+1;
+      l.fiches.push(f);
+    });
+  });
+  return Object.values(lignes);
+}
+function showSuivi(){
+  RFFS.requireRole('chef', function(){ show('screen-suivi'); renderSuivi(); });
+}
+function lignesSuivi(){
+  const lignes = calcSuivi(getDataAnnee(), AGENTS);
+  const eq = document.getElementById('suivi-equipe').value, tri = document.getElementById('suivi-tri').value;
+  const vues = eq ? lignes.filter(l=>l.equipe===eq) : lignes;
+  const parNom = (a,b)=>a.nom.localeCompare(b.nom,'fr');
+  if(tri==='nom') vues.sort(parNom);
+  else if(tri==='derniere') vues.sort((a,b)=>(a.derniere||'').localeCompare(b.derniere||'') || parNom(a,b));
+  else vues.sort((a,b)=>a.seances-b.seances || parNom(a,b));
+  return {toutes:lignes, vues};
+}
+function renderSuivi(){
+  const sel = document.getElementById('suivi-equipe'), choix = sel.value;
+  const equipes = [...new Set(calcSuivi(getDataAnnee(), AGENTS).map(l=>l.equipe))].sort((a,b)=>a.localeCompare(b,'fr',{numeric:true}));
+  sel.innerHTML = '<option value="">Toutes</option>' + equipes.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join('');
+  sel.value = equipes.includes(choix) ? choix : '';
+  const {vues} = lignesSuivi();
+  const sans = vues.filter(l=>!l.seances).length, total = vues.reduce((n,l)=>n+l.seances,0);
+  const annees = anneesDisponibles(), rang = annees.indexOf(anneeActive);
+  const fl = (pas, actif, txt, titre) => annees.length>1
+    ? `<button type="button" class="yr-btn" onclick="changerAnnee(${pas})" ${actif?'':'disabled'} title="${titre}" aria-label="${titre}">${txt}</button>` : '';
+  document.getElementById('suivi-titre').innerHTML = 'Suivi ' + fl(-1, rang>0, '◀', 'Année précédente') + `<span id="suivi-annee">${anneeActive}</span>` +
+    fl(1, rang<annees.length-1, '▶', 'Année suivante') + ` — ${vues.length} agent${vues.length>1?'s':''}`;
+  document.getElementById('suivi-stats').innerHTML = `
+    <div class="stat"><div class="stat-n">${vues.length}</div><div class="stat-l">Agents suivis</div></div>
+    <div class="stat"><div class="stat-n ok">${vues.length-sans}</div><div class="stat-l">Avec au moins une séance</div></div>
+    <div class="stat"><div class="stat-n ko">${sans}</div><div class="stat-l">Sans séance en ${anneeActive}</div></div>`;
+  if(!vues.length){
+    document.getElementById('suivi-content').innerHTML = '<div class="empty">Aucun agent à afficher. Saisis les équipes dans « Équipes », ou enregistre des fiches avec des noms d\'agents.</div>';
+    return;
+  }
+  const liste = o => Object.keys(o).sort((a,b)=>o[b]-o[a] || a.localeCompare(b,'fr')).map(k=>esc(k)+(o[k]>1?' ×'+o[k]:'')).join(', ') || '—';
+  document.getElementById('suivi-content').innerHTML = `<table class="suivi-table">
+    <thead><tr><th>Agent</th><th>Équipe</th><th class="sv-num">Séances</th><th class="sv-num">Validées</th><th class="sv-num">Non validées</th><th>Dernière séance</th><th>Aéronefs travaillés</th><th>Thèmes</th></tr></thead>
+    <tbody>${vues.map((l,i)=>`
+      <tr class="sv-ligne ${l.seances?'':'sv-zero'}" data-agent="${esc(l.nom)}" onclick="toggleSuiviDetail(${i})">
+        <td><strong>${esc(l.nom)}</strong></td>
+        <td>${esc(l.equipe)}</td>
+        <td class="sv-num">${l.seances}</td>
+        <td class="sv-num" style="color:var(--green);">${l.validees}</td>
+        <td class="sv-num" style="color:var(--red);">${l.nonValidees}</td>
+        <td>${l.seances ? esc(l.derniereTxt||'—') : '<em>Aucune séance</em>'}</td>
+        <td>${liste(l.aeronefs)}</td>
+        <td>${Object.keys(l.themes).length ? Object.keys(l.themes).length+' thème'+(Object.keys(l.themes).length>1?'s':'') : '—'}</td>
+      </tr>
+      <tr class="sv-detail" id="sv-detail-${i}" style="display:none;"><td colspan="8">${
+        l.fiches.length ? l.fiches.slice().sort((a,b)=>cleDate(b).localeCompare(cleDate(a))).map(f=>
+          `${esc(f.date||'')} · <strong>${esc(f.aeronef||'—')}</strong> · ${esc(f.theme||'—')} · ${f.resultat==='validé'?'✓ validé':f.resultat==='non_validé'?'✗ non validé':'en cours'}`).join('<br>')
+        : 'Aucune séance enregistrée cette année.'}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+function toggleSuiviDetail(i){
+  const d = document.getElementById('sv-detail-'+i);
+  if(d) d.style.display = d.style.display==='none' ? '' : 'none';
+}
+function exportSuiviCSV(){
+  const {vues} = lignesSuivi();
+  if(!vues.length){ RFFS.toast('Aucun agent à exporter.','info'); return; }
+  const cols = ['Agent','Équipe','Séances','Validées','Non validées','Autres','Dernière séance','Aéronefs','Thèmes'];
+  const rows = vues.map(l=>[l.nom, l.equipe, l.seances, l.validees, l.nonValidees, l.autres, l.derniereTxt||'',
+    Object.keys(l.aeronefs).map(k=>k+' ('+l.aeronefs[k]+')').join(', '), Object.keys(l.themes).map(k=>k+' ('+l.themes[k]+')').join(', ')]);
+  const csv = [cols,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = `RFFS_BOD_Suivi_agents_${anneeActive}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ── ÉQUIPES ET AGENTS (réservé au chef de service) ───────────────────────────
+function blocEquipe(e){
+  return `<div class="card equipe-bloc">
+    <label>Nom de l'équipe</label>
+    <input type="text" class="eq-nom" value="${esc(e.nom)}">
+    <label>Agents (un nom par ligne)</label>
+    <textarea class="eq-agents" rows="8" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;box-sizing:border-box;">${esc((e.agents||[]).join('\n'))}</textarea>
+    <button type="button" class="btn btn-ghost" style="margin-top:8px;" onclick="this.closest('.equipe-bloc').remove()">Retirer cette équipe</button>
+  </div>`;
+}
+function renderEquipes(){
+  const noms = Object.keys(AGENTS);
+  const liste = noms.length
+    ? noms.map(n=>({nom:n, agents:AGENTS[n]}))
+    : [1,2,3,4].map(i=>({nom:'Équipe '+i, agents:[]}));
+  document.getElementById('equipes-list').innerHTML = liste.map(blocEquipe).join('');
+}
+function addEquipe(){
+  const n = document.querySelectorAll('.equipe-bloc').length + 1;
+  document.getElementById('equipes-list').insertAdjacentHTML('beforeend', blocEquipe({nom:'Équipe '+n, agents:[]}));
+}
+async function saveEquipes(){
+  const equipes = {};
+  document.querySelectorAll('.equipe-bloc').forEach(b=>{
+    const nom = b.querySelector('.eq-nom').value.trim();
+    const agents = b.querySelector('.eq-agents').value.split('\n').map(x=>x.trim().toUpperCase()).filter(Boolean);
+    if(nom) equipes[nom] = agents;
+  });
+  const r = await RFFS.saveAgents(equipes);
+  if(r === true) msg('eq-msg','Équipes enregistrées. Elles apparaissent dans les générateurs.',true);
+  else if(r === 'attente') msg('eq-msg','Pas de réseau : la liste partira au retour du réseau.',true);
+  else msg('eq-msg','Enregistrement refusé : action réservée au chef de service.',false);
+}
+
+function renderAll(){
+  const data = getDataAnnee();
+  const total = data.length;
+  const val   = data.filter(f=>f.resultat==='validé').length;
+  const nval  = data.filter(f=>f.resultat==='non_validé').length;
+
+  // Compteur année
+  const annees = anneesDisponibles(), rang = annees.indexOf(anneeActive);
+  const fleche = (pas, actif, txt, titre) => annees.length>1
+    ? `<button type="button" class="yr-btn" onclick="changerAnnee(${pas})" ${actif?'':'disabled'} title="${titre}" aria-label="${titre}">${txt}</button>` : '';
+  document.getElementById('year-counter').innerHTML =
+    fleche(-1, rang>0, '◀', 'Année précédente') + `<span id="annee-affichee">${anneeActive}</span>` + fleche(1, rang<annees.length-1, '▶', 'Année suivante') +
+    ` — ${total} fiche${total>1?'s':''}`;
+
+  // Stats
+  document.getElementById('stats-block').innerHTML = `
+    <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">Total fiches</div></div>
+    <div class="stat"><div class="stat-n ok">${val}</div><div class="stat-l">Validées</div></div>
+    <div class="stat"><div class="stat-n ko">${nval}</div><div class="stat-l">Non validées</div></div>
+`;
+
+  // Grouper par mois
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts = (f.date||'').split('/');
+    const m = parts.length===3 ? parseInt(parts[1])-1 : new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+
+  const months = Object.keys(byMonth).map(Number).sort((a,b)=>a-b);
+  if(!months.length){
+    document.getElementById('month-tabs').innerHTML='';
+    document.getElementById('fiches-content').innerHTML=`<div class="empty">Aucune fiche enregistrée en ${anneeActive}.${getData().length?' Utilise les flèches à côté de l\'année pour voir les autres années.':''}</div>`;
+    return;
+  }
+
+  if(activeMonth===null || !byMonth[activeMonth]) activeMonth = months[months.length-1];
+
+  document.getElementById('month-tabs').innerHTML = months.map(m=>
+    `<div class="m-tab ${m===activeMonth?'active':''}" onclick="setMonth(${m})">${MOIS[m]} (${byMonth[m].length})</div>`
+  ).join('');
+
+  renderMonth(byMonth[activeMonth]||[]);
+}
+
+function setMonth(m){ activeMonth=m; renderAll(); }
+
+function exportPDFMois(){
+  const data = getDataAnnee();
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+  const fiches = byMonth[activeMonth]||[];
+  if(!fiches.length){ alert('Aucune fiche ce mois.'); return; }
+  const w = window.open('','_blank');
+  const MOIS_NOMS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiches ${MOIS_NOMS[activeMonth]} ${anneeActive}</title>
+  <style>body{font-family:Arial,sans-serif;font-size:11px;color:#222;margin:20px;}
+  h1{font-size:14px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:6px;margin-bottom:14px;}
+  .fiche{border:1px solid #ddd;border-radius:6px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+  .fiche-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .fiche-title{font-weight:700;font-size:12px;color:#1F3864;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+  .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.3px;}
+  .val{font-size:11px;color:#222;}
+  .obs{background:#f8f8f8;border-radius:4px;padding:6px;font-style:italic;color:#555;margin-top:6px;font-size:10px;}
+  @media print{body{margin:10px;}}</style></head><body>
+  <h1>RFFS BOD — Fiches ${MOIS_NOMS[activeMonth]} ${anneeActive} (${fiches.length} fiche${fiches.length>1?'s':''})</h1>
+  ${fiches.map(f=>{
+    const badge = f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+    const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+    const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+    return `<div class="fiche">
+      <div class="fiche-hdr"><span class="fiche-title">${esc(f.aeronef||'—')} — ${esc(f.theme||'—')}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="grid">
+        <div><div class="lbl">Date</div><div class="val">${esc(f.date||'—')} ${esc(f.heure||'')}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${esc(f.source||'Web')}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
+      </div>
+      ${f.observations?`<div class="obs">${esc(f.observations)}</div>`:''}
+    </div>`;
+  }).join('')}
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
+function renderMonth(fiches){
+  if(!fiches.length){
+    document.getElementById('fiches-content').innerHTML='<div class="empty">Aucune fiche ce mois.</div>';
+    return;
+  }
+  document.getElementById('fiches-content').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+      <label style="font-size:11px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" id="chk-all" onchange="toggleAll(this.checked)"> Tout sélectionner
+      </label>
+      <button onclick="exportPDFMois()" style="font-size:11px;padding:5px 12px;background:#fff;color:var(--green);border:1.5px solid var(--green);border-radius:6px;cursor:pointer;font-weight:600;">📄 PDF du mois</button>
+    </div>
+    <div class="fiches-hdr" style="grid-template-columns:28px 100px 1fr 70px 90px;">
+      <span></span><span>Date</span><span>Aéronef / Thème</span><span>Niveau</span><span>Résultat</span>
+    </div>
+    ${[...fiches].reverse().map(f=>{
+      const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+      const label = f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
+      return `<div class="fiche-row" style="grid-template-columns:28px 100px 1fr 70px 90px;">
+        <span><input type="checkbox" class="chk-fiche" data-id="${esc(f.id)}" style="cursor:pointer;"></span>
+        <span class="col-date">${esc(f.date||'')}<br><span style="font-size:10px;">${esc(f.heure||'')}</span></span>
+        <span><strong style="font-size:12px;">${esc(f.aeronef||'—')}</strong><br><span class="col-theme">${esc(f.theme||'')}</span></span>
+        <span style="color:var(--muted);font-size:12px;">Niv. ${esc(f.niveau||'—')}</span>
+        <span style="display:flex;gap:5px;align-items:center;">
+          <div class="badge ${badge}">${label}</div>
+          <button onclick="openFiche('${esc(f.id)}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+          <button onclick="pdfFiche('${esc(f.id)}')" style="background:none;border:1px solid var(--green);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--green);" title="PDF">📄</button>
+        </span>
+      </div>`;
+    }).join('')}`;
+}
+
+function toggleAll(checked){
+  document.querySelectorAll('.chk-fiche').forEach(c=>c.checked=checked);
+}
+
+// ── SUPPRESSION (réservée au chef de service) ───────────────────────────────
+// Retire les fiches de l'appareil et du cloud. Renvoie true si la suppression a eu lieu.
+async function supprimerFiches(ids){
+  try{
+    if(RFFS.role()!=='chef'){ RFFS.toast('Suppression réservée au chef de service.','err'); return false; }
+    if(!ids.length){ RFFS.toast('Coche d\'abord la ou les fiches à supprimer.','info'); return false; }
+    const ok = await RFFS.confirmer(`Supprimer ${ids.length} fiche(s) ? Cette action est irréversible.`, 'Supprimer');
+    if(!ok) return false;
+    ids = ids.map(String);
+    // 1. retirer tout de suite de l'appareil et de l'écran
+    localStorage.setItem(KEY_DATA, JSON.stringify(getData().filter(f=>!ids.includes(String(f.id)))));
+    activeMonth = null;
+    renderAll();
+    if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+    RFFS.toast('Suppression en cours…','info');
+    // 2. retirer du cloud (toutes les fiches en même temps)
+    const res = await Promise.all(ids.map(id=>RFFS.deleteFiche(id)));
+    const refus = res.filter(r=>r===false).length, attente = res.filter(r=>r==='attente').length;
+    if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud : elles reviendront à la prochaine synchro.','err');
+    else if(attente) RFFS.toast('Pas de réseau : la suppression dans le cloud se fera au retour du réseau.','info');
+    else RFFS.toast(`✓ ${ids.length} fiche(s) supprimée(s).`,'ok');
+    return true;
+  }catch(e){
+    console.error(e);
+    RFFS.toast('Erreur pendant la suppression : '+(e && e.message ? e.message : e),'err');
+    return false;
+  }
+}
+
+async function deleteSelected(){
+  await supprimerFiches([...document.querySelectorAll('.chk-fiche:checked')].map(c=>c.dataset.id));
+}
+
+async function deleteOpenFiche(){
+  if(!ficheOuverte) return;
+  if(await supprimerFiches([ficheOuverte])){ ficheOuverte = null; closeModal(); }
+}
+
+function exportCSV(){
+  const data = getDataAnnee();
+  if(!data.length){ alert('Aucune fiche à exporter.'); return; }
+  const cols = ['Date','Heure','Aéronef','Thème','Niveau','Conditions','Agents','Résultat','Observations'];
+  const rows = data.map(f=>[
+    f.date||'', f.heure||'', f.aeronef||'', f.theme||'',
+    f.niveau||'', f.conditions||'', (f.agents||'').replace(/\|/g,','),
+    f.resultat||'', (f.observations||'').replace(/\n/g,' ')
+  ]);
+  const csv = [cols,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = `RFFS_BOD_Formations_${anneeActive}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function showChef(){
+  RFFS.requireRole('chef', function(){ show('screen-chef'); renderChef(); });
+}
+
+function exportPDFChefMois(mois){
+  const data = getDataAnnee();
+  const fiches = data.filter(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    return m===mois;
+  });
+  if(!fiches.length){ alert('Aucune fiche ce mois.'); return; }
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiches ${MOIS[mois]} ${anneeActive}</title>
+  <style>body{font-family:Arial,sans-serif;font-size:11px;color:#222;margin:20px;}
+  h1{font-size:14px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:6px;margin-bottom:14px;}
+  .fiche{border:1px solid #ddd;border-radius:6px;padding:10px 12px;margin-bottom:10px;page-break-inside:avoid;}
+  .fiche-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .fiche-title{font-weight:700;font-size:12px;color:#1F3864;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+  .lbl{font-size:9px;color:#888;text-transform:uppercase;}.val{font-size:11px;}
+  .obs{background:#f8f8f8;border-radius:4px;padding:6px;font-style:italic;color:#555;margin-top:6px;font-size:10px;}
+  @media print{body{margin:10px;}}</style></head><body>
+  <h1>RFFS BOD — Fiches ${MOIS[mois]} ${anneeActive} (${fiches.length} fiche${fiches.length>1?'s':''})</h1>
+  ${fiches.map(f=>{
+    const badge=f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+    const label=f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+    const agents=(f.agents||'—').split('|').filter(Boolean).join(', ');
+    return `<div class="fiche">
+      <div class="fiche-hdr"><span class="fiche-title">${esc(f.aeronef||'—')} — ${esc(f.theme||'—')}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="grid">
+        <div><div class="lbl">Date</div><div class="val">${esc(f.date||'—')} ${esc(f.heure||'')}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${esc(f.source||'Web')}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
+      </div>
+      ${f.observations?`<div class="obs">${esc(f.observations)}</div>`:''}
+    </div>`;
+  }).join('')}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+
+function renderChef(){
+  // Même contenu que l'historique mais avec cases à cocher et suppression
+  const data = getDataAnnee();
+  if(!data.length){
+    document.getElementById('chef-content').innerHTML='<div class="empty">Aucune fiche enregistrée.</div>';
+    return;
+  }
+  const byMonth = {};
+  data.forEach(f=>{
+    const parts=(f.date||'').split('/');
+    const m=parts.length===3?parseInt(parts[1])-1:new Date().getMonth();
+    if(!byMonth[m]) byMonth[m]=[];
+    byMonth[m].push(f);
+  });
+  const months=Object.keys(byMonth).map(Number).sort((a,b)=>a-b);
+  let html='';
+  months.reverse().forEach(m=>{
+    html+=`<div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span>${MOIS[m]} ${anneeActive} — ${byMonth[m].length} fiche${byMonth[m].length>1?'s':''}</span>
+        <button onclick="exportPDFChefMois(${m})" style="font-size:10px;padding:3px 8px;background:#fff;color:var(--green);border:1px solid var(--green);border-radius:4px;cursor:pointer;">📄 PDF</button>
+      </div>`;
+    [...byMonth[m]].reverse().forEach(f=>{
+      const badge=f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+      const label=f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+        <input type="checkbox" class="chk-chef" data-id="${esc(f.id)}" style="cursor:pointer;width:16px;height:16px;flex-shrink:0;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:600;">${esc(f.aeronef||'—')} <span style="color:var(--muted);font-weight:400;">— ${esc(f.theme||'')}</span></div>
+          <div style="font-size:10px;color:var(--muted);">${esc(f.date||'')} ${esc(f.heure||'')} · Niv.${esc(f.niveau||'—')}</div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
+          <div class="badge ${badge}">${label}</div>
+          <button onclick="openFiche('${esc(f.id)}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('chef-content').innerHTML=html;
+}
+
+async function deleteChefSelected(){
+  await supprimerFiches([...document.querySelectorAll('.chk-chef:checked')].map(c=>c.dataset.id));
+  const tout = document.getElementById('chk-chef-all'); if(tout) tout.checked = false;
+}
+
+async function syncCloud(silencieux){
+  if(!RFFS.role()){
+    if(!silencieux) RFFS.login(null, function(){ syncCloud(false); });
+    return;
+  }
+  const btn = document.getElementById('btn-sync');
+  if(btn) btn.textContent = '⏳ Sync...';
+  const res = await RFFS.synchroniser();
+  if(btn) btn.textContent = '🔄 Sync';
+  if(!res){
+    if(!silencieux) RFFS.toast('Synchronisation impossible pour le moment.','err');
+    return;
+  }
+  activeMonth = null;
+  renderAll();
+  if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+  if(!silencieux){
+    RFFS.toast(res.horsLigne
+      ? `Hors connexion : ${res.total} fiche(s) affichées depuis cet appareil.`
+      : `✓ ${res.total} fiche(s) — ${res.cloud} dans le cloud, ${res.locales} sur cet appareil seulement.`, 'ok');
+  }
+}
+
+function pdfFiche(id){
+  const data = getData();
+  const f = data.find(x=>String(x.id)===String(id));
+  if(!f) return;
+  const badge = f.resultat==='validé'?'ok':f.resultat==='non_validé'?'ko':'wip';
+  const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
+  const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiche ${esc(f.aeronef)} ${esc(f.date)}</title>
+  <style>body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:30px;}
+  h1{font-size:16px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:8px;margin-bottom:16px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:12px;}
+  .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px;}
+  .val{font-size:13px;color:#222;font-weight:500;}
+  .badge{display:inline-block;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;}
+  .ok{background:#e8f5e9;color:#375623;}.ko{background:#fce4e4;color:#C00000;}.wip{background:#fff3e0;color:#C55A11;}
+  .obs{background:#f8f8f8;border-radius:6px;padding:10px;font-style:italic;color:#555;margin-top:12px;font-size:11px;}
+  .footer{margin-top:20px;font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:8px;}
+  @media print{body{margin:15px;}}</style></head><body>
+  <h1>RFFS BOD — Fiche d'exercice</h1>
+  <div class="grid">
+    <div><div class="lbl">Date / Heure</div><div class="val">${esc(f.date||'—')} à ${esc(f.heure||'—')}</div></div>
+    <div><div class="lbl">Résultat</div><div class="val"><span class="badge ${badge}">${label}</span></div></div>
+    <div><div class="lbl">Aéronef</div><div class="val">${esc(f.aeronef||'—')}</div></div>
+    <div><div class="lbl">Niveau RFFS</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+    <div><div class="lbl">Thème</div><div class="val">${esc(f.theme||'—')}</div></div>
+    <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+    <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
+  </div>
+  ${f.observations?`<div class="obs"><strong>Observations :</strong><br>${esc(f.observations)}</div>`:''}
+  ${f.ficheFormHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Fiche formative complète</h2><div style="font-size:11px;">${RFFS.safeHtml(f.ficheFormHtml)}</div></div>` : f.schemaHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Schéma d'intervention</h2>${RFFS.safeHtml(f.schemaHtml)}</div>` : ''}
+  <div class="footer">RFFS BOD · Fiche enregistrée le ${esc(f.date)} · Source : ${esc(f.source||'Web')}</div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 400);
+}
+
+let ficheOuverte = null;
+function openFiche(id){
+  const data = getData();
+  const f = data.find(x=>String(x.id)===String(id));
+  if(!f) return;
+  ficheOuverte = String(f.id);
+  const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
+  const label = f.resultat==='validé'?'✓ VALIDÉ':f.resultat==='non_validé'?'✗ NON VALIDÉ':'⟳ EN COURS';
+  const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
+  document.getElementById('modal-title').textContent = f.aeronef + ' — ' + f.date;
+  const schemaBlock = f.ficheFormHtml
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Fiche formative complète</div><div style="border:1px solid #ddd;border-radius:6px;overflow:auto;padding:10px;background:#fafafa;max-height:500px;">${RFFS.safeHtml(f.ficheFormHtml)}</div></div>`
+    : f.schemaHtml
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Schéma d'intervention</div><div style="border:1px solid #ddd;border-radius:6px;padding:8px;background:#fafafa;">${RFFS.safeHtml(f.schemaHtml)}</div></div>`
+    : '';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-field"><div class="modal-label">Date / Heure</div><div class="modal-value">${esc(f.date||'—')} à ${esc(f.heure||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Aéronef</div><div class="modal-value" style="font-size:15px;font-weight:600;color:var(--navy);">${esc(f.aeronef||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Thème</div><div class="modal-value">${esc(f.theme||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Niveau RFFS</div><div class="modal-value">Niv. ${esc(f.niveau||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Conditions</div><div class="modal-value">${esc(f.conditions||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Agents</div><div class="modal-value">${esc(agents)}</div></div>
+    <div class="modal-field"><div class="modal-label">Résultat</div><div class="modal-value"><span class="badge ${badge}">${label}</span></div></div>
+    <div class="modal-field"><div class="modal-label">Observations</div><div class="modal-value" style="background:var(--bg);border-radius:6px;padding:8px;font-style:${f.observations?'normal':'italic'};color:${f.observations?'var(--text)':'var(--muted)'};">${esc(f.observations||'Aucune observation')}</div></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:right;">Source : ${esc(f.source||'Web')} · ID : ${esc(f.id)}</div>
+    ${schemaBlock}
+  `;
+  document.getElementById('modal-fiche').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal-fiche').classList.remove('open');
+}
+
+function printFiche(){
+  window.print();
+}
+
+// Fermer en cliquant en dehors
+document.addEventListener('DOMContentLoaded', function(){
+  const m = document.getElementById('modal-fiche');
+  if(m) m.addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+});
+
+function clearAll(){
+  const conf = confirm('Êtes-vous sûr de vouloir supprimer tout l\'historique ?\n\nCette action est irréversible.');
+  if(conf){
+    localStorage.removeItem(KEY_DATA);
+    activeMonth = null;
+    renderAll();
+  }
+}
+  renderAll();
+  RFFS.onChange(function(r){
+    document.body.classList.toggle('is-chef', r==='chef');   // affiche les boutons réservés au chef
+    if(r) syncCloud(true);
+  });
+</script>
+
+<!-- ── MODALE LECTURE FICHE ── -->
+<div class="modal-overlay" id="modal-fiche">
+  <div class="modal" id="modal-content">
+    <div class="modal-hdr">
+      <h3 id="modal-title">Détail de la fiche</h3>
+      <button onclick="closeModal()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-red chef-only" onclick="deleteOpenFiche()" style="margin-right:auto;">🗑 Supprimer cette fiche</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Fermer</button>
+      <button class="btn btn-green" onclick="printFiche()">📄 Exporter PDF</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
