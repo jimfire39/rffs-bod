@@ -30,6 +30,7 @@ var AGENTS = {};
 var RFFS = (function () {
   'use strict';
 
+  var VERSION = '12/11/2026 – 3';
   var CLE_AGENTS = 'rffs_agents_cache';
   var LIBELLES   = { formateur: 'Formateur', chef: 'Chef de service' };
   var DELAI_MS   = 5000;          // au-delà, on considère qu'il n'y a pas de réseau
@@ -431,7 +432,7 @@ var RFFS = (function () {
     elVoile.innerHTML =
       '<div id="rffs-boite" role="dialog" aria-modal="true" aria-label="Profil connecté">' +
         '<h3>' + esc(LIBELLES[role]) + '</h3>' +
-        '<p>Tu es connecté avec ce profil sur cet appareil.</p>' +
+        '<p>Tu es connecté avec ce profil sur cet appareil.<br><span style="font-size:11px;">Version du site : ' + esc(VERSION) + '</span></p>' +
         '<button type="button" class="rffs-btn p" id="rffs-changer">Changer de profil</button>' +
         '<button type="button" class="rffs-btn s" id="rffs-deco">Se déconnecter</button>' +
         '<button type="button" class="rffs-btn s" id="rffs-fermer">Fermer</button>' +
@@ -496,6 +497,25 @@ var RFFS = (function () {
     document.getElementById('rffs-annuler').onclick = fermer;
   }
 
+  // Demande de confirmation affichée dans la page (les fenêtres du navigateur peuvent être bloquées).
+  // Renvoie une promesse : true si l'utilisateur confirme, false sinon.
+  function confirmer(message, libelle) {
+    return new Promise(function (resoudre) {
+      if (!elVoile) { resoudre(window.confirm(message)); return; }
+      elVoile.innerHTML =
+        '<div id="rffs-boite" role="alertdialog" aria-modal="true" aria-label="Confirmation">' +
+          '<h3>Confirmation</h3>' +
+          '<p style="font-size:14px;color:#1a2433;">' + esc(message) + '</p>' +
+          '<button type="button" class="rffs-btn p" id="rffs-conf-oui" style="background:#c00000;">' + esc(libelle || 'Confirmer') + '</button>' +
+          '<button type="button" class="rffs-btn s" id="rffs-conf-non">Annuler</button>' +
+        '</div>';
+      elVoile.classList.add('open');
+      function finir(reponse) { elVoile.classList.remove('open'); elVoile.innerHTML = ''; resoudre(reponse); }
+      document.getElementById('rffs-conf-oui').onclick = function () { finir(true); };
+      document.getElementById('rffs-conf-non').onclick = function () { finir(false); };
+    });
+  }
+
   function attendreRole(profil, action) {
     var essais = 0;
     (function boucle() {
@@ -522,6 +542,8 @@ var RFFS = (function () {
     esc: esc,
     safeHtml: safeHtml,
     toast: toast,
+    confirmer: confirmer,
+    version: VERSION,
     estConfigure: function () { return configure; },
     role: function () { return role; },
     onChange: function (f) { ecouteurs.push(f); if (pret) { try { f(role); } catch (e) {} } },

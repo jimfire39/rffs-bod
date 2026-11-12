@@ -391,19 +391,30 @@ function toggleAll(checked){
 // ── SUPPRESSION (réservée au chef de service) ───────────────────────────────
 // Retire les fiches de l'appareil et du cloud. Renvoie true si la suppression a eu lieu.
 async function supprimerFiches(ids){
-  if(RFFS.role()!=='chef'){ RFFS.toast('Suppression réservée au chef de service.','err'); return false; }
-  if(!ids.length){ RFFS.toast('Aucune fiche sélectionnée.','info'); return false; }
-  if(!confirm(`Supprimer ${ids.length} fiche(s) ? Cette action est irréversible.`)) return false;
-  ids = ids.map(String);
-  localStorage.setItem(KEY_DATA, JSON.stringify(getData().filter(f=>!ids.includes(String(f.id)))));
-  let refus = 0;
-  for(const id of ids){ if((await RFFS.deleteFiche(id)) === false) refus++; }
-  activeMonth = null;
-  renderAll();
-  if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
-  if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud.','err');
-  else RFFS.toast(`✓ ${ids.length} fiche(s) supprimée(s).`,'ok');
-  return true;
+  try{
+    if(RFFS.role()!=='chef'){ RFFS.toast('Suppression réservée au chef de service.','err'); return false; }
+    if(!ids.length){ RFFS.toast('Coche d\'abord la ou les fiches à supprimer.','info'); return false; }
+    const ok = await RFFS.confirmer(`Supprimer ${ids.length} fiche(s) ? Cette action est irréversible.`, 'Supprimer');
+    if(!ok) return false;
+    ids = ids.map(String);
+    // 1. retirer tout de suite de l'appareil et de l'écran
+    localStorage.setItem(KEY_DATA, JSON.stringify(getData().filter(f=>!ids.includes(String(f.id)))));
+    activeMonth = null;
+    renderAll();
+    if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+    RFFS.toast('Suppression en cours…','info');
+    // 2. retirer du cloud (toutes les fiches en même temps)
+    const res = await Promise.all(ids.map(id=>RFFS.deleteFiche(id)));
+    const refus = res.filter(r=>r===false).length, attente = res.filter(r=>r==='attente').length;
+    if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud : elles reviendront à la prochaine synchro.','err');
+    else if(attente) RFFS.toast('Pas de réseau : la suppression dans le cloud se fera au retour du réseau.','info');
+    else RFFS.toast(`✓ ${ids.length} fiche(s) supprimée(s).`,'ok');
+    return true;
+  }catch(e){
+    console.error(e);
+    RFFS.toast('Erreur pendant la suppression : '+(e && e.message ? e.message : e),'err');
+    return false;
+  }
 }
 
 async function deleteSelected(){
