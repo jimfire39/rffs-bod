@@ -57,6 +57,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .modal-field{margin-bottom:12px;}
 .modal-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
 .modal-value{font-size:13px;color:var(--text);}
+.chef-only{display:none!important;}
+body.is-chef .chef-only{display:inline-flex!important;}
 .modal-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 @media print{.modal-overlay{display:block!important;position:static;background:none;padding:0;}
 .modal{box-shadow:none;max-height:none;border-radius:0;}
@@ -124,6 +126,7 @@ input:focus{border-color:var(--navy);}
       <div class="page-hdr">
         <h1 id="year-counter">2026 — 0 fiche</h1>
         <div class="hdr-actions">
+          <button class="btn btn-red chef-only" onclick="deleteSelected()">🗑 Supprimer la sélection</button>
           <button class="btn btn-green" onclick="exportCSVProtected()">⬇ Exporter CSV</button>
           <button class="btn btn-navy" onclick="showChef()" style="background:var(--navy);">👨‍✈️ Chef de service</button>
         </div>
@@ -385,24 +388,31 @@ function toggleAll(checked){
   document.querySelectorAll('.chk-fiche').forEach(c=>c.checked=checked);
 }
 
-async function deleteSelected(){
-  const checked = [...document.querySelectorAll('.chk-fiche:checked')];
-  if(!checked.length){ alert('Aucune fiche sélectionnée.'); return; }
-  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Cette action est irréversible.`)) return;
-
-  const ids = checked.map(c=>c.dataset.id);
-
-  // Supprimer du localStorage
-  let data = getData().filter(f=>!ids.includes(String(f.id)));
-  localStorage.setItem(KEY_DATA, JSON.stringify(data));
-
-  // Supprimer du cloud (réservé au chef de service)
-  if(RFFS.role()==='chef'){
-    for(const id of ids){ await RFFS.deleteFiche(id); }
-  }
-
+// ── SUPPRESSION (réservée au chef de service) ───────────────────────────────
+// Retire les fiches de l'appareil et du cloud. Renvoie true si la suppression a eu lieu.
+async function supprimerFiches(ids){
+  if(RFFS.role()!=='chef'){ RFFS.toast('Suppression réservée au chef de service.','err'); return false; }
+  if(!ids.length){ RFFS.toast('Aucune fiche sélectionnée.','info'); return false; }
+  if(!confirm(`Supprimer ${ids.length} fiche(s) ? Cette action est irréversible.`)) return false;
+  ids = ids.map(String);
+  localStorage.setItem(KEY_DATA, JSON.stringify(getData().filter(f=>!ids.includes(String(f.id)))));
+  let refus = 0;
+  for(const id of ids){ if((await RFFS.deleteFiche(id)) === false) refus++; }
   activeMonth = null;
   renderAll();
+  if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+  if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud.','err');
+  else RFFS.toast(`✓ ${ids.length} fiche(s) supprimée(s).`,'ok');
+  return true;
+}
+
+async function deleteSelected(){
+  await supprimerFiches([...document.querySelectorAll('.chk-fiche:checked')].map(c=>c.dataset.id));
+}
+
+async function deleteOpenFiche(){
+  if(!ficheOuverte) return;
+  if(await supprimerFiches([ficheOuverte])){ ficheOuverte = null; closeModal(); }
 }
 
 function exportCSV(){
@@ -512,19 +522,8 @@ function renderChef(){
 }
 
 async function deleteChefSelected(){
-  const checked=[...document.querySelectorAll('.chk-chef:checked')];
-  if(!checked.length){alert('Aucune fiche sélectionnée.');return;}
-  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Action irréversible.`)) return;
-  const ids=checked.map(c=>c.dataset.id);
-  let data=getData().filter(f=>!ids.includes(String(f.id)));
-  localStorage.setItem(KEY_DATA, JSON.stringify(data));
-  // Cloud
-  let refus = 0;
-  for(const id of ids){ if((await RFFS.deleteFiche(id)) === false) refus++; }
-  if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud.','err');
-  renderChef();
-  renderAll();
-  alert(`✓ ${ids.length} fiche(s) supprimée(s).`);
+  await supprimerFiches([...document.querySelectorAll('.chk-chef:checked')].map(c=>c.dataset.id));
+  const tout = document.getElementById('chk-chef-all'); if(tout) tout.checked = false;
 }
 
 async function syncCloud(silencieux){
@@ -587,10 +586,12 @@ function pdfFiche(id){
   setTimeout(()=>w.print(), 400);
 }
 
+let ficheOuverte = null;
 function openFiche(id){
   const data = getData();
   const f = data.find(x=>String(x.id)===String(id));
   if(!f) return;
+  ficheOuverte = String(f.id);
   const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
   const label = f.resultat==='validé'?'✓ VALIDÉ':f.resultat==='non_validé'?'✗ NON VALIDÉ':'⟳ EN COURS';
   const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
@@ -638,7 +639,10 @@ function clearAll(){
   }
 }
   renderAll();
-  RFFS.onChange(function(r){ if(r) syncCloud(true); });
+  RFFS.onChange(function(r){
+    document.body.classList.toggle('is-chef', r==='chef');   // affiche les boutons réservés au chef
+    if(r) syncCloud(true);
+  });
 </script>
 
 <!-- ── MODALE LECTURE FICHE ── -->
@@ -650,6 +654,7 @@ function clearAll(){
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer">
+      <button class="btn btn-red chef-only" onclick="deleteOpenFiche()" style="margin-right:auto;">🗑 Supprimer cette fiche</button>
       <button class="btn btn-ghost" onclick="closeModal()">Fermer</button>
       <button class="btn btn-green" onclick="printFiche()">📄 Exporter PDF</button>
     </div>
