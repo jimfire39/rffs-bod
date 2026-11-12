@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur Fiches Incendie — RFFS BOD</title>
+<style>
+:root{
+  --navy:#002F5F;--navy-l:#1a4a80;--orange:#E8500A;--orange-l:#ff6a20;
+  --red:#C00000;--green:#2d6a2d;--amber:#E36C09;--gray:#595959;
+  --lgray:#f5f5f5;--lblue:#D6E4F7;--border:#ddd;--text:#1a1a1a;--text-m:#666;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.app-header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.hdr-inner{max-width:1260px;margin:0 auto;display:flex;align-items:stretch;}
+.hdr-brand{padding:13px 22px;display:flex;flex-direction:column;justify-content:center;}
+.hdr-brand h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:.5px;}
+.hdr-brand span{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+.hdr-badge{background:var(--orange);padding:13px 20px;margin-left:auto;display:flex;align-items:center;gap:14px;}
+.hdr-badge span{font-size:11px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;}
+.btn-home{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;}
+.btn-home:hover{background:rgba(255,255,255,.25);}
+
+/* LAYOUT */
+.app-body{max-width:1260px;margin:0 auto;padding:20px 14px;display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start;}
+
+/* PANEL */
+.panel{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;position:sticky;top:64px;}
+.panel-title{background:var(--navy);padding:11px 17px;font-size:11px;font-weight:700;color:#fff;letter-spacing:.8px;text-transform:uppercase;}
+.panel-body{padding:16px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fg select,.fg input[type=number],.fg input[type=text]{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);background:#fff;transition:border-color .2s;appearance:none;}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--navy);}
+.sw{position:relative;}
+.sw::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none;font-size:11px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tg{display:flex;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;}
+.tg input{display:none;}
+.tg label{flex:1;padding:7px 4px;text-align:center;font-size:12px;font-weight:500;color:var(--gray);cursor:pointer;transition:all .2s;margin:0;text-transform:none;letter-spacing:0;border:none;}
+.tg input:checked+label{background:var(--navy);color:#fff;}
+.divider{height:1px;background:var(--border);margin:12px 0;}
+.btn-gen{width:100%;padding:11px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;}
+.btn-gen:hover{background:var(--orange-l);}
+.btn-gen:active{transform:scale(.98);}
+.btn-sec{width:100%;padding:8px;background:#fff;color:var(--navy);border:1.5px solid var(--navy);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:7px;}
+.btn-sec:hover{background:var(--navy);color:#fff;}
+.badge-vpi{display:inline-block;background:#7a2d00;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
+.badge-vim{display:inline-block;background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
+
+/* FICHE WRAP */
+.fiche-wrap{background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+.placeholder{padding:70px 30px;text-align:center;color:var(--text-m);}
+.placeholder .ico{font-size:44px;margin-bottom:14px;opacity:.2;}
+.placeholder h3{font-size:17px;font-weight:500;margin-bottom:6px;color:var(--gray);}
+.placeholder p{font-size:13px;}
+
+/* FICHE HEADER */
+.fiche-hdr{display:grid;grid-template-columns:1fr auto;}
+.fhdr-l{background:var(--navy);padding:12px 18px;}
+.fhdr-l h2{font-size:13px;font-weight:700;color:#fff;}
+.fhdr-l span{font-size:10px;color:rgba(255,255,255,.5);display:block;margin-top:2px;}
+.fhdr-r{background:var(--orange);padding:12px 18px;display:flex;align-items:center;}
+.fhdr-r span{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;}
+
+/* FICHE BODY */
+.fiche-body{padding:15px;}
+.id-t{width:100%;border-collapse:collapse;margin-bottom:13px;font-size:12px;}
+.id-t td{padding:5px 8px;border:1px solid #ccc;}
+.lbl{background:#f0f0f0;font-weight:600;color:var(--gray);font-size:10px;text-transform:uppercase;white-space:nowrap;}
+.vm{font-weight:700;color:var(--navy);font-size:13px;}
+.shdr{padding:6px 12px;font-size:11px;font-weight:700;color:#fff;letter-spacing:.7px;text-transform:uppercase;margin:12px 0 7px;border-radius:4px;}
+.shdr.nv{background:var(--navy)}.shdr.gy{background:var(--gray)}.shdr.or{background:var(--orange);}.shdr.rd{background:var(--red);}
+.abox{border:2px solid var(--amber);background:#fffbe6;border-radius:7px;padding:11px 13px;margin-bottom:8px;}
+.abox p{font-size:12px;line-height:1.6;margin-bottom:2px;}
+.abox .bd{font-weight:700}.abox .it{font-style:italic;}
+.qbox{font-size:11px;color:var(--gray);margin-bottom:13px;font-style:italic;padding:7px 11px;background:var(--lgray);border-radius:5px;border-left:3px solid var(--navy);}
+.qbox strong{color:var(--navy);font-style:normal;}
+.st{width:100%;border-collapse:collapse;margin-bottom:13px;font-size:12px;}
+.st td{border:1px solid #ccc;vertical-align:top;}
+.sl{width:28px;text-align:center;font-size:18px;font-weight:800;color:#fff;padding:9px 4px;}
+.slb{width:75px;font-size:10px;font-weight:700;padding:7px;background:var(--lgray);text-transform:uppercase;letter-spacing:.5px;}
+.sc{padding:8px 10px;line-height:1.6;}
+.ss{background:var(--navy)}.si{background:var(--orange)}.sm{background:var(--red)}.ssec{background:var(--green)}.svpi{background:#7a2d00;}
+.ssl{color:var(--navy)}.sil{color:var(--orange)}.sml{color:var(--red)}.ssecl{color:var(--green)}.svpil{color:#7a2d00;}
+.dt{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:12px;}
+.dt th{background:var(--navy);color:#fff;padding:6px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--navy);text-align:left;}
+.dt td{padding:6px 8px;border:1px solid #ccc;vertical-align:top;}
+.dt tr:nth-child(even) td{background:var(--lgray);}
+.tg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px;}
+.tc{border:1px solid #ddd;border-radius:7px;padding:9px;background:var(--lgray);font-size:11px;}
+.tc h4{font-size:11px;font-weight:700;margin-bottom:5px;}
+.tc ul{list-style:none;padding:0;}
+.tc ul li{padding:2px 0;color:var(--text-m);line-height:1.5;}
+.tc ul li::before{content:'› ';color:var(--navy);}
+.fiche-footer{border-top:1px solid var(--border);padding:7px 16px;font-size:10px;color:var(--text-m);display:flex;justify-content:space-between;background:var(--lgray);}
+
+/* ALERTE SPÉCIALE VÉH ÉLECTRIQUE */
+.elec-warn{border:2px solid var(--red);background:#fff0f0;border-radius:7px;padding:10px 13px;margin-bottom:10px;}
+.elec-warn p{font-size:12px;line-height:1.6;margin-bottom:2px;}
+.elec-warn .titre{font-size:12px;font-weight:800;color:var(--red);text-transform:uppercase;margin-bottom:5px;}
+
+/* SCHÉMA INTERACTIF */
+.schema-wrap{border:2px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.schema-ctrl{background:#f0f4f9;padding:8px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--border);}
+.schema-ctrl-lbl{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
+.vbadge{display:inline-flex;align-items:center;gap:5px;border:2px solid transparent;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;user-select:none;}
+.vbadge.vim-b{background:var(--navy);color:#fff;}
+.vbadge.vpi-b{background:#7a2d00;color:#fff;}
+.vbadge.active{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange);}
+.rot-btn{padding:4px 10px;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.rot-btn:hover{background:var(--navy);color:#fff;}
+.rst-btn{padding:4px 10px;border:1.5px solid var(--red);background:#fff;color:var(--red);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.rst-btn:hover{background:var(--red);color:#fff;}
+.schema-svg-wrap{position:relative;background:#e8eff7;}
+.schema-svg-wrap svg{display:block;width:100%;height:auto;}
+.vim-positions-bar{font-size:11px;padding:6px 10px;background:#fff;border-top:1px solid var(--border);min-height:28px;}
+
+/* FICHE FORMATIVE */
+.ff-wrap{border:2px solid var(--navy);border-radius:8px;overflow:hidden;margin-top:18px;}
+.ff-hdr{background:var(--navy);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;}
+.ff-hdr h3{font-size:13px;font-weight:700;color:#fff;}
+.ff-hdr span{font-size:10px;color:rgba(255,255,255,.6);}
+.ff-body{padding:13px;}
+.ff-section{margin-bottom:13px;}
+.ff-section-title{background:var(--gray);color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:3px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+.ff-interv{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+.ff-interv th{background:#f0f0f0;padding:5px 8px;border:1px solid #ccc;font-size:10px;font-weight:700;color:var(--gray);text-align:center;}
+.ff-interv td{border:1px solid #ccc;padding:5px 8px;vertical-align:top;}
+.ff-interv .vim-hdr{background:var(--navy);color:#fff;text-align:center;font-weight:700;}
+.ff-interv .vpi-hdr{background:#7a2d00;color:#fff;text-align:center;font-weight:700;}
+.ff-interv input[type=text]{width:100%;border:none;outline:none;font-size:11px;background:transparent;font-family:inherit;}
+.ff-checklist{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.ff-check-row{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border:1px solid #eee;border-radius:4px;background:#fafafa;font-size:12px;}
+.ff-oui-non{display:flex;gap:10px;}
+.ff-oui-non label{display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;}
+.ff-attaque{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:13px;}
+.ff-attaque-item{display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px;border:1px solid #eee;border-radius:4px;background:#fafafa;}
+.ff-attaque-item input{accent-color:var(--navy);}
+.ff-gestion{width:100%;border-collapse:collapse;font-size:12px;}
+.ff-gestion th{background:var(--navy);color:#fff;padding:5px 7px;font-size:10px;text-transform:uppercase;border:1px solid var(--navy);text-align:center;}
+.ff-gestion td{border:1px solid #ddd;padding:5px 7px;}
+.ff-gestion tr:nth-child(even) td{background:#f8f8f8;}
+.ff-gestion .item-lbl{font-weight:500;}
+.ff-gestion input[type=checkbox]{accent-color:var(--navy);width:14px;height:14px;}
+.ff-obs{width:100%;border:1px solid #ddd;border-radius:5px;padding:7px;font-size:12px;resize:vertical;min-height:50px;font-family:inherit;margin-top:6px;}
+.ff-radio-grp{display:flex;gap:12px;}
+.ff-radio-grp label{display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;}
+
+/* SCHÉMA — TOOLBAR FORMES */
+.schema-shapes-bar{background:#f7f0e8;padding:7px 12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;border-bottom:1px solid #e0d0c0;}
+.shape-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1.5px solid #8a6a3a;background:#fff;color:#5a3e10;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;user-select:none;}
+.shape-btn:hover,.shape-btn.active-shape{background:#8a6a3a;color:#fff;border-color:#5a3e10;}
+.del-shape-btn{padding:4px 10px;border:1.5px solid var(--red);background:#fff;color:var(--red);border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.del-shape-btn:hover{background:var(--red);color:#fff;}
+
+/* LOCAL PERSO */
+.local-input-row{display:flex;gap:7px;margin-top:8px;}
+.local-input-row input{flex:1;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;}
+.local-input-row button{padding:6px 12px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
+
+@media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
+@media(max-width:820px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.ff-checklist,.tg2,.ff-attaque{grid-template-columns:1fr;}}
+</style>
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js"></script>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <h1>🔥 RFFS BOD — Incendie Terrestre</h1>
+      <span>Générateur de fiches d'exercice — Interventions bâtiments &amp; véhicules</span>
+    </div>
+    <div class="hdr-badge">
+      <a href="index.html" class="btn-home">← Accueil</a>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- PANNEAU GAUCHE -->
+  <aside class="panel no-print">
+    <div class="panel-title">🎯 Paramètres de l'exercice</div>
+    <div class="panel-body">
+
+      <!-- CATÉGORIE -->
+      <div class="fg">
+        <label>Catégorie</label>
+        <div class="sw">
+          <select id="categorie" onchange="updSousCat()">
+            <option value="feu_batiment">🏢 Feu de bâtiment / local</option>
+            <option value="feu_vehicule">🚗 Feu de véhicule</option>
+            <option value="feu_infrastructure">⚡ Infrastructure technique</option>
+            <option value="sauvetage">🚨 Sauvetage / urgence</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SOUS-CATÉGORIE -->
+      <div class="fg">
+        <label>Sous-catégorie / Thème</label>
+        <div class="sw"><select id="sous_cat"></select></div>
+      </div>
+
+      <!-- LIEU DE MANŒUVRE -->
+      <div class="fg">
+        <label>Lieu de manœuvre</label>
+        <div class="sw">
+          <select id="lieu">
+            <option>Jetée ibérique R+1</option>
+            <option>Jetée ibérique (RDC)</option>
+            <option>CBS Hall A</option>
+            <option>CBS Hall B</option>
+            <option>CBS Billi</option>
+            <option>Livraison bagage Billi</option>
+            <option>Centrale ANA</option>
+            <option>Bâtiment servitude côté piste</option>
+            <option>Sous-station clim côté piste</option>
+            <option>Algeco EasyJet</option>
+            <option>Local électrique</option>
+            <option>Panneaux solaires</option>
+          </select>
+        </div>
+        <!-- Ajout manuel -->
+        <div class="local-input-row">
+          <input type="text" id="lieu_custom" placeholder="Ajouter un local...">
+          <button onclick="addLieu()">+ Ajouter</button>
+        </div>
+      </div>
+
+      <!-- VÉHICULES -->
+      <div class="fg">
+        <label>Moyens engagés</label>
+        <div class="tg">
+          <input type="radio" name="veh" id="veh_vpi" value="vpi" onchange="autoAgents()"><label for="veh_vpi">VPI seul</label>
+          <input type="radio" name="veh" id="veh_vpi_vim" value="vpi_vim" checked onchange="autoAgents()"><label for="veh_vpi_vim">VPI + VIM</label>
+          <input type="radio" name="veh" id="veh_vim" value="vim" onchange="autoAgents()"><label for="veh_vim">VIMs seul</label>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="fg">
+          <label>Nb VIM</label>
+          <div class="sw"><select id="nb_vim">
+            <option value="1">1 VIM</option>
+            <option value="2" selected>2 VIM</option>
+            <option value="3">3 VIM</option>
+          </select></div>
+        </div>
+        <div class="fg">
+          <label>Agents</label>
+          <input type="number" id="nb_agents" min="1" max="12" value="4">
+        </div>
+      </div>
+
+      <!-- MODE -->
+      <div class="fg">
+        <label>Mode</label>
+        <div class="tg">
+          <input type="radio" name="mode" id="m_norm" value="normal" checked><label for="m_norm">Normal</label>
+          <input type="radio" name="mode" id="m_alea" value="aleatoire"><label for="m_alea">Aléatoire</label>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <button class="btn-gen" onclick="genFiche()">🔥 GÉNÉRER LA FICHE</button>
+      <button class="btn-sec no-print" onclick="window.print()">🖨️ Imprimer</button>
+
+    </div>
+  </aside>
+
+  <!-- ZONE FICHE -->
+  <main>
+    <div class="fiche-wrap" id="fiche-zone">
+      <div class="placeholder">
+        <div class="ico">🏢</div>
+        <h3>Prêt à générer</h3>
+        <p>Sélectionne la catégorie, le lieu et les moyens, puis clique sur <strong>Générer la fiche</strong>.</p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DONNÉES — THÈMES D'INTERVENTION
+═══════════════════════════════════════════════════════ */
+const CATS = {
+  feu_batiment: {
+    label: '🏢 Feu de bâtiment / local',
+    themes: {
+      feu_local_elec: {
+        l: 'Feu local électrique',
+        al: [
+          {t:'Un dégagement de fumée est signalé dans un local électrique.',b:1},
+          {t:'Odeur de brûlé — arc électrique possible.',i:1},
+          {t:'Confinement immédiat — coupure TGBT requis.',b:1}
+        ],
+        q:'Local consigné ? — TGBT coupé ? — Personnes présentes ? — Matières dangereuses stockées ? — SGS prévenu ?',
+        sit:['Feu ou échauffement dans un local électrique ou armoire TGBT.','Risque arc électrique — ne pas intervenir sous tension.','Confinement et coupure avant toute attaque.'],
+        sec:['Ne jamais intervenir sous tension — attendre la coupure TGBT.','Utiliser extincteur CO2 uniquement sur installation électrique.','ARI obligatoire si fumées denses.','SGS + exploitant à prévenir immédiatement.'],
+        moyens_vpi:['VPI → Reconnaissance périmètre — confinement fumées.','VPI OPER. → CO2 sur tableau si coupure confirmée — pas de lance eau sur électrique.'],
+        moyens_vim:['VIM 1 → Secteur façade — positionnement alimentation réserve eau.','VIM 2 → Protection propagation — couloir évacuation.'],
+        tc:[
+          {ti:'⚡ Risque électrique',c:'red',li:['Ne jamais attaquer sous tension','Attendre coupure TGBT confirmée','CO2 uniquement — PAS d\'eau']},
+          {ti:'💨 Fumées',c:'red',li:['ARI obligatoire si local enfumé','Confinement porte fermée','Ventilation après extinction seulement']},
+          {ti:'🔧 Coupure',c:'nv',li:['TGBT identifié avant intervention','Consignation par agent habilité','Vérifier absence tension avant attaque']},
+          {ti:'📞 Acteurs',c:'nv',li:['SGS prévenu immédiatement','Exploitant technique requis','CR chef de service']}
+        ]
+      },
+      feu_poubelle: {
+        l: 'Feu poubelle / déchets',
+        al: [
+          {t:'Feu de poubelle ou corbeille signalé dans une zone publique.',b:1},
+          {t:'Début de feu — fumée visible depuis la salle.',i:1},
+          {t:'Évacuation partielle en cours — intervenez.',b:1}
+        ],
+        q:'Localisation précise — Zone sécurisée ? — Évacuation déclenchée ? — Détecteur activé ?',
+        sit:['Début d\'incendie sur poubelle ou déchet dans espace public aéroportuaire.','Risque de propagation aux équipements proches.','Évacuation et confinement en cours.'],
+        sec:['Ne pas désenfumer prématurément — risque d\'alimentation foyer.','Vérifier absence matières dangereuses dans les déchets.','Pas de remise en place avant refroidissement complet.'],
+        moyens_vpi:['VPI → Attaque directe au jet brouillard — extinction rapide.','VPI OPER. → Évacuation des passagers du secteur.'],
+        moyens_vim:['VIM 1 → Positionnement façade — alimentation si propagation.','VIM 2 → Protection zones adjacentes.'],
+        tc:[
+          {ti:'🔥 Extinction',c:'red',li:['Jet brouillard ou jet droit selon foyer','Extincteur eau poudre si début','Vérifier absence braises résiduelles']},
+          {ti:'👥 Évacuation',c:'nv',li:['Zone publique → évacuation immédiate','Coordination SCA ou Sécurité aéroport','Ne pas obstruer issues de secours']},
+          {ti:'📋 Procédure',c:'nv',li:['Détection + alarme incendie activée ?','CR twR et chef de service','Mettre en veille détecteurs zone']},
+          {ti:'🚿 Moyens',c:'nv',li:['Extincteur CO2 ou eau poudre','Lance brouillard si propagation','Contrôle 30 min après extinction']}
+        ]
+      },
+      feu_faux_plafond: {
+        l: 'Feu faux-plafond / gaine technique',
+        al: [
+          {t:'Détecteur de fumée activé en zone de faux-plafond.',b:1},
+          {t:'Odeur de brûlé — source non visible.',i:1},
+          {t:'Recherche active — zone délimitée. Intervenez.',b:1}
+        ],
+        q:'Zone du détecteur actif — Câblage proche ? — TGBT zone coupé ? — Accès faux-plafond identifié ?',
+        sit:['Feu couvant dans un faux-plafond ou gaine technique.','Foyer non visible — propagation rapide possible sur câbles.','ARI nécessaire pour reconnaissance.'],
+        sec:['Risque d\'effondrement de plafond sous l\'eau — prudence.','Câbles électriques sous tension potentielle.','Foyer masqué : utiliser la caméra thermique.','Ne pas ouvrir excessivement avant d\'avoir le foyer localisé.'],
+        moyens_vpi:['VPI → Reconnaissance avec caméra thermique — localisation foyer.','VPI OPER. → Coupure sélective selon tableau de zone.'],
+        moyens_vim:['VIM 1 → Alimentation réserve — tuyaux en attente façade.','VIM 2 → Protection couloir et évacuation.'],
+        tc:[
+          {ti:'🔍 Reconnaissance',c:'red',li:['Caméra thermique obligatoire','Localiser avant d\'ouvrir','ARI dès odeur de brûlé']},
+          {ti:'💧 Attaque',c:'red',li:['Brouillard si électrique confirmé éteint','Jet droit si feu ouvert visible','Attention effondrement plafond']},
+          {ti:'⚡ Électricité',c:'nv',li:['TGBT zone coupé avant accès','Consignation confirmée','CO2 si doute sur tension résiduelle']},
+          {ti:'📞 Coordination',c:'nv',li:['Exploitant technique sur zone','Tracé câblage nécessaire','CR chef de service']}
+        ]
+      },
+      feu_cuisine: {
+        l: 'Feu cuisine / snack aérogare',
+        al: [
+          {t:'Déclenchement alarme incendie dans la zone restauration.',b:1},
+          {t:'Feu de friteuse ou matières grasses signalé.',i:1},
+          {t:'Évacuation en cours — intervenez immédiatement.',b:1}
+        ],
+        q:'Type de foyer (friteuse, four, gaz) — Gaz coupé ? — Évacuation complète ? — SGS prévenu ?',
+        sit:['Feu de matières grasses ou équipement cuisine en aérogare.','Risque de feu de classe F — ne jamais utiliser de l\'eau.','Évacuation zone publique en cours.'],
+        sec:['JAMAIS d\'eau sur feu de matières grasses — explosion certaine.','Extincteur classe F ou couverture étouffante.','Couper gaz et électricité avant intervention.','Feu matières grasses : température > 300°C — risque réallumage.'],
+        moyens_vpi:['VPI → Extinction par étouffement (classe F) — couverture ou CO2.','VPI OPER. → Coupure gaz et électricité — évacuation zone.'],
+        moyens_vim:['VIM 1 → Positionnement façade — protection propagation structure.','VIM 2 → Refroidissement si propagation hors local cuisine.'],
+        tc:[
+          {ti:'🚫 INTERDIT eau',c:'red',li:['Eau sur matière grasse = explosion','Classe F : extincteur spécifique','Couverture étouffante si disponible']},
+          {ti:'🔥 Feu matières grasses',c:'red',li:['Température > 300°C','Risque réallumage après extinction','Laisser refroidir naturellement']},
+          {ti:'⛽ Energies',c:'nv',li:['Coupure gaz en priorité','TGBT zone cuisine coupé','Vérifier absence de fuite']},
+          {ti:'👥 Évacuation',c:'nv',li:['Zone restauration + passagers','Coordination sécurité aéroport','CR chef de service']}
+        ]
+      }
+    }
+  },
+
+  feu_vehicule: {
+    label: '🚗 Feu de véhicule',
+    themes: {
+      feu_carburation: {
+        l: 'Feu véhicule à carburation traditionnelle',
+        al: [
+          {t:'Feu de véhicule à essence ou diesel signalé sur le site.',b:1},
+          {t:'Flammes visibles compartiment moteur ou habitacle.',i:1},
+          {t:'Intervenez — risque explosion réservoir.',b:1}
+        ],
+        q:'Type de véhicule — Occupants ? — Réservoir plein ? — Matières transportées ? — Carburant au sol ?',
+        sit:['Feu de véhicule thermique — essence ou diesel.','Risque explosion réservoir si feu avancé.','Occupants possibles — sauvetage prioritaire.'],
+        sec:['Distance de sécurité : 10 m mini — 25 m si réservoir en feu.','Réservoir sous pression : ne pas s\'aligner dans l\'axe.','Mousse ou poudre sur nappe carburant sol.','Refroidissement réservoir à distance avant approche.'],
+        moyens_vpi:['VPI → Attaque directe jet brouillard — protection sauvetage si occupants.','VPI OPER. → Mousse sur nappe carburant si présente au sol.'],
+        moyens_vim:['VIM 1 → Refroidissement et protection exposition — canon mousse réservoir.','VIM 2 → Sauvetage occupants — couloir évacuation — protection arrière.'],
+        tc:[
+          {ti:'💥 Risque réservoir',c:'red',li:['25 m minimum si réservoir en feu','Ne pas s\'aligner dans l\'axe','Refroidissement avant approche']},
+          {ti:'⛽ Nappe carburant',c:'red',li:['Mousse sur nappe sol immédiatement','Interdire sources d\'ignition','Confinement nappe — éviter écoulement égout']},
+          {ti:'👥 Sauvetage',c:'nv',li:['Occupants prioritaires','Approche côté opposé au foyer','ARI si habitacle enfumé']},
+          {ti:'🚒 Moyens',c:'nv',li:['Poudre ou mousse moteur','Jet brouillard habitacle','Eau sur carrosserie pour refroidissement']}
+        ]
+      },
+      feu_hybride: {
+        l: 'Feu véhicule hybride',
+        al: [
+          {t:'Feu sur un véhicule hybride signalé.',b:1},
+          {t:'Fumée suspecte — batterie haute tension possible.',i:1},
+          {t:'Intervenez — DANGER HAUTE TENSION — procédure spécifique.',b:1}
+        ],
+        q:'Modèle identifié ? — Système HT actif ? — Occupants ? — Coupe-circuit accessible ? — Cartes d\'urgence disponibles ?',
+        sit:['Feu de véhicule hybride — double risque : thermique + haute tension.','Batterie HT : 100 à 650 V — risque électrocution.','Carburant thermique possible en parallèle.'],
+        sec:['NE JAMAIS couper cables oranges sauf personnel habilité.','Distance sécurité électrique : 5 m minimum en eau conductrice.','Gants isolants et matériel diélectrique obligatoires.','Batterie peut redémarrer seule même après extinction apparente.','Immersion complète si batterie : nécessite fosse d\'immersion.'],
+        moyens_vpi:['VPI → Attaque jet eau abondant sur foyer thermique — refroidissement batterie.','VPI OPER. → Reconnaissance — identification coupe-circuit — cartes urgence.'],
+        moyens_vim:['VIM 1 → Alimentation eau abondante — refroidissement continu batterie HT (jusqu\'à 4h).','VIM 2 → Protection périmètre — gestion évacuation — demande de renfort.'],
+        tc:[
+          {ti:'⚡ Haute tension',c:'red',li:['Câbles oranges = HT — NE PAS COUPER','Gants isolants HV obligatoires','Distance 5 m en milieu conducteur']},
+          {ti:'🔋 Batterie Li-ion',c:'red',li:['Refroidissement eau abondant et continu','Possible redémarrage après extinction','Prévoir 4h de refroidissement minimum']},
+          {ti:'📋 Cartes urgence',c:'nv',li:['Code couleur sur le véhicule','Fiche constructeur disponible (FFSS)','Identifier coupe-circuit service 12V']},
+          {ti:'🚒 Intervention',c:'nv',li:['Jet droit puissant sur batterie','Ne pas briser accumulateurs','Évacuer périmètre si fuite gaz']}
+        ]
+      },
+      feu_electrique: {
+        l: 'Feu véhicule électrique (VE)',
+        al: [
+          {t:'Feu ou échauffement signalé sur un véhicule 100% électrique.',b:1},
+          {t:'Fumée anormale — batterie en emballement thermique.',i:1},
+          {t:'INTERVENEZ — emballement thermique imminent ou en cours.',b:1}
+        ],
+        q:'Modèle — Énergie restante ? — Coupe-circuit 12V localisé ? — Fosse d\'immersion disponible ? — Occupants ?',
+        sit:['Emballement thermique batterie Li-ion — véhicule 100% électrique.','Risque de réallumage multiple sur plusieurs heures.','Haute tension : 400 à 800 V selon modèle.'],
+        sec:['Emballement thermique Li-ion : irréversible — eau abondante seul moyen de ralentir.','Ne jamais approcher à moins de 3 m sans EPI diélectriques.','Gaz toxiques émis : HF (acide fluorhydrique), CO, oxydes d\'azote — ARI OBLIGATOIRE.','Risque de réallumage après 24h ou plus.','Si possible : immerger le véhicule dans une benne d\'eau.'],
+        moyens_vpi:['VPI → Refroidissement batterie en continu — vider les 500 L sur la batterie.','VPI OPER. → Coupe-circuit 12V — périmètre de sécurité 25 m.'],
+        moyens_vim:['VIM 1 → Alimentation continue eau abondante sur batterie — plusieurs milliers de litres.','VIM 2 → Soutien refroidissement — coordination renfort SDIS — gestion zone.'],
+        tc:[
+          {ti:'🔋 Emballement Li-ion',c:'red',li:['Irréversible une fois déclenché','Eau abondante et continue — seule option','Refroidissement peut durer 4 à 24h+']},
+          {ti:'☠️ Gaz toxiques',c:'red',li:['HF, CO, oxydes d\'azote','ARI OBLIGATOIRE à l\'approche','Périmètre 25 m mini sous le vent']},
+          {ti:'⚡ Haute tension',c:'red',li:['400 à 800V selon modèle','Jamais sous l\'eau conductrice sans EPI HV','Coupe-circuit 12V uniquement']},
+          {ti:'🚒 Stratégie',c:'nv',li:['Refroidissement > extinction','Prévoir benne immersion si disponible','Demander renfort SDIS dès départ']}
+        ]
+      },
+      feu_vehicule_piste: {
+        l: 'Feu véhicule de piste / poids lourd',
+        al: [
+          {t:'Feu signalé sur un véhicule de piste ou poids lourd en zone côté piste.',b:1},
+          {t:'Fumée noire dense — pneus ou hydraulique possiblement impliqués.',i:1},
+          {t:'Intervenez — informez TWR — zone sécurisée.',b:1}
+        ],
+        q:'Type de véhicule (tracteur, loader, catering...) — Occupants ? — Carburant diesel ? — Matières transportées ? — TWR informée ?',
+        sit:['Feu de véhicule de piste en zone de manœuvre aéroportuaire.','Risque de gêne aux opérations aériennes.','Possible liaison hydraulique ou pneumatique impliquée.'],
+        sec:['TWR informée immédiatement — fermeture éventuelle piste concernée.','Pneus PL : risque d\'explosion — distance sécurité 25 m dans l\'axe des roues.','Liquide hydraulique : Skydrol possible sur certains engins.','Balisage zone de sécurité côté piste.'],
+        moyens_vpi:['VPI → Attaque directe foyer moteur ou habitacle.','VPI OPER. → Contact TWR — balisage zone — alerte SSLIA.'],
+        moyens_vim:['VIM 1 → Extinction et refroidissement véhicule sinistré.','VIM 2 → Protection aéronefs à proximité — surveillance propagation.'],
+        tc:[
+          {ti:'✈️ Coordination TWR',c:'red',li:['Informer TWR immédiatement','Fermeture voie de circulation possible','Pas de feu visible depuis tour ?']},
+          {ti:'💥 Pneus PL',c:'red',li:['25 m dans l\'axe des roues','Ne jamais s\'aligner sur les jantes','Refroidissement eau avant approche']},
+          {ti:'💧 Fluides',c:'nv',li:['Gazole : mousse si nappe au sol','Skydrol : corrosif — ARI si chauffé','Jet brouillard habitacle']},
+          {ti:'🚧 Zone',c:'nv',li:['Balisage côté piste obligatoire','Écarter aéronefs si possible','CR en fin d\'intervention à TWR']}
+        ]
+      }
+    }
+  },
+
+  feu_infrastructure: {
+    label: '⚡ Infrastructure technique',
+    themes: {
+      feu_panneaux_solaires: {
+        l: 'Feu / échauffement panneaux solaires',
+        al: [
+          {t:'Alarme incendie ou fumée signalée en toiture — panneaux solaires impliqués.',b:1},
+          {t:'Échauffement détecté ou arcs électriques visibles.',i:1},
+          {t:'Intervenez — HAUTE TENSION en toiture — procédure spécifique.',b:1}
+        ],
+        q:'Onduleur accessible ? — Coupe-circuit identifié ? — Accès toiture sécurisé ? — ENEDIS prévenu ?',
+        sit:['Feu ou échauffement sur installation photovoltaïque en toiture.','Panneaux solaires en tension même la nuit (charge résiduelle).','Risque électrique majeur — ne pas couper les câbles.'],
+        sec:['Panneaux sous tension MÊME la nuit et MÊME la pluie.','Couper uniquement par l\'onduleur ou ENEDIS — jamais les câbles DC.','Distance sécurité : 5 m minimum des panneaux sous tension.','Jet eau dispersé (brouillard) uniquement — jamais jet direct sur panneaux en tension.'],
+        moyens_vpi:['VPI → Refroidissement structure toiture — brouillard sur panneaux non endommagés.','VPI OPER. → Identification et coupure onduleur — contact ENEDIS.'],
+        moyens_vim:['VIM 1 → Alimentation eau toiture — positionnement façade.','VIM 2 → Protection propagation structure — surveillance sol.'],
+        tc:[
+          {ti:'☀️ Tension résiduelle',c:'red',li:['Toujours sous tension si lumineux','ENEDIS seul peut couper côté réseau','Ne JAMAIS couper câbles DC panneaux']},
+          {ti:'💧 Extinction',c:'red',li:['Jet brouillard UNIQUEMENT','Jamais jet direct sous tension','Distance 5 m minimum']},
+          {ti:'🔌 Coupure',c:'nv',li:['Onduleur : interrupteur DC et AC','ENEDIS pour déconnexion réseau','Attendre confirmation avant approche']},
+          {ti:'📞 Coordination',c:'nv',li:['ENEDIS prévenu immédiatement','Exploitant bâtiment requis','CR chef de service + exploitant']}
+        ]
+      },
+      feu_sous_station: {
+        l: 'Feu sous-station / centrale technique',
+        al: [
+          {t:'Feu signalé dans la sous-station électrique ou centrale technique.',b:1},
+          {t:'Déclenchement disjoncteur général — bâtiment concerné en panne.',i:1},
+          {t:'DANGER HAUTE TENSION — intervenez avec procédure HT.',b:1}
+        ],
+        q:'Tension concernée (BT/HTA) — Consignation effectuée ? — Agent habilité présent ? — Fumées toxiques (SF6) ?',
+        sit:['Feu dans une installation électrique haute ou basse tension.','Risque présence de SF6 (gaz isolant toxique dans les GIS).','Coupure générale possible — impact opérationnel aéroport.'],
+        sec:['SF6 : gaz incolore, asphyxiant — ARI OBLIGATOIRE.','Ne jamais intervenir en HTA sans consignation confirmée.','Attendre habilité électrique pour consignation.','CO2 uniquement sur installation électrique active.'],
+        moyens_vpi:['VPI → CO2 en attente de consignation — périmètre sécurité.','VPI OPER. → Prévenir exploitant technique — agent habilité — ENEDIS si HTA.'],
+        moyens_vim:['VIM 1 → Positionnement façade — attente consignation.','VIM 2 → Protection propagation — surveillance extérieure.'],
+        tc:[
+          {ti:'☣️ SF6',c:'red',li:['Gaz asphyxiant incolore inodore','ARI OBLIGATOIRE si local GIS','Ventiler avant désencapsulage']},
+          {ti:'⚡ HTA',c:'red',li:['Jamais d\'intervention sans consignation','Attendre agent habilité','CO2 uniquement si BT confirmé']},
+          {ti:'🔌 Consignation',c:'nv',li:['4 opérations : séparer, condamner, vérifier, mettre à la terre','Exploitant ou ENEDIS uniquement','Confirmation écrite avant accès']},
+          {ti:'📞 Acteurs',c:'nv',li:['ENEDIS pour HTA','Exploitant technique immédiatement','CR chef de service et autorités']}
+        ]
+      }
+    }
+  },
+
+  sauvetage: {
+    label: '🚨 Sauvetage / urgence',
+    themes: {
+      personne_coincee: {
+        l: 'Personne coincée / désincarcération',
+        al: [
+          {t:'Personne signalée coincée dans un véhicule ou local.',b:1},
+          {t:'Victime consciente — dégagement urgent requis.',i:1},
+          {t:'Intervenez — SAMU en route — sécurisation zone.',b:1}
+        ],
+        q:'Nombre de victimes — État de conscience — Accès possible — SAMU prévenu — Feu présent ?',
+        sit:['Personne coincée dans un véhicule ou espace confiné.','Sauvetage urgent — risque vital potentiel.','SAMU demandé — zone sécurisée en cours.'],
+        sec:['Ne jamais déplacer une victime sans protocole médical sauf danger immédiat.','Stabiliser le véhicule avant désincarcération.','Couper contact moteur et batterie 12V.','Couvrir les bris de verre — protéger la victime lors de la découpe.'],
+        moyens_vpi:['VPI → Sécurisation périmètre — protection anti-incendie de la victime.','VPI OPER. → Bilan victime — contact SAMU — maintien conscience.'],
+        moyens_vim:['VIM 1 → Extinction préventive si risque feu — protection couloir sauvetage.','VIM 2 → Appui sauvetage — éclairage si nuit.'],
+        tc:[
+          {ti:'🆘 Sauvetage',c:'red',li:['Victime prioritaire sur extinction','Ne pas déplacer sauf danger vital','Maintenir contact verbal avec victime']},
+          {ti:'🚗 Véhicule',c:'red',li:['Couper contact + batterie 12V','Stabiliser véhicule avant découpe','Couvrir la victime (bris de verre)']},
+          {ti:'🏥 SAMU',c:'nv',li:['Bilan médical complet (ABCDE)','Relais SAMU à l\'arrivée','CR régulier par radio']},
+          {ti:'🔒 Sécurité',c:'nv',li:['Périmètre de sécurité 10 m','Interdire curieux','CR chef de service']}
+        ]
+      },
+      malaise_zone_piste: {
+        l: 'Malaise / urgence médicale zone piste',
+        al: [
+          {t:'Malaise signalé en zone côté piste.',b:1},
+          {t:'Personne inconsciente ou en détresse respiratoire.',i:1},
+          {t:'SAMU demandé — intervenez immédiatement — TWR informée.',b:1}
+        ],
+        q:'Localisation précise — État de conscience — Respiration — Antécédents connus — Agent ou passager ?',
+        sit:['Urgence médicale en zone de manœuvre aéroportuaire.','Accès SAMU potentiellement difficile — rôle SSLIA primordial.','RCP possible en attente médecin.'],
+        sec:['Sécuriser la zone côté piste — signaler à TWR.','Appliquer protocole SAMU : RCP si nécessaire.','Accès défibrilateur le plus proche.','Ne pas déplacer si trauma possible.'],
+        moyens_vpi:['VPI → Accès rapide — matériel secours à personne (O2, DAE, trousse).','VPI OPER. → Bilan victime ABCDE — contact SAMU — RCP si nécessaire.'],
+        moyens_vim:['VIM 1 → Protection zone — balisage — guidage SAMU à l\'entrée.','VIM 2 → Réserve — appui équipe médicale à l\'arrivée.'],
+        tc:[
+          {ti:'💊 Bilan ABCDE',c:'red',li:['A: Airway - voies aériennes libres','B: Breathing - ventilation','C: Circulation - pouls, hémorragie']},
+          {ti:'❤️ RCP',c:'red',li:['30 compressions + 2 insufflations','DAE dès disponible','Ne pas interrompre jusqu\'à SAMU']},
+          {ti:'✈️ TWR',c:'nv',li:['Localisation GPS transmise','Fermeture voie si nécessaire','Guidage SAMU côté ville']},
+          {ti:'📞 Coordination',c:'nv',li:['SAMU 15 en premier contact','Relais médical à l\'arrivée','CR chef de service']}
+        ]
+      }
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   INIT & SÉLECTEURS
+═══════════════════════════════════════════════════════ */
+function updSousCat(){
+  const cat = document.getElementById('categorie').value;
+  const themes = CATS[cat].themes;
+  document.getElementById('sous_cat').innerHTML = Object.keys(themes)
+    .map(k=>`<option value="${k}">${themes[k].l}</option>`).join('');
+  // Afficher/masquer le nb VIM selon mode
+  const vehVal = document.querySelector('input[name="veh"]:checked').value;
+  document.getElementById('nb_vim').parentElement.parentElement.style.display =
+    vehVal === 'vpi' ? 'none' : '';
+}
+
+function addLieu(){
+  const v = document.getElementById('lieu_custom').value.trim();
+  if(!v) return;
+  const sel = document.getElementById('lieu');
+  const opt = document.createElement('option');
+  opt.value = v; opt.textContent = v; opt.selected = true;
+  sel.appendChild(opt);
+  document.getElementById('lieu_custom').value = '';
+}
+
+function autoAgents(){
+  const v = document.querySelector('input[name="veh"]:checked').value;
+  const agentsEl = document.getElementById('nb_agents');
+  const nbVimSel = parseInt(document.getElementById('nb_vim').value) || 1;
+  if(v === 'vpi'){
+    agentsEl.readOnly = false;
+    agentsEl.style.background = '';
+    agentsEl.style.color = '';
+  } else {
+    const agentsVim = nbVimSel * 2;
+    agentsEl.value = v === 'vpi_vim' ? agentsVim + 2 : agentsVim;
+    agentsEl.readOnly = true;
+    agentsEl.style.background = '#f5f5f5';
+    agentsEl.style.color = '#595959';
+  }
+  document.getElementById('nb_vim').parentElement.parentElement.style.display =
+    v === 'vpi' ? 'none' : '';
+}
+// Recalculer si on change le nb de VIM
+document.getElementById('nb_vim').addEventListener('change', autoAgents);
+
+updSousCat();
+autoAgents();
+
+/* ═══════════════════════════════════════════════════════
+   GÉNÉRATION FICHE
+═══════════════════════════════════════════════════════ */
+function genFiche(){
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  let catKey, themeKey;
+
+  if(mode === 'aleatoire'){
+    const cats = Object.keys(CATS);
+    catKey = cats[Math.floor(Math.random()*cats.length)];
+    const ths = Object.keys(CATS[catKey].themes);
+    themeKey = ths[Math.floor(Math.random()*ths.length)];
+    document.getElementById('categorie').value = catKey;
+    updSousCat();
+    document.getElementById('sous_cat').value = themeKey;
+  } else {
+    catKey = document.getElementById('categorie').value;
+    themeKey = document.getElementById('sous_cat').value;
+  }
+
+  const th = CATS[catKey].themes[themeKey];
+  const lieu = document.getElementById('lieu').value;
+  const vehType = document.querySelector('input[name="veh"]:checked').value;
+  const nbVim = vehType === 'vpi' ? 0 : parseInt(document.getElementById('nb_vim').value);
+  const nbAgents = parseInt(document.getElementById('nb_agents').value);
+  const now = new Date();
+  const date = now.toLocaleDateString('fr-FR');
+  const heure = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('fiche-zone').innerHTML = buildFiche(th, lieu, vehType, nbVim, nbAgents, date, heure, catKey, themeKey);
+  initSchema();
+}
+
+function getVehLabel(type, nbVim){
+  if(type==='vpi') return '<span class="badge-vpi">VPI</span> (2 agents)';
+  if(type==='vim') return `${nbVim}x <span class="badge-vim">VIM</span> (4 agents)`;
+  return `<span class="badge-vpi">VPI</span> + ${nbVim}x <span class="badge-vim">VIM</span> (4 agents)`;
+}
+
+function buildFiche(th, lieu, vehType, nbVim, nbAgents, date, heure, catKey, themeKey){
+  // Alerte
+  const alertHTML = th.al.map(a=>`<p class="${a.b?'bd':''} ${a.i?'it':''}">${a.t}</p>`).join('');
+
+  // Missions selon véhicules
+  let missionRows = '';
+  if(vehType==='vpi' || vehType==='vpi_vim'){
+    missionRows += `<tr><td class="sl svpi">P</td><td class="slb"><span class="svpil">VPI</span></td><td class="sc">${th.moyens_vpi.join('<br>')}</td></tr>`;
+  }
+  if(vehType==='vim' || vehType==='vpi_vim'){
+    const mims = th.moyens_vim;
+    for(let i=0;i<Math.min(nbVim,mims.length);i++){
+      missionRows += `<tr><td class="sl ss">${i+1}</td><td class="slb"><span class="ssl">VIM ${i+1}</span></td><td class="sc">${mims[i]}</td></tr>`;
+    }
+  }
+
+  // Consignes de sécurité
+  const secHTML = th.sec.map((s,i)=>`<tr><td class="sl ssec">${i+1}</td><td class="slb ssecl">SÉCURITÉ</td><td class="sc">${s}</td></tr>`).join('');
+
+  // Tableaux conseils
+  const tcHTML = `<div class="tg2">${th.tc.map(t=>`
+    <div class="tc">
+      <h4 style="color:${t.c==='red'?'var(--red)':'var(--navy)'}">${t.ti}</h4>
+      <ul>${t.li.map(l=>`<li>${l}</li>`).join('')}</ul>
+    </div>`).join('')}</div>`;
+
+  // Alerte véhicule électrique
+  const isElec = themeKey === 'feu_electrique';
+  const elecWarn = isElec ? `
+    <div class="elec-warn">
+      <div class="titre">⚡ PROTOCOLE VÉHICULE ÉLECTRIQUE</div>
+      <p>ARI obligatoire à l'approche — gaz HF, CO, oxydes d'azote.</p>
+      <p>Refroidissement batterie en eau abondante et continue — peut durer 4 à 24h+.</p>
+      <p>Jamais d'approche à moins de 3 m sans EPI diélectriques.</p>
+      <p>Prévoir renfort SDIS dès le départ — demander benne immersion.</p>
+    </div>` : '';
+
+  // Schéma générique bâtiment/lieu
+  const schemaHTML = buildSchema(vehType, nbVim);
+
+  // Évaluation formative
+  const evalHTML = buildFormative(th, lieu, vehType, nbVim, nbAgents, catKey, themeKey);
+
+  return `
+  <div class="fiche-hdr">
+    <div class="fhdr-l">
+      <h2>🔥 ${th.l.toUpperCase()}</h2>
+      <span>${lieu} — ${date} ${heure}</span>
+    </div>
+    <div class="fhdr-r"><span>${CATS[catKey].label}</span></div>
+  </div>
+  <div class="fiche-body">
+
+    <table class="id-t">
+      <tr>
+        <td class="lbl">Lieu</td><td class="vm">${lieu}</td>
+        <td class="lbl">Moyens</td><td class="vm">${getVehLabel(vehType,nbVim)}</td>
+      </tr>
+      <tr>
+        <td class="lbl">Agents</td><td>${nbAgents} agents</td>
+        <td class="lbl">Date / Heure</td><td>${date} ${heure}</td>
+      </tr>
+    </table>
+
+    ${elecWarn}
+
+    <div class="shdr or">📢 Déclenchement de l'alerte</div>
+    <div class="abox">${alertHTML}</div>
+
+    <div class="shdr nv">❓ Prise de renseignements</div>
+    <div class="qbox"><strong>Questions clés :</strong> ${th.q}</div>
+
+    <div class="shdr nv">🚒 Situation à l'arrivée</div>
+    <div class="abox">${th.sit.map(s=>`<p>${s}</p>`).join('')}</div>
+
+    <div class="shdr nv">📋 Missionnement des véhicules</div>
+    <table class="st">${missionRows}</table>
+
+    <div class="shdr nv">🗺️ Schéma d'intervention — Placement véhicules</div>
+    ${schemaHTML}
+
+    <div class="shdr rd">🛡️ Consignes de sécurité spécifiques</div>
+    <table class="st">${secHTML}</table>
+
+    <div class="shdr gy">📚 Références tactiques</div>
+    ${tcHTML}
+
+    <table class="id-t" style="margin-top:10px">
+      <tr>
+        <td class="lbl">Chef de manœuvre</td><td><input type="text" style="border:none;border-bottom:1px solid #ccc;width:120px;font-size:12px"></td>
+        <td class="lbl">Date exercice</td><td><input type="text" style="border:none;border-bottom:1px solid #ccc;width:100px;font-size:12px"></td>
+      </tr>
+    </table>
+
+    ${evalHTML}
+
+  </div>
+  <div class="fiche-footer">
+    <span>RFFS BOD — Exercice incendie terrestre</span>
+    <span>${lieu} · ${new Date().toLocaleDateString('fr-FR')}</span>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCHÉMA INTERACTIF — PLAN GÉNÉRIQUE
+═══════════════════════════════════════════════════════ */
+let selVehId = 'VPI';
+let vehDirs = {};
+let vehPositions = {};
+
+function buildSchema(vehType, nbVim){
+  // Badges de sélection véhicule
+  let badges = '';
+  if(vehType==='vpi' || vehType==='vpi_vim'){
+    badges += `<span class="vbadge vpi-b active" id="badge-VPI" data-vid="VPI" onclick="selVeh('VPI')">🚒 VPI</span>`;
+  }
+  if(vehType==='vim' || vehType==='vpi_vim'){
+    for(let i=1;i<=nbVim;i++){
+      badges += `<span class="vbadge vim-b" id="badge-VIM${i}" data-vid="VIM${i}" onclick="selVeh('VIM${i}')">🚒 VIM ${i}</span>`;
+    }
+  }
+  if(!badges) badges = '<span style="font-size:11px;color:var(--gray)">Aucun véhicule</span>';
+
+  return `
+  <div class="schema-wrap">
+    <!-- Barre véhicules -->
+    <div class="schema-ctrl no-print">
+      <span class="schema-ctrl-lbl">Véhicule :</span>
+      ${badges}
+      <button class="rot-btn" onclick="rotateSel()">↻ Rotation</button>
+      <button class="rst-btn" onclick="resetSchema()">✕ Reset</button>
+    </div>
+    <!-- Barre formes bâtiment -->
+    <div class="schema-shapes-bar no-print">
+      <span class="schema-ctrl-lbl" style="color:#5a3e10">Bâtiment :</span>
+      <button class="shape-btn" id="shape-btn-grand" onclick="selShape('grand')">▬ Grand</button>
+      <button class="shape-btn" id="shape-btn-moyen" onclick="selShape('moyen')">▬ Moyen</button>
+      <button class="shape-btn" id="shape-btn-petit" onclick="selShape('petit')">■ Petit</button>
+      <button class="shape-btn" id="shape-btn-carre" onclick="selShape('carre')">◼ Carré</button>
+      <span style="width:1px;background:#c0a870;margin:0 2px;align-self:stretch"></span>
+      <button class="shape-btn" id="btn-feu-inc" onclick="selToolFeu()">🔥 Feu</button>
+      <button class="shape-btn" id="btn-fumee-inc" onclick="selToolFumee()" style="color:#555;border-color:#aaa">🌫️ Fumée</button>
+      <button class="del-shape-btn" onclick="deleteLastShape()">⌫ Suppr</button>
+    </div>
+    <!-- SVG canvas -->
+    <div class="schema-svg-wrap">
+      <svg id="svg-incendie" viewBox="0 0 560 340" xmlns="http://www.w3.org/2000/svg"
+           style="cursor:crosshair" onclick="handleCanvasClick(event)">
+        <!-- Fond terrain -->
+        <rect width="560" height="340" fill="#e8eff7"/>
+        <!-- Quadrillage guide discret -->
+        <defs>
+          <pattern id="grid-inc" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(100,130,180,0.12)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="560" height="340" fill="url(#grid-inc)"/>
+        <!-- Voie d'accès générique -->
+        <rect x="0" y="148" width="70" height="44" fill="#b0bec5" opacity="0.7"/>
+        <line x1="70" y1="170" x2="110" y2="170" stroke="#ffd600" stroke-width="1.5" stroke-dasharray="7,5"/>
+        <text x="35" y="168" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" fill="#546e7a">ACCÈS</text>
+        <!-- Groupe calque formes bâtiment (inséré avant les véhicules) -->
+        <g id="shapes-layer"></g>
+        <!-- Hydrant -->
+        <circle cx="510" cy="60" r="13" fill="#e53935" stroke="#b71c1c" stroke-width="2"/>
+        <text x="510" y="64" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#fff">BI</text>
+        <!-- Légende -->
+        <g transform="translate(420,260)">
+          <rect width="130" height="70" fill="rgba(255,255,255,0.88)" rx="4" stroke="#ccc" stroke-width="1"/>
+          <circle cx="14" cy="16" r="6" fill="#e53935"/>
+          <text x="25" y="20" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Borne incendie</text>
+          <text x="8" y="38" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#7a2d00">VPI</text>
+          <text x="25" y="38" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VPI</text>
+          <text x="8" y="54" font-family="Segoe UI,sans-serif" font-size="8" font-weight="700" fill="#002F5F">VIM</text>
+          <text x="25" y="54" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">= VIM</text>
+          <text x="8" y="66" font-family="Segoe UI,sans-serif" font-size="9" fill="#C00000">🔥</text>
+          <text x="25" y="66" font-family="Segoe UI,sans-serif" font-size="9" fill="#263238">Foyer (déplaçable)</text>
+        </g>
+      </svg>
+    </div>
+    <div class="vim-positions-bar" id="veh-positions-bar">
+      <span style="color:var(--text-m);font-size:11px">Sélectionne un véhicule puis clique sur le plan — ajoute des formes bâtiment avec la barre au-dessus.</span>
+    </div>
+  </div>`;
+}
+
+function initSchema(){
+  selVehId = 'VPI';
+  vehDirs = {};
+  vehPositions = {};
+  incToolMode = 'vim'; // reset outil
+  incShapes = [];       // reset formes bâtiment
+  // Activer premier badge
+  const firstBadge = document.querySelector('.vbadge');
+  if(firstBadge){
+    selVehId = firstBadge.dataset.vid;
+    firstBadge.classList.add('active');
+  }
+  // Reset boutons feu/fumée visuellement
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.style.background=''; bf.style.color=''; bf.classList.remove('active-shape'); }
+  if(bs){ bs.style.background=''; bs.style.color=''; bs.classList.remove('active-shape'); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   OUTILS — MODE (vim | feu | fumee | shape:xxx)
+═══════════════════════════════════════════════════════ */
+let incToolMode = 'vim';
+
+function selToolFeu(){
+  incToolMode = 'feu';
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.classList.add('active-shape'); }
+  if(bs){ bs.classList.remove('active-shape'); }
+  document.querySelectorAll('.shape-btn:not(#btn-feu-inc):not(#btn-fumee-inc)').forEach(b=>b.classList.remove('active-shape'));
+}
+
+function selToolFumee(){
+  incToolMode = 'fumee';
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  const bf = document.getElementById('btn-feu-inc');
+  const bs = document.getElementById('btn-fumee-inc');
+  if(bf){ bf.classList.remove('active-shape'); }
+  if(bs){ bs.classList.add('active-shape'); }
+  document.querySelectorAll('.shape-btn:not(#btn-feu-inc):not(#btn-fumee-inc)').forEach(b=>b.classList.remove('active-shape'));
+}
+
+function selShape(size){
+  incToolMode = 'shape:' + size;
+  document.querySelectorAll('.vbadge').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
+  const btn = document.getElementById('shape-btn-' + size);
+  if(btn) btn.classList.add('active-shape');
+}
+
+/* ═══════════════════════════════════════════════════════
+   FORMES BÂTIMENT
+═══════════════════════════════════════════════════════ */
+let incShapes = [];
+let incShapeCounter = 0;
+
+const SHAPE_SIZES = {
+  grand:  { w: 200, h: 100 },
+  moyen:  { w: 130, h: 80  },
+  petit:  { w: 80,  h: 55  },
+  carre:  { w: 70,  h: 70  }
+};
+
+function addShape(size, cx, cy){
+  const svg = document.getElementById('svg-incendie');
+  const layer = document.getElementById('shapes-layer');
+  if(!svg || !layer) return;
+  const dim = SHAPE_SIZES[size] || SHAPE_SIZES.grand;
+  const id = 'shape-' + (++incShapeCounter);
+  const x = cx - dim.w/2, y = cy - dim.h/2;
+  incShapes.push({ id, size, x, y, w: dim.w, h: dim.h });
+  renderShape({ id, size, x, y, w: dim.w, h: dim.h });
+}
+
+function renderShape(s){
+  const svg = document.getElementById('svg-incendie');
+  const layer = document.getElementById('shapes-layer');
+  if(!layer) return;
+  const old = document.getElementById(s.id); if(old) old.remove();
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', s.id);
+  g.style.cursor = 'move';
+  g.dataset.sid = s.id;
+  g.dataset.x = s.x; g.dataset.y = s.y;
+  g.dataset.w = s.w; g.dataset.h = s.h;
+
+  g.innerHTML = `
+    <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}"
+          fill="#cfd8dc" stroke="#455a64" stroke-width="2.5" rx="3"/>
+    <text x="${s.x + s.w/2}" y="${s.y + s.h/2 + 4}" text-anchor="middle"
+          font-family="Segoe UI,sans-serif" font-size="11" font-weight="700" fill="#37474f">BÂTIMENT</text>`;
+
+  layer.appendChild(g);
+  enableShapeDrag(g, s);
+}
+
+function enableShapeDrag(g, s){
+  let dragging=false, sx=0, sy=0, sgx=0, sgy=0;
+  function svgCoords(e){
+    const svg=document.getElementById('svg-incendie');
+    const r=svg.getBoundingClientRect();
+    const vbW=svg.viewBox.baseVal.width, vbH=svg.viewBox.baseVal.height;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(cx-r.left)*(vbW/r.width),y:(cy-r.top)*(vbH/r.height)};
+  }
+  function onDown(e){
+    e.preventDefault(); e.stopPropagation(); dragging=true;
+    const p=svgCoords(e); sx=p.x; sy=p.y;
+    sgx=parseFloat(g.dataset.x); sgy=parseFloat(g.dataset.y);
+    g.style.opacity='0.72';
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onUp);
+  }
+  function onMove(e){
+    if(!dragging) return; e.preventDefault();
+    const p=svgCoords(e);
+    const nx=sgx+(p.x-sx), ny=sgy+(p.y-sy);
+    g.dataset.x=nx; g.dataset.y=ny;
+    const rect=g.querySelector('rect');
+    const txt=g.querySelector('text');
+    const w=parseFloat(g.dataset.w), h=parseFloat(g.dataset.h);
+    if(rect){ rect.setAttribute('x',nx); rect.setAttribute('y',ny); }
+    if(txt){ txt.setAttribute('x',nx+w/2); txt.setAttribute('y',ny+h/2+4); }
+    // sync dans incShapes
+    const shape = incShapes.find(sh=>sh.id===s.id);
+    if(shape){ shape.x=nx; shape.y=ny; }
+  }
+  function onUp(){
+    dragging=false; g.style.opacity='1';
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onUp);
+  }
+  g.addEventListener('mousedown',onDown);
+  g.addEventListener('touchstart',onDown,{passive:false});
+}
+
+function deleteLastShape(){
+  if(!incShapes.length) return;
+  const last = incShapes.pop();
+  const el = document.getElementById(last.id);
+  if(el) el.remove();
+}
+
+/* ═══════════════════════════════════════════════════════
+   BADGES FEU & FUMÉE (style RFFS)
+═══════════════════════════════════════════════════════ */
+function flammeIncSVG(sz){
+  sz=sz||44;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><radialGradient id="fgi'+sz+'" cx="50%" cy="72%" r="62%">'
+    +'<stop offset="0%" stop-color="#FFF9C4"/>'
+    +'<stop offset="30%" stop-color="#FFD600"/>'
+    +'<stop offset="65%" stop-color="#FF6D00"/>'
+    +'<stop offset="100%" stop-color="#B71C1C"/>'
+    +'</radialGradient></defs>'
+    +'<path d="M14,1 C14,1 11,7 9,9.5 C7.5,11.5 5,10.5 5,7.5 C3.5,10.5 3.5,14.5 5.5,17.5 C3,16.5 1,13.5 1,10.5 C0,14.5 2,19.5 5.5,22.5 C3.5,24.5 2.5,27.5 3.5,30 C2,28 1,25.5 1,23.5 C1,27.5 3,31.5 7,33.5 C9,34.5 11,35.5 11,37 C13,35 15,32 15,29 C17,32 17,35 15,37 C19,35 21,32 21,29 C21,26 19,23 21,21 C23,25 23,29 21,33 C25,29 25,23 21,19 C23,19 25,17 25,13 C23,15 21,15 19,13 C21,9 21,5 19,3 C18,6 17,9 15,11 C15,7 16,3 14,1 Z"'
+    +' fill="url(#fgi'+sz+')" stroke="#8B0000" stroke-width="0.8"/>'
+    +'</svg>';
+}
+
+function fumeeIncSVG(sz){
+  sz=sz||44;
+  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><linearGradient id="fmi'+sz+'" x1="0%" y1="0%" x2="30%" y2="100%">'
+    +'<stop offset="0%" stop-color="#E8E8E8"/>'
+    +'<stop offset="60%" stop-color="#BDBDBD"/>'
+    +'<stop offset="100%" stop-color="#9E9E9E"/>'
+    +'</linearGradient></defs>'
+    +'<circle cx="8" cy="18" r="6" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="14" cy="16" r="7.5" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<circle cx="21" cy="18" r="5.5" fill="url(#fmi'+sz+')" stroke="#757575" stroke-width="0.7"/>'
+    +'<rect x="3" y="19" width="20" height="5" fill="url(#fmi'+sz+')"/>'
+    +'<path d="M11,15 C11,12 13,10 12,7 C13,9 15,10 14,13" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'<path d="M17,14 C17,11 19,9 18,6 C19,8 21,9 20,12" fill="none" stroke="#9E9E9E" stroke-width="1.3" stroke-linecap="round"/>'
+    +'<rect x="3" y="24" width="22" height="2" fill="#9E9E9E" rx="1"/>'
+    +'</svg>';
+}
+
+function svgToB64Inc(svgStr){
+  try{ return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr))); }
+  catch(e){ return 'data:image/svg+xml;base64,' + btoa(svgStr); }
+}
+
+function placeFoyerInc(type, cx, cy){
+  const svg = document.getElementById('svg-incendie');
+  if(!svg) return;
+  const mid = 'inc-marker-' + type;
+  const old = document.getElementById(mid); if(old) old.remove();
+  const sz = 44;
+  const iconSrc = svgToB64Inc(type==='feu' ? flammeIncSVG(sz) : fumeeIncSVG(sz));
+  const tx = cx - sz/2;
+  const ty = type==='feu' ? cy - sz : cy - sz/2;
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id', mid);
+  g.style.cursor = 'move';
+  g.dataset.cx = cx; g.dataset.cy = cy; g.dataset.type = type;
+  const shadow = type==='feu'
+    ? `<ellipse cx="${cx}" cy="${cy}" rx="14" ry="5" fill="rgba(0,0,0,0.25)"/>`
+    : '';
+  g.innerHTML = shadow + `<image href="${iconSrc}" x="${tx}" y="${ty}" width="${sz}" height="${sz}" style="pointer-events:all"/>`;
+  svg.appendChild(g);
+  enableFoyerIncDrag(g, type, sz);
+}
+
+function enableFoyerIncDrag(g, type, sz){
+  let dragging=false, sX=0, sY=0, sCx=0, sCy=0;
+  sz=sz||44;
+  function gP(e){
+    const svg=document.getElementById('svg-incendie'), r=svg.getBoundingClientRect();
+    const w=svg.viewBox.baseVal.width, h=svg.viewBox.baseVal.height;
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(cx-r.left)*(w/r.width),y:(cy-r.top)*(h/r.height)};
+  }
+  function dn(e){ e.preventDefault(); e.stopPropagation(); dragging=true;
+    const p=gP(e); sX=p.x; sY=p.y;
+    sCx=parseFloat(g.dataset.cx); sCy=parseFloat(g.dataset.cy);
+    g.style.opacity='0.72';
+    document.addEventListener('mousemove',mv);
+    document.addEventListener('mouseup',up);
+    document.addEventListener('touchmove',mv,{passive:false});
+    document.addEventListener('touchend',up);
+  }
+  function mv(e){ if(!dragging) return; e.preventDefault();
+    const p=gP(e); const ncx=sCx+(p.x-sX), ncy=sCy+(p.y-sY);
+    g.dataset.cx=ncx; g.dataset.cy=ncy;
+    const img=g.querySelector('image'), ell=g.querySelector('ellipse');
+    if(img){ img.setAttribute('x',ncx-sz/2); img.setAttribute('y',type==='feu'?ncy-sz:ncy-sz/2); }
+    if(ell){ ell.setAttribute('cx',ncx); ell.setAttribute('cy',ncy); }
+  }
+  function up(){ dragging=false; g.style.opacity='1';
+    document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
+    document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up);
+  }
+  g.addEventListener('mousedown',dn);
+  g.addEventListener('touchstart',dn,{passive:false});
+}
+
+/* ═══════════════════════════════════════════════════════
+   DISPATCHER CLICK CANVAS
+═══════════════════════════════════════════════════════ */
+function handleCanvasClick(evt){
+  // Ignorer si clic sur un élément draggable déjà posé
+  if(evt.target.closest && (
+    evt.target.closest('[id^="marker-veh-"]') ||
+    evt.target.closest('[id^="shape-"]') ||
+    evt.target.closest('[id^="inc-marker-"]')
+  )) return;
+
+  const svg = document.getElementById('svg-incendie');
+  const r = svg.getBoundingClientRect();
+  const vbW = svg.viewBox.baseVal.width, vbH = svg.viewBox.baseVal.height;
+  const x = (evt.clientX - r.left)*(vbW/r.width);
+  const y = (evt.clientY - r.top)*(vbH/r.height);
+
+  if(incToolMode === 'feu'){
+    placeFoyerInc('feu', x, y);
+  } else if(incToolMode === 'fumee'){
+    placeFoyerInc('fumee', x, y);
+  } else if(incToolMode.startsWith('shape:')){
+    const size = incToolMode.split(':')[1];
+    addShape(size, x, y);
+  } else {
+    // mode vim — placement véhicule
+    placeVehAt(selVehId, x, y);
+  }
+}
+
+function selVeh(vid){
+  incToolMode = 'vim';
+  selVehId = vid;
+  document.querySelectorAll('.vbadge').forEach(b=>{
+    b.classList.toggle('active', b.dataset.vid === vid);
+  });
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
+}
+
+function rotateSel(){
+  vehDirs[selVehId] = ((vehDirs[selVehId]||0) + 90) % 360;
+  redrawVehMarker(selVehId);
+}
+
+function resetSchema(){
+  // Supprimer tous les marqueurs véhicules
+  document.querySelectorAll('[id^="marker-veh-"]').forEach(m=>m.remove());
+  // Supprimer formes bâtiment
+  const layer = document.getElementById('shapes-layer');
+  if(layer) layer.innerHTML = '';
+  incShapes = [];
+  // Supprimer badges feu/fumée
+  ['inc-marker-feu','inc-marker-fumee'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.remove();
+  });
+  vehPositions = {};
+  vehDirs = {};
+  incToolMode = 'vim';
+  document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active-shape'));
+  const firstBadge = document.querySelector('.vbadge');
+  if(firstBadge){ selVehId = firstBadge.dataset.vid; }
+  document.querySelectorAll('.vbadge').forEach(b=>{
+    b.classList.toggle('active', b.dataset.vid === selVehId);
+  });
+  document.getElementById('veh-positions-bar').innerHTML =
+    '<span style="color:var(--text-m);font-size:11px">Sélectionne un véhicule puis clique sur le plan — ajoute des formes bâtiment avec la barre au-dessus.</span>';
+}
+
+// (placeVehSchema remplacé par handleCanvasClick)
+
+function placeVehAt(vid, x, y){
+  vehPositions[vid] = {x,y};
+  redrawVehMarker(vid);
+  updatePosBar();
+}
+
+function redrawVehMarker(vid){
+  const svg = document.getElementById('svg-incendie');
+  if(!svg) return;
+  const old = document.getElementById('marker-veh-'+vid);
+  if(old) old.remove();
+
+  const isVpi = vid === 'VPI';
+  const color = isVpi ? '#7a2d00' : '#002F5F';
+  const pos = vehPositions[vid];
+  if(!pos) return;
+  const angle = vehDirs[vid]||0;
+  const sz = 52;
+  const {x, y} = pos;
+
+  // Créer groupe
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('id','marker-veh-'+vid);
+  g.style.cursor='move';
+  g.dataset.vid = vid;
+  g.dataset.cx = x;
+  g.dataset.cy = y;
+
+  // SVG truck inline
+  const cx = x, cy = y;
+  const half = sz/2;
+  // Transformations de rotation
+  const trk = buildTruckSVG(vid, color, isVpi, cx, cy, half, angle);
+  g.innerHTML = trk;
+  svg.appendChild(g);
+  enableVehDrag(g, vid);
+}
+
+function buildTruckSVG(vid, color, isVpi, cx, cy, half, angle){
+  const label = vid;
+  // Simple rectangle-camion avec label
+  const w = half*2, h = half*1.1;
+  const tx = cx - w/2, ty = cy - h/2;
+  const rot = `rotate(${angle},${cx},${cy})`;
+  return `
+    <g transform="${rot}">
+      <rect x="${tx}" y="${ty}" width="${w}" height="${h}" fill="${color}" rx="4" stroke="#fff" stroke-width="2"/>
+      <rect x="${tx+2}" y="${ty+2}" width="${w*0.32}" height="${h-4}" fill="#1a1a1a" rx="2"/>
+      <text x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="central"
+        font-family="Arial Black,sans-serif" font-size="${isVpi?10:11}" font-weight="900" fill="#fff">${label}</text>
+    </g>`;
+}
+
+function enableVehDrag(g, vid){
+  let dragging=false, sx=0, sy=0, scx=0, scy=0;
+  function svgCoords(evt){
+    const svg=document.getElementById('svg-incendie');
+    const r=svg.getBoundingClientRect();
+    const vbW=svg.viewBox.baseVal.width, vbH=svg.viewBox.baseVal.height;
+    const cx=evt.touches?evt.touches[0].clientX:evt.clientX;
+    const cy=evt.touches?evt.touches[0].clientY:evt.clientY;
+    return{x:(cx-r.left)*(vbW/r.width),y:(cy-r.top)*(vbH/r.height)};
+  }
+  function onDown(e){
+    e.preventDefault();e.stopPropagation();dragging=true;
+    const p=svgCoords(e);sx=p.x;sy=p.y;
+    scx=parseFloat(g.dataset.cx);scy=parseFloat(g.dataset.cy);
+    g.style.opacity='0.7';
+    document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onUp);
+  }
+  function onMove(e){
+    if(!dragging)return;e.preventDefault();
+    const p=svgCoords(e);
+    const nx=scx+(p.x-sx), ny=scy+(p.y-sy);
+    g.dataset.cx=nx;g.dataset.cy=ny;
+    vehPositions[vid]={x:nx,y:ny};
+    redrawVehMarker(vid);
+    updatePosBar();
+  }
+  function onUp(){
+    dragging=false;g.style.opacity='1';
+    document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);
+  }
+  g.addEventListener('mousedown',onDown);
+  g.addEventListener('touchstart',onDown,{passive:false});
+}
+
+// (enableFeuDrag remplacé par enableFoyerIncDrag / placeFoyerInc)
+
+function updatePosBar(){
+  const bar = document.getElementById('veh-positions-bar');
+  if(!bar) return;
+  const entries = Object.keys(vehPositions).map(vid=>{
+    const isVpi = vid==='VPI';
+    return `<span style="margin:0 5px;background:${isVpi?'#7a2d00':'var(--navy)'};color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">${vid} → placé</span>`;
+  });
+  bar.innerHTML = entries.length ? entries.join('') : '<span style="color:var(--text-m);font-size:11px">Aucun véhicule placé</span>';
+}
+
+/* ═══════════════════════════════════════════════════════
+   ÉVALUATION FORMATIVE
+═══════════════════════════════════════════════════════ */
+function buildFormative(th, lieu, vehType, nbVim, nbAgents, catKey, themeKey){
+  // Lignes intervenants
+  let intervRows = '';
+  if(vehType==='vpi'||vehType==='vpi_vim'){
+    intervRows += `<tr><td class="vpi-hdr" colspan="1">VPI</td>
+      <td><input type="text" placeholder="Conducteur..."></td>
+      <td><input type="text" placeholder="Opérateur..."></td></tr>`;
+  }
+  if(vehType==='vim'||vehType==='vpi_vim'){
+    for(let i=1;i<=nbVim;i++){
+      intervRows += `<tr><td class="vim-hdr">VIM ${i}</td>
+        <td><input type="text" placeholder="Conducteur..."></td>
+        <td><input type="text" placeholder="Opérateur..."></td></tr>`;
+    }
+  }
+
+  const checkItems = [
+    'Transmission alarme correcte','Nature et localisation identifiées',
+    'Moyens adaptés engagés','CR chef de service effectué',
+    'SGS / exploitant contacté','Coupure énergie demandée',
+    'Périmètre sécurité établi','ARI mis en œuvre si nécessaire'
+  ];
+  const checkHTML = checkItems.map(item=>`
+    <div class="ff-check-row">
+      <span class="label">${item}</span>
+      <div class="ff-oui-non">
+        <label><input type="radio" name="chk_${item.replace(/\s/g,'_')}"> Oui</label>
+        <label><input type="radio" name="chk_${item.replace(/\s/g,'_')}"> Non</label>
+      </div>
+    </div>`).join('');
+
+  const gestionItems = ['Port des EPI','Respect zones de danger','Feu maîtrisé','Feu éteint',
+    'Refroidissement post-extinction','Demande de renfort adaptée','Sauvetage réalisé si nécessaire',
+    'Surveillance après extinction','CR final transmis'];
+  const gestionRows = gestionItems.map(item=>`<tr>
+    <td class="item-lbl">${item}</td>
+    <td style="text-align:center"><input type="checkbox"></td>
+    <td style="text-align:center"><input type="checkbox"></td>
+    <td style="text-align:center"><input type="checkbox"></td>
+  </tr>`).join('');
+
+  return `
+  <div class="ff-wrap no-print" id="fiche-formative">
+    <div class="ff-hdr">
+      <h3>📋 ÉVALUATION FORMATIVE</h3>
+      <span>${lieu} — ${th.l}</span>
+    </div>
+    <div class="ff-body">
+
+      <div class="ff-section">
+        <div class="ff-section-title">Intervenants</div>
+        <table class="ff-interv">
+          <tr><th>Véhicule</th><th>Conducteur</th><th>Opérateur</th></tr>
+          ${intervRows}
+        </table>
+      </div>
+
+      <div class="ff-section">
+        <div class="ff-section-title">
+          Prise de renseignements
+          <div class="ff-radio-grp" style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:0">
+            Etat :
+            <label><input type="radio" name="etat_inc" value="veille"> Veille</label>
+            <label><input type="radio" name="etat_inc" value="alerte" checked> Alerte</label>
+            <label><input type="radio" name="etat_inc" value="urgence"> Urgence</label>
+          </div>
+        </div>
+        <div class="ff-checklist">${checkHTML}</div>
+        <textarea class="ff-obs" placeholder="Observations prise de renseignements..."></textarea>
+      </div>
+
+      <div class="ff-section">
+        <div class="ff-section-title">Placement et attaque</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
+          <strong style="font-size:12px;align-self:center">Placement :</strong>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement_inc" value="adapté"> Adapté</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement_inc" value="trop_loin"> Trop loin</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="placement_inc" value="trop_pres"> Trop près</label>
+        </div>
+        <div class="ff-attaque">
+          <label class="ff-attaque-item"><input type="checkbox"> En dynamique</label>
+          <label class="ff-attaque-item"><input type="checkbox"> En statique</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Moyens adaptés</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Moyens non adaptés</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Mise en œuvre rapide</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Mise en œuvre lente</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Coordination correcte</label>
+          <label class="ff-attaque-item"><input type="checkbox"> Problèmes de coordination</label>
+        </div>
+        <textarea class="ff-obs" placeholder="Observations placement et attaque..."></textarea>
+      </div>
+
+      <div class="ff-section">
+        <div class="ff-section-title">Gestion de l'intervention</div>
+        <table class="ff-gestion">
+          <thead><tr><th style="text-align:left">Critère</th><th>Oui</th><th>Non</th><th>S/O</th></tr></thead>
+          <tbody>${gestionRows}</tbody>
+        </table>
+        <textarea class="ff-obs" placeholder="Observations gestion..."></textarea>
+      </div>
+
+      <div class="ff-section" style="background:#f8f8f8;border-radius:6px;padding:11px;border:1px solid #e0e0e0;">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;">Résultat</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 13px;border:2px solid #2d6a2d;border-radius:6px;background:#fff;">
+            <input type="radio" name="inc_resultat" value="validé"> <span style="color:#2d6a2d;font-weight:700;">✓ VALIDÉ</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 13px;border:2px solid var(--red);border-radius:6px;background:#fff;">
+            <input type="radio" name="inc_resultat" value="non_validé"> <span style="color:var(--red);font-weight:700;">✗ NON VALIDÉ</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 13px;border:2px solid var(--amber);border-radius:6px;background:#fff;">
+            <input type="radio" name="inc_resultat" value="à_revoir"> <span style="color:var(--amber);font-weight:700;">⚠ À REVOIR</span>
+          </label>
+        </div>
+        <textarea class="ff-obs" id="obs-generale-inc" placeholder="Observations générales de l'évaluateur..." style="margin-bottom:10px;min-height:60px;"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="saveIncendie()"
+            style="flex:1;padding:9px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+            💾 Enregistrer la fiche
+          </button>
+          <button onclick="window.print()"
+            style="flex:1;padding:9px;background:#fff;color:var(--navy);border:1.5px solid var(--navy);border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">
+            🖨️ Imprimer
+          </button>
+        </div>
+        <div id="save-confirm-inc" style="display:none;text-align:center;margin-top:8px;font-size:12px;color:#2d6a2d;font-weight:700;">✓ Fiche enregistrée dans l'historique !</div>
+        <div id="save-error-inc" style="display:none;text-align:center;margin-top:8px;font-size:12px;color:var(--red);font-weight:600;"></div>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CLOUD — HISTORIQUE INCENDIE
+═══════════════════════════════════════════════════════ */
+const KEY_DATA_INC = 'rffs_incendie_fiches';
+
+async function saveIncendie() {
+  // Récupérer le résultat sélectionné
+  const resEl = document.querySelector('input[name="inc_resultat"]:checked');
+  if(!resEl){
+    showSaveError('Sélectionne un résultat avant d\'enregistrer.');
+    return;
+  }
+  const resultat = resEl.value;
+  const obs = (document.getElementById('obs-generale-inc') || {}).value || '';
+
+  // Récupérer les paramètres depuis les sélecteurs du panneau
+  const lieu      = document.getElementById('lieu').value;
+  const sousCatEl = document.getElementById('sous_cat');
+  const catEl     = document.getElementById('categorie');
+  const themeLabel = sousCatEl ? sousCatEl.options[sousCatEl.selectedIndex].text : '';
+  const vehType   = document.querySelector('input[name="veh"]:checked').value;
+  const nbAgents  = document.getElementById('nb_agents').value;
+
+  const now   = new Date();
+  const date  = now.toLocaleDateString('fr-FR');
+  const heure = now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  // ── Capturer le schéma SVG avec tous les marqueurs ──────────────────────────
+  let schemaHtml = '';
+  const svgInc = document.getElementById('svg-incendie');
+  if(svgInc){
+    const serializer = new XMLSerializer();
+    let svgStr = serializer.serializeToString(svgInc);
+    svgStr = svgStr.replace(/<svg /, '<svg style="width:100%;height:auto;max-width:100%;" ');
+    schemaHtml = svgStr;
+  }
+
+  // ── Capturer le HTML de la fiche formative ──────────────────────────────────
+  const ficheFormEl = document.getElementById('fiche-formative');
+  let ficheFormHtml = '';
+  if(ficheFormEl){
+    const clone = ficheFormEl.cloneNode(true);
+    // Remplacer le SVG cloné par le SVG sérialisé
+    const svgClone = clone.querySelector('#svg-incendie');
+    if(svgClone && schemaHtml){
+      const tmp = document.createElement('div');
+      tmp.innerHTML = schemaHtml;
+      const freshSvg = tmp.firstElementChild;
+      if(freshSvg) svgClone.parentNode.replaceChild(freshSvg, svgClone);
+    }
+    // Supprimer boutons interactifs
+    clone.querySelectorAll('button').forEach(b => b.remove());
+    ficheFormHtml = clone.outerHTML;
+  }
+
+  const fiche = {
+    id: Date.now(),
+    date, heure,
+    lieu,
+    theme: themeLabel,
+    vehType,
+    agents: nbAgents,
+    resultat,
+    observations: obs,
+    schemaHtml,
+    ficheFormHtml,
+    source: 'Incendie',
+    cloud: 'non'
+  };
+
+  // Enregistrement sur l'appareil
+  const stored = JSON.parse(localStorage.getItem(KEY_DATA_INC) || '[]');
+  stored.unshift(fiche);
+  if(!RFFS.stocker(KEY_DATA_INC, stored)) return;
+
+  // Envoi vers le cloud (le fichier commun affiche lui-même l'état de l'envoi)
+  const etat = await RFFS.saveFiche(fiche);
+  const ok = etat === 'envoyee';
+
+  // Feedback
+  const confirmEl = document.getElementById('save-confirm-inc');
+  const errEl     = document.getElementById('save-error-inc');
+  if(confirmEl){
+    confirmEl.style.display = 'block';
+    confirmEl.textContent = ok
+      ? '✓ Fiche enregistrée et synchronisée !'
+      : '✓ Fiche enregistrée sur cet appareil';
+    setTimeout(()=>{ confirmEl.style.display='none'; }, 4000);
+  }
+  if(errEl) errEl.style.display = 'none';
+}
+
+function showSaveError(msg){
+  const errEl = document.getElementById('save-error-inc');
+  if(errEl){ errEl.textContent = msg; errEl.style.display='block'; }
+}
+</script>
+</body>
+</html>
