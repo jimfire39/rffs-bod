@@ -30,7 +30,7 @@ var AGENTS = {};
 var RFFS = (function () {
   'use strict';
 
-  var VERSION = '12/11/2026 – 3';
+  var VERSION = '12/11/2026 – 4';
   var CLE_AGENTS = 'rffs_agents_cache';
   var LIBELLES   = { formateur: 'Formateur', chef: 'Chef de service' };
   var DELAI_MS   = 5000;          // au-delà, on considère qu'il n'y a pas de réseau
@@ -531,7 +531,7 @@ var RFFS = (function () {
     elToast.className = type || 'info';
     elToast.style.display = 'block';
     clearTimeout(minuterieToast);
-    minuterieToast = setTimeout(function () { elToast.style.display = 'none'; }, 4500);
+    minuterieToast = setTimeout(function () { elToast.style.display = 'none'; }, type === 'err' ? 10000 : 4500);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', monter);
