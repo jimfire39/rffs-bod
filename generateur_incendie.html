@@ -165,6 +165,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#eef2f7;color:var(--
 @media print{.app-header,.panel,.no-print{display:none!important;}.app-body{display:block;padding:0;}.fiche-wrap{border:none;border-radius:0;}body{background:#fff;}}
 @media(max-width:820px){.app-body{grid-template-columns:1fr;}.panel{position:static;}.ff-checklist,.tg2,.ff-attaque{grid-template-columns:1fr;}}
 </style>
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js?v=4"></script>
 </head>
 <body>
 
@@ -1371,41 +1376,9 @@ function buildFormative(th, lieu, vehType, nbVim, nbAgents, catKey, themeKey){
 }
 
 /* ═══════════════════════════════════════════════════════
-   SUPABASE — HISTORIQUE INCENDIE
+   CLOUD — HISTORIQUE INCENDIE
 ═══════════════════════════════════════════════════════ */
-const SUPA_URL = 'https://swrjwiujatbbpmznaffc.supabase.co';
-const SUPA_KEY = 'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E';
 const KEY_DATA_INC = 'rffs_incendie_fiches';
-
-async function supabaseInsertInc(fiche) {
-  try {
-    const res = await fetch(SUPA_URL + '/rest/v1/fiches', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPA_KEY,
-        'Authorization': 'Bearer ' + SUPA_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        date:         fiche.date        || '',
-        heure:        fiche.heure       || '',
-        aeronef:      fiche.lieu        || '',   // réutilise le champ aeronef pour le lieu
-        theme:        fiche.theme       || '',
-        niveau:       0,
-        conditions:   fiche.vehType    || '',    // réutilise conditions pour le type véhicule
-        agents:       String(fiche.agents || ''),
-        resultat:     fiche.resultat    || '',
-        observations: fiche.observations|| '',
-        source:       'Incendie'
-      })
-    });
-    return res.ok;
-  } catch(e) {
-    console.warn('Supabase offline:', e.message);
-    return false;
-  }
-}
 
 async function saveIncendie() {
   // Récupérer le résultat sélectionné
@@ -1468,16 +1441,18 @@ async function saveIncendie() {
     observations: obs,
     schemaHtml,
     ficheFormHtml,
-    source: 'Incendie'
+    source: 'Incendie',
+    cloud: 'non'
   };
 
-  // LocalStorage
+  // Enregistrement sur l'appareil
   const stored = JSON.parse(localStorage.getItem(KEY_DATA_INC) || '[]');
   stored.unshift(fiche);
-  localStorage.setItem(KEY_DATA_INC, JSON.stringify(stored));
+  if(!RFFS.stocker(KEY_DATA_INC, stored)) return;
 
-  // Supabase
-  const ok = await supabaseInsertInc(fiche);
+  // Envoi vers le cloud (le fichier commun affiche lui-même l'état de l'envoi)
+  const etat = await RFFS.saveFiche(fiche);
+  const ok = etat === 'envoyee';
 
   // Feedback
   const confirmEl = document.getElementById('save-confirm-inc');
@@ -1486,7 +1461,7 @@ async function saveIncendie() {
     confirmEl.style.display = 'block';
     confirmEl.textContent = ok
       ? '✓ Fiche enregistrée et synchronisée !'
-      : '✓ Fiche enregistrée localement (sync offline)';
+      : '✓ Fiche enregistrée sur cet appareil';
     setTimeout(()=>{ confirmEl.style.display='none'; }, 4000);
   }
   if(errEl) errEl.style.display = 'none';

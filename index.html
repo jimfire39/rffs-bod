@@ -233,6 +233,11 @@ footer{background:var(--noir);text-align:center;padding:20px;font-size:13px;colo
   gtag('js', new Date());
   gtag('config', 'G-Y8BKS8L5MS');
 </script>
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js?v=4"></script>
 </head>
 <body>
 
@@ -746,63 +751,25 @@ function renderDocs() {
   el.innerHTML = html;
 }
 
-// ===== ADMIN =====
-var ADMIN_PWD = 'RFFSBOD96';
-var isAdmin = false;
-
+// ===== ADMIN (bandeau d'accueil, réservé au chef de service) =====
 function openAdmin() {
-  if (isAdmin) {
+  RFFS.requireRole('chef', function () {
     openModal('modal-admin');
     var saved = localStorage.getItem('rffs-banner') || 'Bienvenue sur RFFS BOD Formation 🚑';
     document.getElementById('banner-input').value = saved;
-  } else {
-    document.getElementById('pwd-input').value = '';
-    document.getElementById('pwd-error').style.display = 'none';
-    openModal('modal-pwd');
-  }
-}
-
-function checkPwd() {
-  var val = document.getElementById('pwd-input').value;
-  if (val === ADMIN_PWD) {
-    isAdmin = true;
-    closeModal('modal-pwd');
-    openModal('modal-admin');
-    var saved = localStorage.getItem('rffs-banner') || 'Bienvenue sur RFFS BOD Formation 🚑';
-    document.getElementById('banner-input').value = saved;
-  } else {
-    document.getElementById('pwd-error').style.display = 'block';
-  }
+  });
 }
 
 async function saveBanner() {
   var txt = document.getElementById('banner-input').value.trim();
   if (!txt) return;
-  // Sauvegarder local
+  var res = await RFFS.setBandeau(txt);
+  if (res === false) {
+    RFFS.toast('Bandeau non modifié : action réservée au chef de service.', 'err');
+    return;
+  }
   localStorage.setItem('rffs-banner', txt);
   document.getElementById('banner-text').textContent = txt;
-  // Sauvegarder dans Supabase — upsert (update ou insert)
-  try {
-    // D'abord supprimer l'ancien
-    await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau?id=gt.0', {
-      method: 'DELETE',
-      headers: {'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E','Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E'}
-    });
-    // Insérer le nouveau
-    await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau', {
-      method: 'POST',
-      headers: {
-        'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E',
-        'Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E',
-        'Content-Type':'application/json',
-        'Prefer':'return=minimal'
-      },
-      body: JSON.stringify({texte: txt})
-    });
-    console.log('Bandeau synchronisé sur Supabase');
-  } catch(e) {
-    console.warn('Supabase bandeau erreur:', e);
-  }
   var s = document.getElementById('banner-success');
   s.style.display = 'block';
   setTimeout(function(){ s.style.display = 'none'; closeModal('modal-admin'); }, 1500);
@@ -843,17 +810,6 @@ function sendForm(e) {
   });
 }
 </script>
-
-<!-- MODAL MOT DE PASSE ADMIN -->
-<div class="modal-overlay" id="modal-pwd">
-  <div class="modal-box">
-    <div class="modal-title">🔐 Accès Admin</div>
-    <input class="modal-input" type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
-    <div class="modal-error" id="pwd-error">Mot de passe incorrect.</div>
-    <button class="modal-btn" onclick="checkPwd()">Entrer</button>
-    <button class="modal-btn-sec" onclick="closeModal('modal-pwd')">Annuler</button>
-  </div>
-</div>
 
 <!-- MODAL ADMIN BANDEAU -->
 <div class="modal-overlay" id="modal-admin">
@@ -957,27 +913,14 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   animate();
 
-  // BANDEAU ADMIN — charger depuis Supabase en priorité
-  (async function(){
-    try {
-      const res = await fetch('https://swrjwiujatbbpmznaffc.supabase.co/rest/v1/bandeau?order=updated_at.desc&limit=1', {
-        cache: 'no-store',
-        headers: {'apikey':'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E','Authorization':'Bearer sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E'}
-      });
-      const data = await res.json();
-      if(data && data.length > 0 && data[0].texte){
-        const txt = data[0].texte;
-        localStorage.setItem('rffs-banner', txt);
-        document.getElementById('banner-text').textContent = txt;
-        return;
-      }
-    } catch(e) {
-      // Fallback silencieux vers localStorage
-    }
-    // Fallback local
-    var savedBanner = localStorage.getItem('rffs-banner');
-    if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
-  })();
+  // BANDEAU — texte du cloud en priorité, sinon dernier texte connu sur l'appareil
+  var savedBanner = localStorage.getItem('rffs-banner');
+  if (savedBanner) document.getElementById('banner-text').textContent = savedBanner;
+  RFFS.getBandeau().then(function (txt) {
+    if (!txt) return;
+    localStorage.setItem('rffs-banner', txt);
+    document.getElementById('banner-text').textContent = txt;
+  });
 });
 
 // ── TUTORIEL PYRO ────────────────────────────────────────────────────────────
@@ -1076,14 +1019,14 @@ const TUTO_SAVE = [
   },
   {
     icon:"💾", title:"Enregistrer la fiche", desc:"Sauvegarde locale + synchronisation cloud automatique.",
-    msg:"La fiche est sauvegardée localement ET sur Supabase. Accessible depuis tous les appareils !",
+    msg:"La fiche est sauvegardée sur l'appareil ET dans le cloud. Accessible depuis tous les appareils !",
     anim:"jump",
     preview:`<div style="padding:8px;width:230px;">
       <div style="background:var(--navy);color:#fff;border-radius:4px;padding:6px;text-align:center;font-size:8px;font-weight:700;margin-bottom:5px;">💾 Enregistrer la fiche</div>
       <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
         <div style="font-size:7px;color:#555;">🖥️ Local</div>
         <div style="font-size:9px;color:var(--orange);">→</div>
-        <div style="font-size:7px;color:#555;">☁️ Supabase</div>
+        <div style="font-size:7px;color:#555;">☁️ Cloud</div>
       </div>
       <div style="text-align:center;margin-top:5px;font-size:7px;color:#375623;font-weight:600;">✓ Fiche enregistrée avec succès !</div>
     </div>`

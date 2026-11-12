@@ -57,6 +57,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .modal-field{margin-bottom:12px;}
 .modal-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
 .modal-value{font-size:13px;color:var(--text);}
+.chef-only{display:none!important;}
+body.is-chef .chef-only{display:inline-flex!important;}
 .modal-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 @media print{.modal-overlay{display:block!important;position:static;background:none;padding:0;}
 .modal{box-shadow:none;max-height:none;border-radius:0;}
@@ -98,6 +100,11 @@ input:focus{border-color:var(--navy);}
   .fiches-hdr>:nth-child(4){display:none;}
 }
 </style>
+<!-- Firebase (bibliothèques hébergées avec le site) + fichier commun RFFS -->
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
+<script src="rffs-cloud.js?v=4"></script>
 </head>
 <body>
 
@@ -111,7 +118,7 @@ input:focus{border-color:var(--navy);}
       <div class="app-bar-sub">Suivi réglementaire annuel</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
-      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" onclick="syncFromSupabase()" style="margin-right:10px;">🔄 Sync</span><span class="back-link" onclick="showAdmin()">⚙ Admin</span>
+      <a href="index.html" style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;margin-right:8px;">← Accueil</a><span class="back-link" id="btn-sync" onclick="syncCloud(false)" style="margin-right:10px;">🔄 Sync</span><span class="back-link" onclick="showAdmin()">👥 Équipes</span>
     </div>
   </div>
   <div style="padding:1.5rem;">
@@ -119,6 +126,7 @@ input:focus{border-color:var(--navy);}
       <div class="page-hdr">
         <h1 id="year-counter">2026 — 0 fiche</h1>
         <div class="hdr-actions">
+          <button class="btn btn-red chef-only" onclick="deleteSelected()">🗑 Supprimer la sélection</button>
           <button class="btn btn-green" onclick="exportCSVProtected()">⬇ Exporter CSV</button>
           <button class="btn btn-navy" onclick="showChef()" style="background:var(--navy);">👨‍✈️ Chef de service</button>
         </div>
@@ -167,115 +175,34 @@ input:focus{border-color:var(--navy);}
 <div id="screen-admin" class="screen">
   <div class="app-bar">
     <div>
-      <div class="app-bar-title">Administration</div>
+      <div class="app-bar-title">Équipes et agents</div>
     </div>
     <span class="back-link" onclick="showMain()">← Retour</span>
   </div>
   <div style="padding:1.5rem;">
     <div class="admin-wrap">
-
       <div class="card">
-        <div class="admin-section-title">Mot de passe historique</div>
-        <label>Mot de passe actuel</label>
-        <input type="password" id="pw-current" placeholder="Mot de passe actuel">
-        <label>Nouveau mot de passe</label>
-        <input type="password" id="pw-new" placeholder="Nouveau mot de passe">
-        <label>Confirmer</label>
-        <input type="password" id="pw-confirm" placeholder="Confirmer">
-        <div class="err" id="pw-msg"></div>
-        <button class="btn btn-navy btn-full" onclick="changePw()">Enregistrer</button>
+        <div class="admin-section-title">Équipes et agents</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Cette liste alimente les menus « Nom » des générateurs et des évaluations. Elle est gardée dans le cloud, visible uniquement après connexion.</div>
       </div>
-
+      <div id="equipes-list"></div>
       <div class="card">
-        <div class="admin-section-title">Mot de passe Chef de service</div>
-        <label>Mot de passe actuel</label>
-        <input type="password" id="chef-current" placeholder="Mot de passe actuel">
-        <label>Nouveau mot de passe</label>
-        <input type="password" id="chef-new" placeholder="Nouveau mot de passe">
-        <label>Confirmer</label>
-        <input type="password" id="chef-confirm" placeholder="Confirmer">
-        <div class="err" id="chef-msg"></div>
-        <button class="btn btn-navy btn-full" onclick="changeChefPw()">Enregistrer</button>
+        <button class="btn btn-ghost btn-full" type="button" onclick="addEquipe()" style="margin-bottom:8px;">＋ Ajouter une équipe</button>
+        <div class="err" id="eq-msg"></div>
+        <button class="btn btn-navy btn-full" type="button" onclick="saveEquipes()">Enregistrer les équipes</button>
       </div>
-
-      <div class="card">
-        <div class="admin-section-title">Mot de passe administrateur</div>
-        <label>Mot de passe admin actuel</label>
-        <input type="password" id="adm-current" placeholder="Mot de passe admin actuel">
-        <label>Nouveau mot de passe admin</label>
-        <input type="password" id="adm-new" placeholder="Nouveau mot de passe admin">
-        <label>Confirmer</label>
-        <input type="password" id="adm-confirm" placeholder="Confirmer">
-        <div class="err" id="adm-msg"></div>
-        <button class="btn btn-navy btn-full" onclick="changeAdmPw()">Enregistrer</button>
-      </div>
-
     </div>
   </div>
 </div>
 
 <script>
 
-// ── SUPABASE SYNC ─────────────────────────────────────────────────────────────
-const SUPA_URL = 'https://swrjwiujatbbpmznaffc.supabase.co';
-const SUPA_KEY = 'sb_publishable_NT3U2klv36FaOY2H-dujyw_3AO49Q0E';
-
-async function supabaseInsert(fiche) {
-  try {
-    const res = await fetch(SUPA_URL + '/rest/v1/fiches', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPA_KEY,
-        'Authorization': 'Bearer ' + SUPA_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        date:         fiche.date        || '',
-        heure:        fiche.heure       || '',
-        aeronef:      fiche.aeronef     || '',
-        theme:        fiche.theme       || '',
-        niveau:       fiche.niveau      || 0,
-        conditions:   fiche.conditions  || '',
-        agents:       fiche.agents      || '',
-        resultat:     fiche.resultat    || '',
-        observations: fiche.observations|| '',
-        source:       fiche.source      || 'Web'
-      })
-    });
-    if(res.ok) console.log('Supabase: fiche enregistrée');
-    else console.warn('Supabase erreur:', res.status, await res.text());
-  } catch(e) {
-    console.warn('Supabase offline:', e.message);
-  }
-}
-
-async function supabaseGetAll() {
-  try {
-    const res = await fetch(SUPA_URL + '/rest/v1/fiches?order=created_at.desc', {
-      headers: {
-        'apikey': SUPA_KEY,
-        'Authorization': 'Bearer ' + SUPA_KEY
-      }
-    });
-    if(res.ok) return await res.json();
-    return [];
-  } catch(e) {
-    console.warn('Supabase lecture échouée:', e.message);
-    return [];
-  }
-}
-
 const KEY_DATA = 'rffs_formatives';
-const KEY_CHEF = 'rffs_chef_pw';
-const KEY_PW   = 'rffs_hist_pw';
-const KEY_ADM  = 'rffs_admin_pw';
+const esc = RFFS.esc;
 const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
 let activeMonth = null;
 
-function getPw()  { return localStorage.getItem(KEY_PW)  || 'RFFSBOD96'; }
-function getAdm() { return localStorage.getItem(KEY_ADM) || 'RFFSBOD96'; }
 function getData(){ return JSON.parse(localStorage.getItem(KEY_DATA) || '[]'); }
 
 function show(id){
@@ -284,16 +211,11 @@ function show(id){
 }
 
 function exportCSVProtected(){
-  const pw = prompt('Mot de passe Chef de service :');
-  if(pw === null) return;
-  if(pw !== getChefPw()){ alert('Mot de passe incorrect.'); return; }
-  exportCSV();
+  RFFS.requireRole('chef', exportCSV);
 }
 
 function showAdmin(){
-  const adm = prompt('Mot de passe administrateur :');
-  if(adm === getAdm()) show('screen-admin');
-  else if(adm !== null) alert('Mot de passe admin incorrect.');
+  RFFS.requireRole('chef', function(){ show('screen-admin'); renderEquipes(); });
 }
 
 function showMain(){ show('screen-main'); renderAll(); }
@@ -305,40 +227,38 @@ function msg(id, txt, ok){
   if(ok) setTimeout(()=>el.textContent='', 3000);
 }
 
-function changePw(){
-  const cur = document.getElementById('pw-current').value;
-  const nw  = document.getElementById('pw-new').value;
-  const cf  = document.getElementById('pw-confirm').value;
-  if(cur !== getPw()){ msg('pw-msg','Mot de passe actuel incorrect.',false); return; }
-  if(!nw){ msg('pw-msg','Nouveau mot de passe vide.',false); return; }
-  if(nw !== cf){ msg('pw-msg','Les mots de passe ne correspondent pas.',false); return; }
-  localStorage.setItem(KEY_PW, nw);
-  msg('pw-msg','Mot de passe mis à jour.',true);
-  ['pw-current','pw-new','pw-confirm'].forEach(i=>document.getElementById(i).value='');
+// ── ÉQUIPES ET AGENTS (réservé au chef de service) ───────────────────────────
+function blocEquipe(e){
+  return `<div class="card equipe-bloc">
+    <label>Nom de l'équipe</label>
+    <input type="text" class="eq-nom" value="${esc(e.nom)}">
+    <label>Agents (un nom par ligne)</label>
+    <textarea class="eq-agents" rows="8" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;box-sizing:border-box;">${esc((e.agents||[]).join('\n'))}</textarea>
+    <button type="button" class="btn btn-ghost" style="margin-top:8px;" onclick="this.closest('.equipe-bloc').remove()">Retirer cette équipe</button>
+  </div>`;
 }
-
-function changeChefPw(){
-  const cur=document.getElementById('chef-current').value;
-  const nw =document.getElementById('chef-new').value;
-  const cf =document.getElementById('chef-confirm').value;
-  if(cur!==getChefPw()){msg('chef-msg','Mot de passe actuel incorrect.',false);return;}
-  if(!nw){msg('chef-msg','Nouveau mot de passe vide.',false);return;}
-  if(nw!==cf){msg('chef-msg','Les mots de passe ne correspondent pas.',false);return;}
-  localStorage.setItem(KEY_CHEF,nw);
-  msg('chef-msg','Mot de passe Chef mis à jour.',true);
-  ['chef-current','chef-new','chef-confirm'].forEach(i=>document.getElementById(i).value='');
+function renderEquipes(){
+  const noms = Object.keys(AGENTS);
+  const liste = noms.length
+    ? noms.map(n=>({nom:n, agents:AGENTS[n]}))
+    : [1,2,3,4].map(i=>({nom:'Équipe '+i, agents:[]}));
+  document.getElementById('equipes-list').innerHTML = liste.map(blocEquipe).join('');
 }
-
-function changeAdmPw(){
-  const cur = document.getElementById('adm-current').value;
-  const nw  = document.getElementById('adm-new').value;
-  const cf  = document.getElementById('adm-confirm').value;
-  if(cur !== getAdm()){ msg('adm-msg','Mot de passe admin incorrect.',false); return; }
-  if(!nw){ msg('adm-msg','Nouveau mot de passe vide.',false); return; }
-  if(nw !== cf){ msg('adm-msg','Les mots de passe ne correspondent pas.',false); return; }
-  localStorage.setItem(KEY_ADM, nw);
-  msg('adm-msg','Mot de passe admin mis à jour.',true);
-  ['adm-current','adm-new','adm-confirm'].forEach(i=>document.getElementById(i).value='');
+function addEquipe(){
+  const n = document.querySelectorAll('.equipe-bloc').length + 1;
+  document.getElementById('equipes-list').insertAdjacentHTML('beforeend', blocEquipe({nom:'Équipe '+n, agents:[]}));
+}
+async function saveEquipes(){
+  const equipes = {};
+  document.querySelectorAll('.equipe-bloc').forEach(b=>{
+    const nom = b.querySelector('.eq-nom').value.trim();
+    const agents = b.querySelector('.eq-agents').value.split('\n').map(x=>x.trim().toUpperCase()).filter(Boolean);
+    if(nom) equipes[nom] = agents;
+  });
+  const r = await RFFS.saveAgents(equipes);
+  if(r === true) msg('eq-msg','Équipes enregistrées. Elles apparaissent dans les générateurs.',true);
+  else if(r === 'attente') msg('eq-msg','Pas de réseau : la liste partira au retour du réseau.',true);
+  else msg('eq-msg','Enregistrement refusé : action réservée au chef de service.',false);
 }
 
 function renderAll(){
@@ -416,15 +336,15 @@ function exportPDFMois(){
     const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
     const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
     return `<div class="fiche">
-      <div class="fiche-hdr"><span class="fiche-title">${f.aeronef||'—'} — ${f.theme||'—'}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="fiche-hdr"><span class="fiche-title">${esc(f.aeronef||'—')} — ${esc(f.theme||'—')}</span><span class="badge ${badge}">${label}</span></div>
       <div class="grid">
-        <div><div class="lbl">Date</div><div class="val">${f.date||'—'} ${f.heure||''}</div></div>
-        <div><div class="lbl">Niveau</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
-        <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
-        <div><div class="lbl">Source</div><div class="val">${f.source||'Web'}</div></div>
-        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+        <div><div class="lbl">Date</div><div class="val">${esc(f.date||'—')} ${esc(f.heure||'')}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${esc(f.source||'Web')}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
       </div>
-      ${f.observations?`<div class="obs">${f.observations}</div>`:''}
+      ${f.observations?`<div class="obs">${esc(f.observations)}</div>`:''}
     </div>`;
   }).join('')}
   </body></html>`);
@@ -451,14 +371,14 @@ function renderMonth(fiches){
       const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
       const label = f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
       return `<div class="fiche-row" style="grid-template-columns:28px 100px 1fr 70px 90px;">
-        <span><input type="checkbox" class="chk-fiche" data-id="${f.id}" style="cursor:pointer;"></span>
-        <span class="col-date">${f.date||''}<br><span style="font-size:10px;">${f.heure||''}</span></span>
-        <span><strong style="font-size:12px;">${f.aeronef||'—'}</strong><br><span class="col-theme">${f.theme||''}</span></span>
-        <span style="color:var(--muted);font-size:12px;">Niv. ${f.niveau||'—'}</span>
+        <span><input type="checkbox" class="chk-fiche" data-id="${esc(f.id)}" style="cursor:pointer;"></span>
+        <span class="col-date">${esc(f.date||'')}<br><span style="font-size:10px;">${esc(f.heure||'')}</span></span>
+        <span><strong style="font-size:12px;">${esc(f.aeronef||'—')}</strong><br><span class="col-theme">${esc(f.theme||'')}</span></span>
+        <span style="color:var(--muted);font-size:12px;">Niv. ${esc(f.niveau||'—')}</span>
         <span style="display:flex;gap:5px;align-items:center;">
           <div class="badge ${badge}">${label}</div>
-          <button onclick="openFiche('${f.id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
-          <button onclick="pdfFiche('${f.id}')" style="background:none;border:1px solid var(--green);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--green);" title="PDF">📄</button>
+          <button onclick="openFiche('${esc(f.id)}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+          <button onclick="pdfFiche('${esc(f.id)}')" style="background:none;border:1px solid var(--green);border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--green);" title="PDF">📄</button>
         </span>
       </div>`;
     }).join('')}`;
@@ -468,34 +388,42 @@ function toggleAll(checked){
   document.querySelectorAll('.chk-fiche').forEach(c=>c.checked=checked);
 }
 
-async function deleteSelected(){
-  const checked = [...document.querySelectorAll('.chk-fiche:checked')];
-  if(!checked.length){ alert('Aucune fiche sélectionnée.'); return; }
-  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Cette action est irréversible.`)) return;
-
-  const ids = checked.map(c=>c.dataset.id);
-
-  // Supprimer du localStorage
-  let data = getData().filter(f=>!ids.includes(String(f.id)));
-  localStorage.setItem(KEY_DATA, JSON.stringify(data));
-
-  // Supprimer de Supabase (si ID numérique = Supabase)
-  for(const id of ids){
-    if(!isNaN(id) && String(id).length < 15){ // ID Supabase = petit entier
-      try{
-        await fetch(SUPA_URL + '/rest/v1/fiches?id=eq.' + id, {
-          method: 'DELETE',
-          headers: {
-            'apikey': SUPA_KEY,
-            'Authorization': 'Bearer ' + SUPA_KEY
-          }
-        });
-      } catch(e){ console.warn('Supabase delete error:', e); }
-    }
+// ── SUPPRESSION (réservée au chef de service) ───────────────────────────────
+// Retire les fiches de l'appareil et du cloud. Renvoie true si la suppression a eu lieu.
+async function supprimerFiches(ids){
+  try{
+    if(RFFS.role()!=='chef'){ RFFS.toast('Suppression réservée au chef de service.','err'); return false; }
+    if(!ids.length){ RFFS.toast('Coche d\'abord la ou les fiches à supprimer.','info'); return false; }
+    const ok = await RFFS.confirmer(`Supprimer ${ids.length} fiche(s) ? Cette action est irréversible.`, 'Supprimer');
+    if(!ok) return false;
+    ids = ids.map(String);
+    // 1. retirer tout de suite de l'appareil et de l'écran
+    localStorage.setItem(KEY_DATA, JSON.stringify(getData().filter(f=>!ids.includes(String(f.id)))));
+    activeMonth = null;
+    renderAll();
+    if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+    RFFS.toast('Suppression en cours…','info');
+    // 2. retirer du cloud (toutes les fiches en même temps)
+    const res = await Promise.all(ids.map(id=>RFFS.deleteFiche(id)));
+    const refus = res.filter(r=>r===false).length, attente = res.filter(r=>r==='attente').length;
+    if(refus) RFFS.toast(refus+' fiche(s) n\'ont pas pu être supprimées du cloud : elles reviendront à la prochaine synchro.','err');
+    else if(attente) RFFS.toast('Pas de réseau : la suppression dans le cloud se fera au retour du réseau.','info');
+    else RFFS.toast(`✓ ${ids.length} fiche(s) supprimée(s).`,'ok');
+    return true;
+  }catch(e){
+    console.error(e);
+    RFFS.toast('Erreur pendant la suppression : '+(e && e.message ? e.message : e),'err');
+    return false;
   }
+}
 
-  activeMonth = null;
-  renderAll();
+async function deleteSelected(){
+  await supprimerFiches([...document.querySelectorAll('.chk-fiche:checked')].map(c=>c.dataset.id));
+}
+
+async function deleteOpenFiche(){
+  if(!ficheOuverte) return;
+  if(await supprimerFiches([ficheOuverte])){ ficheOuverte = null; closeModal(); }
 }
 
 function exportCSV(){
@@ -516,14 +444,8 @@ function exportCSV(){
   document.body.removeChild(a);
 }
 
-function getChefPw(){ return localStorage.getItem(KEY_CHEF) || 'CHEF2026'; }
-
 function showChef(){
-  const pw = prompt('Mot de passe Chef de service :');
-  if(pw === null) return;
-  if(pw !== getChefPw()){ alert('Mot de passe incorrect.'); return; }
-  show('screen-chef');
-  renderChef();
+  RFFS.requireRole('chef', function(){ show('screen-chef'); renderChef(); });
 }
 
 function exportPDFChefMois(mois){
@@ -553,15 +475,15 @@ function exportPDFChefMois(mois){
     const label=f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
     const agents=(f.agents||'—').split('|').filter(Boolean).join(', ');
     return `<div class="fiche">
-      <div class="fiche-hdr"><span class="fiche-title">${f.aeronef||'—'} — ${f.theme||'—'}</span><span class="badge ${badge}">${label}</span></div>
+      <div class="fiche-hdr"><span class="fiche-title">${esc(f.aeronef||'—')} — ${esc(f.theme||'—')}</span><span class="badge ${badge}">${label}</span></div>
       <div class="grid">
-        <div><div class="lbl">Date</div><div class="val">${f.date||'—'} ${f.heure||''}</div></div>
-        <div><div class="lbl">Niveau</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
-        <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
-        <div><div class="lbl">Source</div><div class="val">${f.source||'Web'}</div></div>
-        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+        <div><div class="lbl">Date</div><div class="val">${esc(f.date||'—')} ${esc(f.heure||'')}</div></div>
+        <div><div class="lbl">Niveau</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+        <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+        <div><div class="lbl">Source</div><div class="val">${esc(f.source||'Web')}</div></div>
+        <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
       </div>
-      ${f.observations?`<div class="obs">${f.observations}</div>`:''}
+      ${f.observations?`<div class="obs">${esc(f.observations)}</div>`:''}
     </div>`;
   }).join('')}</body></html>`);
   w.document.close();
@@ -594,14 +516,14 @@ function renderChef(){
       const badge=f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
       const label=f.resultat==='validé'?'Validé':f.resultat==='non_validé'?'Non validé':'En cours';
       html+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;">
-        <input type="checkbox" class="chk-chef" data-id="${f.id}" style="cursor:pointer;width:16px;height:16px;flex-shrink:0;">
+        <input type="checkbox" class="chk-chef" data-id="${esc(f.id)}" style="cursor:pointer;width:16px;height:16px;flex-shrink:0;">
         <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;">${f.aeronef||'—'} <span style="color:var(--muted);font-weight:400;">— ${f.theme||''}</span></div>
-          <div style="font-size:10px;color:var(--muted);">${f.date||''} ${f.heure||''} · Niv.${f.niveau||'—'}</div>
+          <div style="font-size:12px;font-weight:600;">${esc(f.aeronef||'—')} <span style="color:var(--muted);font-weight:400;">— ${esc(f.theme||'')}</span></div>
+          <div style="font-size:10px;color:var(--muted);">${esc(f.date||'')} ${esc(f.heure||'')} · Niv.${esc(f.niveau||'—')}</div>
         </div>
         <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
           <div class="badge ${badge}">${label}</div>
-          <button onclick="openFiche('${f.id}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
+          <button onclick="openFiche('${esc(f.id)}')" style="background:none;border:1px solid #ddd;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;color:var(--muted);" title="Voir détail">👁</button>
         </div>
       </div>`;
     });
@@ -611,67 +533,31 @@ function renderChef(){
 }
 
 async function deleteChefSelected(){
-  const checked=[...document.querySelectorAll('.chk-chef:checked')];
-  if(!checked.length){alert('Aucune fiche sélectionnée.');return;}
-  if(!confirm(`Supprimer ${checked.length} fiche(s) ? Action irréversible.`)) return;
-  const ids=checked.map(c=>c.dataset.id);
-  let data=getData().filter(f=>!ids.includes(String(f.id)));
-  localStorage.setItem(KEY_DATA, JSON.stringify(data));
-  // Supabase
-  for(const id of ids){
-    if(!isNaN(id)&&String(id).length<15){
-      try{
-        await fetch(SUPA_URL+'/rest/v1/fiches?id=eq.'+id,{
-          method:'DELETE',
-          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-        });
-      }catch(e){console.warn('Supabase delete:',e);}
-    }
-  }
-  renderChef();
-  renderAll();
-  alert(`✓ ${ids.length} fiche(s) supprimée(s).`);
+  await supprimerFiches([...document.querySelectorAll('.chk-chef:checked')].map(c=>c.dataset.id));
+  const tout = document.getElementById('chk-chef-all'); if(tout) tout.checked = false;
 }
 
-async function syncFromSupabase(){
-  const btn = document.querySelector('[onclick="syncFromSupabase()"]');
-  if(btn) btn.textContent = '⏳ Sync...';
-  const fiches = await supabaseGetAll();
-  if(!fiches.length){ 
-    alert('Aucune fiche trouvée sur Supabase.');
-    if(btn) btn.textContent = '🔄 Sync';
+async function syncCloud(silencieux){
+  if(!RFFS.role()){
+    if(!silencieux) RFFS.login(null, function(){ syncCloud(false); });
     return;
   }
-  // Convertir le format Supabase → format local
-  const remote = fiches.map(f=>({
-    id:           f.id,
-    date:         f.date,
-    heure:        f.heure,
-    aeronef:      f.aeronef,
-    theme:        f.theme,
-    niveau:       f.niveau,
-    conditions:   f.conditions,
-    agents:       f.agents,
-    resultat:     f.resultat,
-    observations: f.observations,
-    source:       f.source||'Web'
-  }));
-  // Fusionner avec les fiches locales — éviter les doublons par ID
-  const local = getData();
-  const remoteIds = new Set(remote.map(f=>String(f.id)));
-  const localOnly = local.filter(f=>!remoteIds.has(String(f.id)));
-  const merged = [...remote, ...localOnly];
-  // Trier par date décroissante
-  merged.sort((a,b)=>{
-    const da = (a.date||'').split('/').reverse().join('-');
-    const db = (b.date||'').split('/').reverse().join('-');
-    return db.localeCompare(da);
-  });
-  localStorage.setItem(KEY_DATA, JSON.stringify(merged));
+  const btn = document.getElementById('btn-sync');
+  if(btn) btn.textContent = '⏳ Sync...';
+  const res = await RFFS.synchroniser();
+  if(btn) btn.textContent = '🔄 Sync';
+  if(!res){
+    if(!silencieux) RFFS.toast('Synchronisation impossible pour le moment.','err');
+    return;
+  }
   activeMonth = null;
   renderAll();
-  if(btn) btn.textContent = '🔄 Sync';
-  alert(`✓ ${merged.length} fiche(s) au total — ${remote.length} cloud + ${localOnly.length} locales fusionnées.`);
+  if(document.getElementById('screen-chef').classList.contains('active')) renderChef();
+  if(!silencieux){
+    RFFS.toast(res.horsLigne
+      ? `Hors connexion : ${res.total} fiche(s) affichées depuis cet appareil.`
+      : `✓ ${res.total} fiche(s) — ${res.cloud} dans le cloud, ${res.locales} sur cet appareil seulement.`, 'ok');
+  }
 }
 
 function pdfFiche(id){
@@ -682,7 +568,7 @@ function pdfFiche(id){
   const label = f.resultat==='validé'?'VALIDÉ':f.resultat==='non_validé'?'NON VALIDÉ':'EN COURS';
   const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
   const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiche ${f.aeronef} ${f.date}</title>
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Fiche ${esc(f.aeronef)} ${esc(f.date)}</title>
   <style>body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:30px;}
   h1{font-size:16px;color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:8px;margin-bottom:16px;}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:12px;}
@@ -695,45 +581,47 @@ function pdfFiche(id){
   @media print{body{margin:15px;}}</style></head><body>
   <h1>RFFS BOD — Fiche d'exercice</h1>
   <div class="grid">
-    <div><div class="lbl">Date / Heure</div><div class="val">${f.date||'—'} à ${f.heure||'—'}</div></div>
+    <div><div class="lbl">Date / Heure</div><div class="val">${esc(f.date||'—')} à ${esc(f.heure||'—')}</div></div>
     <div><div class="lbl">Résultat</div><div class="val"><span class="badge ${badge}">${label}</span></div></div>
-    <div><div class="lbl">Aéronef</div><div class="val">${f.aeronef||'—'}</div></div>
-    <div><div class="lbl">Niveau RFFS</div><div class="val">Niv. ${f.niveau||'—'}</div></div>
-    <div><div class="lbl">Thème</div><div class="val">${f.theme||'—'}</div></div>
-    <div><div class="lbl">Conditions</div><div class="val">${f.conditions||'—'}</div></div>
-    <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${agents}</div></div>
+    <div><div class="lbl">Aéronef</div><div class="val">${esc(f.aeronef||'—')}</div></div>
+    <div><div class="lbl">Niveau RFFS</div><div class="val">Niv. ${esc(f.niveau||'—')}</div></div>
+    <div><div class="lbl">Thème</div><div class="val">${esc(f.theme||'—')}</div></div>
+    <div><div class="lbl">Conditions</div><div class="val">${esc(f.conditions||'—')}</div></div>
+    <div style="grid-column:span 2"><div class="lbl">Agents</div><div class="val">${esc(agents)}</div></div>
   </div>
-  ${f.observations?`<div class="obs"><strong>Observations :</strong><br>${f.observations}</div>`:''}
-  ${f.ficheFormHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Fiche formative complète</h2><div style="font-size:11px;">${f.ficheFormHtml}</div></div>` : f.schemaHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Schéma d'intervention</h2>${f.schemaHtml}</div>` : ''}
-  <div class="footer">RFFS BOD · Fiche enregistrée le ${f.date} · Source : ${f.source||'Web'}</div>
+  ${f.observations?`<div class="obs"><strong>Observations :</strong><br>${esc(f.observations)}</div>`:''}
+  ${f.ficheFormHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Fiche formative complète</h2><div style="font-size:11px;">${RFFS.safeHtml(f.ficheFormHtml)}</div></div>` : f.schemaHtml ? `<div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px;"><h2 style="font-size:13px;color:#1F3864;margin-bottom:8px;">Schéma d'intervention</h2>${RFFS.safeHtml(f.schemaHtml)}</div>` : ''}
+  <div class="footer">RFFS BOD · Fiche enregistrée le ${esc(f.date)} · Source : ${esc(f.source||'Web')}</div>
   </body></html>`);
   w.document.close();
   setTimeout(()=>w.print(), 400);
 }
 
+let ficheOuverte = null;
 function openFiche(id){
   const data = getData();
   const f = data.find(x=>String(x.id)===String(id));
   if(!f) return;
+  ficheOuverte = String(f.id);
   const badge = f.resultat==='validé'?'badge-ok':f.resultat==='non_validé'?'badge-ko':'badge-wip';
   const label = f.resultat==='validé'?'✓ VALIDÉ':f.resultat==='non_validé'?'✗ NON VALIDÉ':'⟳ EN COURS';
   const agents = (f.agents||'—').split('|').filter(Boolean).join(', ');
   document.getElementById('modal-title').textContent = f.aeronef + ' — ' + f.date;
   const schemaBlock = f.ficheFormHtml
-    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Fiche formative complète</div><div style="border:1px solid #ddd;border-radius:6px;overflow:auto;padding:10px;background:#fafafa;max-height:500px;">${f.ficheFormHtml}</div></div>`
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Fiche formative complète</div><div style="border:1px solid #ddd;border-radius:6px;overflow:auto;padding:10px;background:#fafafa;max-height:500px;">${RFFS.safeHtml(f.ficheFormHtml)}</div></div>`
     : f.schemaHtml
-    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Schéma d'intervention</div><div style="border:1px solid #ddd;border-radius:6px;padding:8px;background:#fafafa;">${f.schemaHtml}</div></div>`
+    ? `<div style="margin:10px 0 4px;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Schéma d'intervention</div><div style="border:1px solid #ddd;border-radius:6px;padding:8px;background:#fafafa;">${RFFS.safeHtml(f.schemaHtml)}</div></div>`
     : '';
   document.getElementById('modal-body').innerHTML = `
-    <div class="modal-field"><div class="modal-label">Date / Heure</div><div class="modal-value">${f.date||'—'} à ${f.heure||'—'}</div></div>
-    <div class="modal-field"><div class="modal-label">Aéronef</div><div class="modal-value" style="font-size:15px;font-weight:600;color:var(--navy);">${f.aeronef||'—'}</div></div>
-    <div class="modal-field"><div class="modal-label">Thème</div><div class="modal-value">${f.theme||'—'}</div></div>
-    <div class="modal-field"><div class="modal-label">Niveau RFFS</div><div class="modal-value">Niv. ${f.niveau||'—'}</div></div>
-    <div class="modal-field"><div class="modal-label">Conditions</div><div class="modal-value">${f.conditions||'—'}</div></div>
-    <div class="modal-field"><div class="modal-label">Agents</div><div class="modal-value">${agents}</div></div>
+    <div class="modal-field"><div class="modal-label">Date / Heure</div><div class="modal-value">${esc(f.date||'—')} à ${esc(f.heure||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Aéronef</div><div class="modal-value" style="font-size:15px;font-weight:600;color:var(--navy);">${esc(f.aeronef||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Thème</div><div class="modal-value">${esc(f.theme||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Niveau RFFS</div><div class="modal-value">Niv. ${esc(f.niveau||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Conditions</div><div class="modal-value">${esc(f.conditions||'—')}</div></div>
+    <div class="modal-field"><div class="modal-label">Agents</div><div class="modal-value">${esc(agents)}</div></div>
     <div class="modal-field"><div class="modal-label">Résultat</div><div class="modal-value"><span class="badge ${badge}">${label}</span></div></div>
-    <div class="modal-field"><div class="modal-label">Observations</div><div class="modal-value" style="background:var(--bg);border-radius:6px;padding:8px;font-style:${f.observations?'normal':'italic'};color:${f.observations?'var(--text)':'var(--muted)'};">${f.observations||'Aucune observation'}</div></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:right;">Source : ${f.source||'Web'} · ID : ${f.id}</div>
+    <div class="modal-field"><div class="modal-label">Observations</div><div class="modal-value" style="background:var(--bg);border-radius:6px;padding:8px;font-style:${f.observations?'normal':'italic'};color:${f.observations?'var(--text)':'var(--muted)'};">${esc(f.observations||'Aucune observation')}</div></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:right;">Source : ${esc(f.source||'Web')} · ID : ${esc(f.id)}</div>
     ${schemaBlock}
   `;
   document.getElementById('modal-fiche').classList.add('open');
@@ -762,6 +650,10 @@ function clearAll(){
   }
 }
   renderAll();
+  RFFS.onChange(function(r){
+    document.body.classList.toggle('is-chef', r==='chef');   // affiche les boutons réservés au chef
+    if(r) syncCloud(true);
+  });
 </script>
 
 <!-- ── MODALE LECTURE FICHE ── -->
@@ -773,6 +665,7 @@ function clearAll(){
     </div>
     <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer">
+      <button class="btn btn-red chef-only" onclick="deleteOpenFiche()" style="margin-right:auto;">🗑 Supprimer cette fiche</button>
       <button class="btn btn-ghost" onclick="closeModal()">Fermer</button>
       <button class="btn btn-green" onclick="printFiche()">📄 Exporter PDF</button>
     </div>
